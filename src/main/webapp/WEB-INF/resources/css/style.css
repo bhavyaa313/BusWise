@@ -1,0 +1,107 @@
+.capsule {
+    padding: 50px 100px;
+    height: 400px;
+    width: 100%; /* Adjust padding as needed */
+    /* High border-radius for rounded corners */
+}
+
+.shape {
+    padding: 0 0 0 0 ;
+    height: 400px;
+    width: 100%;
+    background-color: rgb(5, 12, 90);
+    /* Adjust padding as needed */
+    border-radius: 20px 0 0 20px; /* top-left & bottom-right rounded */
+
+    /* High border-radius for rounded corners */
+}
+
+.shape1 {
+    padding: 0 0 0 0;
+    height: 400px;
+    width: 100%;
+    background-color: rgb(5, 12, 90); /* Adjust padding as needed */
+    border-radius:0 20px 20px 0; /* top-left & bottom-right rounded */
+    /* High border-radius for rounded corners */
+}
+
+
+
+
+.font {
+    font-family: "Edu TAS Beginner", cursive;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+
+
+.font-accordian {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight:bold;
+    word-spacing: 10px;
+    font-style: normal;
+}
+
+.font-accordian-body {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight:450;
+    font-style: normal;
+}
+
+
+.img-slider{
+    height: 50vh;
+    width: 120vh;
+}
+
+
+.font-bus{
+    letter-spacing: 20px;
+}
+
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-top: 200px;
+    background-color: rgb(255, 255, 255);
+    color: white;
+    text-align: left;
+    font-weight:250;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+}
+
+body::after {
+    content: '';
+    display: block;
+}
+
+.c {
+    display: inline-block;
+    width: 30px; /* Adjust width as needed */
+    height: 30px; /* Adjust height as needed */
+    background-color: #ffffff; /* Adjust background color */
+    border-radius: 50%;
+    text-align: center; /* Center text horizontally */
+    line-height: 30px; /* Center text vertically (adjust if needed) */
+    color: #3a3939;
+    border: 1px solid #716d6d; /* Adjust text color */
+}
+
+
+.img-card{
+    height: 300px;
+    width: 200px;
+}

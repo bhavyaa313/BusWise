@@ -1,0 +1,99 @@
+
+.error-message1{
+    display: block;
+    margin-top: 10px;
+    font-size: 0.8em;
+    color: red;
+}
+
+
+
+
+@media only screen and (max-width: 760px) {
+
+    table,
+    tbody,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+        width: 100%;
+        clear: both;
+        text-align: start;
+    }
+
+    thead tr {
+        position: absolute;
+        left: -9999px;
+    }
+
+    tr {
+        border-top: 5px solid #ccc;
+    }
+
+    td,
+    th {
+        border: none !important;
+    }
+
+    td:before {
+        float: left;
+        width: 95%;
+        margin-left: -100%;
+    }
+
+    td {
+        padding-left: 5%;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    .table td {
+        padding: 5px 20px 10px;
+    }
+}
+#pagination {
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 4px;
+    padding: 1px 2px 4px 2px;
+    border: 1px solid #DDDDDD; /* Light gray border */
+    /* Light gray background */
+}
+
+#pagination a, #pagination i {
+    display: inline-block;
+    vertical-align: middle;
+    width: 22px;
+    color: #333333; /* Black text */
+    text-align: center;
+    font-size: 10px;
+    padding: 3px 0 2px 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+#pagination a {
+    margin: 0 2px 0 2px;
+    border-radius: 4px;
+    border: 1px solid #DDDDDD; /* Light gray border */
+    cursor: pointer;
+    /* Remove box-shadow for a cleaner look */
+    text-shadow: none;
+    background-color: #EEEEEE; /* Lighter gray background */
+}
+
+#pagination i {
+    margin: 0 3px 0 3px;
+}
+
+#pagination a.current {
+    border: 1px solid #AAAAAA; /* Slightly darker gray border */
+    background-color: #DDDDDD; /* Light gray background */
+}

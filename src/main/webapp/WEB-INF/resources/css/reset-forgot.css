@@ -1,0 +1,53 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f1f1f1;
+}
+
+.error-message
+{
+    color: red;
+}
+
+
+
+.custom-input {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.custom-input:focus {
+    border-bottom: 1px solid #000;
+    box-shadow: none;
+    outline: none;
+}
+
+
+
+
+body {
+    background-color: #ffffff;
+    background-image: url("<c:url value="/resources/image/bg.jpeg"/>");
+    /* Replace with your image path */
+    background-size: cover;
+    /* Ensures the image covers the whole background */
+    background-position: center;
+    /* Centers the background image */
+    background-repeat: no-repeat;
+    /* Prevents the image from repeating */
+
+    height: 100vh !important;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.form-floating label {
+    padding: 0 0.75rem;
+    background-color: white;
+    color: #007bff;
+    /* Match the color of the welcome text */
+    font-weight: bold;
+}
