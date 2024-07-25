@@ -60,7 +60,10 @@ public class DailySalesPdfService {
             e.printStackTrace();
         }
 
-        return filePath;
+
+        String pathTemp = String.format("/%s/%s/", "resources", "reports");
+        String path = request.getContextPath() + pathTemp + "DailySalesReport_" + dateString + ".pdf";
+        return path;
     }
 
     private void addHeader(Document document) {

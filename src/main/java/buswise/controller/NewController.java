@@ -4,6 +4,11 @@ import buswise.dao.BookingDao;
 import buswise.dto.*;
 import buswise.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -13,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -79,13 +85,41 @@ public class NewController {
     @ResponseBody
     public String downlaodTicket(HttpServletRequest request1, @PathVariable("id") int id) {
         String ticket = ticketPDFService.createPdf(request1, id);
+        System.out.println(ticket);
         return ticket;
     }
 
+//    @GetMapping("/ticketDownload/{id}")
+//
+//    public ResponseEntity<Resource> downloadTicket(HttpServletRequest request1, @PathVariable("id") int id) {
+//        try {
+//            // Generate the file and get its path
+//            String filePath = ticketPDFService.createPdf(request1, id);
+//            System.out.println(filePath);
+//            System.out.println("-----------------");
+//
+//            // Convert the local file path to a URL that can be used to serve the file
+//            File file = new File(filePath);
+//
+//            // Ensure the file is within the static directory
+//            String fileName = file.getName();
+//            Resource resource = new ClassPathResource("static/tickets/" + fileName);
+//
+//            if (resource.exists() || resource.isReadable()) {
+//                return ResponseEntity.ok()
+//                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+//                        .contentType(MediaType.APPLICATION_PDF)
+//                        .body(resource);
+//            } else {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//            }
+//        } catch (Exception e ) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 
-    @GetMapping("/sendEmail/{email}/{bookingId}")
-    public String sendEmailWithAttachment(@PathVariable("email") String toMail, @PathVariable("bookingId") int id, @PathVariable("userId") int userId
-            , HttpServletRequest request) {
+    @GetMapping("/sendEmail/{email}/{bookingId}/{userId}")
+    public String sendEmailWithAttachment(@PathVariable("email") String toMail, @PathVariable("bookingId") int id, @PathVariable("userId") int userId, HttpServletRequest request) {
         try {
             HttpSession httpSession = request.getSession();
             String filePath = httpSession.getServletContext().getRealPath("/") + "WEB-INF" + File.separator + "resources"
@@ -99,16 +133,25 @@ public class NewController {
                     "Best regards,\n" +
                     "The BusWise Team";
 
+            System.out.println("Creating PDF...");
             ticketPDFService.createPdf(request, id);
+
+            System.out.println("Sending email with attachment...");
             emailService.sendWithAttachment(toMail, subject, message, filePath);
+
+            System.out.println("Saving email logs...");
             projectService.saveEmailLogsWhileBooking(toMail, userId);
 
             return "Email sent successfully with attachment!";
         } catch (MessagingException e) {
             e.printStackTrace();
             return "Failed to send email with attachment.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "An error occurred.";
         }
     }
+
 
     @PostMapping("/dailySales")
     @ResponseBody

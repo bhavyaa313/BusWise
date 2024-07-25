@@ -2,6 +2,7 @@ package buswise.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "routes")
@@ -27,11 +28,8 @@ public class Routes {
     private int distance;
     @Column(name = "no_of_subroutes")
     private int noOfSubroutes;
+    @OneToMany(mappedBy = "routeId") // OneToMany with SubRoute (mappedBy refers to routeId in SubRoute)
 
-
-    @ManyToOne
-    @JoinColumn(name = "route_id")
-    private SubRoute subRoute;
 
     public int getNoOfSubroutes() {
         return noOfSubroutes;
@@ -114,15 +112,9 @@ public class Routes {
     }
 
 
-    public SubRoute getSubRoute() {
-        return subRoute;
-    }
 
-    public void setSubRoute(SubRoute subRoute) {
-        this.subRoute = subRoute;
-    }
 
-    public Routes(int routeId, String source, String destination, User createdBy, User modifiedBy, LocalDateTime createdDate, LocalDateTime modifiedDate, boolean isDeleted, int distance, int noOfSubroutes, SubRoute subRoute) {
+    public Routes(int routeId, String source, String destination, User createdBy, User modifiedBy, LocalDateTime createdDate, LocalDateTime modifiedDate, boolean isDeleted, int distance, int noOfSubroutes) {
         this.routeId = routeId;
         this.source = source;
         this.destination = destination;
@@ -133,7 +125,7 @@ public class Routes {
         this.isDeleted = isDeleted;
         this.distance = distance;
         this.noOfSubroutes = noOfSubroutes;
-        this.subRoute = subRoute;
+
     }
 
     public Routes() {

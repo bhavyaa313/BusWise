@@ -1,11 +1,4 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: PCA84
-  Date: 05-07-2024
-  Time: 12:12
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <%--
   Created by IntelliJ IDEA.
   User: PCA84
@@ -24,8 +17,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-    <title>Login</title>
+    <link rel="stylesheet" href="<c:url value="/resources/css/reset-forgot.css" />">
+    <title>Forgot Password</title>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
@@ -35,34 +28,9 @@
 
     <%--    --%>
     <script src="script.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f1f1f1;
-        }
-
-        .error-message
-        {
-            color: red;
-        }
 
 
-
-        .custom-input {
-            border: none;
-            border-bottom: 1px solid #ccc;
-            border-radius: 0;
-            box-shadow: none;
-        }
-
-        .custom-input:focus {
-            border-bottom: 1px solid #000;
-            box-shadow: none;
-            outline: none;
-        }
-
-
-
+<style>
 
         body {
             background-color: #ffffff;
@@ -78,18 +46,8 @@
             height: 100vh !important;
         }
 
-        .card {
-            border-radius: 10px;
-        }
+</style>
 
-        .form-floating label {
-            padding: 0 0.75rem;
-            background-color: white;
-            color: #007bff;
-            /* Match the color of the welcome text */
-            font-weight: bold;
-        }
-    </style>
 </head>
 
 <body>

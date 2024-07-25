@@ -1,11 +1,4 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: PCA84
-  Date: 09-07-2024
-  Time: 09:36
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <%--
   Created by IntelliJ IDEA.
   User: PCA84
@@ -55,6 +48,13 @@
             height: 7vh;
             width: 27vh;
         }
+        @media (max-width: 576px) {
+            .capsule {
+                min-height: 82vh;
+                padding: 10px;
+            }
+
+        }
     </style>
 </head>
 
@@ -98,7 +98,7 @@
                             </div>
                             <div class="col-md-3 ">
 
-                                <input type="date" class="form-control form-control-lg" placeholder="date" name="date"
+                                <input type="date" class="form-control form-control-lg" placeholder="date" name="date" id="date"
                                        style="height: 80px; width: 100%;">
                             </div>
                         </div>

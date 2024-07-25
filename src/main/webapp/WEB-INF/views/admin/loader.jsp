@@ -57,6 +57,7 @@
 
             // Set the loader to display for a specific time (e.g., 2 seconds) before submitting the form
             setTimeout(() => {
+                history.pushState({ formSubmitted: true }, '', '');
                 $('#searchForm')[0].submit(); // Ensure correct form is submitted
             }, 2000);
         }
@@ -66,6 +67,13 @@
     window.addEventListener('load', function() {
         hideLoader();
     });
+
+    debugger
+    window.onpopstate = function(event) {
+        if (event.state && event.state.formSubmitted) {
+            hideLoader(); // Hide the loader when navigating back
+        }
+    };
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

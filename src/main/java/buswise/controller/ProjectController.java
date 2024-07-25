@@ -7,15 +7,14 @@ import buswise.dao.VerificationDao;
 import buswise.dto.*;
 import buswise.model.*;
 import buswise.service.*;
-
-
-import com.itextpdf.forms.xfdf.Mode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -144,7 +143,7 @@ public class ProjectController {
 
     @GetMapping("/buses/checkBusUsage/{busId}/{userId}")
     public ResponseEntity<?> checkBusUsage( @PathVariable int busId) {
-        boolean isBusUsed = projectService.isRouteUsedInSchedule(busId);
+        boolean isBusUsed = projectService.isBusUsedInSchedule(busId);
         Map<String, Boolean> response = new HashMap<>();
         response.put("isUsed", isBusUsed);
         return ResponseEntity.ok(response);
@@ -218,6 +217,14 @@ public class ProjectController {
     }
 
 
+    @GetMapping("/schedule/checkScheduleUsage/{scheduleId}/{userId}")
+    public ResponseEntity<?> checkScheduleUsage( @PathVariable int scheduleId) {
+        boolean isScheduleUsed = projectService.isScheduleInBooking(scheduleId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isUsed", isScheduleUsed);
+        return ResponseEntity.ok(response);
+    }
+
 
 
     @PostMapping("/schedule/getRoutes/{userId}")
@@ -255,6 +262,7 @@ public class ProjectController {
         } else {
 
             projectService.editSchedule(ScheduleDto, id);
+
         }
     }
 
@@ -363,56 +371,78 @@ public class ProjectController {
         return projectService.myBookings(userId, curPage, filterOption);
     }
 
-    @RequestMapping("/cancelSeat/{bookingDetailId}/{bookingId}/{userId}")
+    @RequestMapping(value = "/cancelSeat/{bookingDetailId}/{bookingId}/{userId}", method = RequestMethod.POST)
     @ResponseBody
-    public void cancelSeat( @PathVariable("bookingDetailId") int bookingDetailId, @PathVariable("userId") int userid, @PathVariable("bookingId") int bookingId)
-    {
+    public ResponseEntity<Map<String, String>> cancelSeat(
+            @PathVariable("bookingDetailId") int bookingDetailId,
+            @PathVariable("userId") int userId,
+            @PathVariable("bookingId") int bookingId) {
+
+        Map<String, String> response = new HashMap<>();
         List<Bookings> bookings = bookingDao.getBookingById(bookingId);
         List<BookingDetails> bookingDetails = bookingDao.getBookingDetailsByBookingDetailId(bookingDetailId);
-        BookingDetails bookingDetails1 = bookingDetails.get(0);
 
+        if (bookings.isEmpty()) {
+            response.put("message", "Booking not found.");
+        } else if (bookingDetails.isEmpty()) {
+            response.put("message", "Booking details not found.");
+        } else {
+            BookingDetails bookingDetail = bookingDetails.get(0);
+            Bookings booking = bookings.get(0);
+            String email = booking.getEmail();
+            String route = booking.getSelectedSource() + " to " + booking.getSelectedDestination();
+            String date = booking.getScheduleId().getTripDate().toString();
+            String departureTime = booking.getDepatureTime();
+            String cancellationDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+            String seatNumber = bookingDetail.getSeatNumber();
 
-        Bookings bookings1 = bookings.get(0);
-        String email = bookings1.getEmail();
-        String route = bookings1.getSelectedSource() + " to " + bookings1.getSelectedDestination();
-        String date = bookings1.getScheduleId().getTripDate().toString();
-        String departureTime = bookings1.getDepatureTime();
-        String cancellationDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
-        String seatNumber = bookingDetails1.getSeatNumber();
+            String subject = "Cancellation of Ticket";
+            String message = "Dear Customer,\n\n" +
+                    "We regret to inform you that your ticket for the following route has been cancelled:\n\n" +
+                    "Route: " + route + "\n" +
+                    "Date of Journey: " + date + "\n" +
+                    "Departure Time: " + departureTime + "\n\n" +
+                    "Seat Number: " + seatNumber + "\n\n" +
+                    "This cancellation was processed on: " + cancellationDateTime + "\n\n" +
+                    "If you have any questions or need further assistance, please do not hesitate to contact our support team.\n\n" +
+                    "We apologize for any inconvenience this may cause.\n\n" +
+                    "Best regards,\n" +
+                    "BusWise\n" +
+                    "Customer Support Team";
 
-        String subject = "Cancellation of Ticket";
+            try {
+                emailService.send(email, subject, message);
 
-        String message = "Dear Customer,\n\n" +
-                "We regret to inform you that your ticket  for the following route has been cancelled:\n\n" +
-                "Route: " + route + "\n" +
-                "Date of Journey: " + date + "\n" +
-                "Departure Time: " + departureTime + "\n\n" +
-                "Seat Number:" + seatNumber + "\n\n"+
-                "This cancellation was processed on: " + cancellationDateTime + "\n\n" +
-                "If you have any questions or need further assistance, please do not hesitate to contact our support team.\n\n" +
-                "We apologize for any inconvenience this may cause.\n\n" +
-                "Best regards,\n" +
-                "BusWise\n" +
-                "Customer Support Team";
+                response.put("message", "Booking cancelled successfully.");
+            } catch (Exception e) {
+                response.put("message", "Booking cancelled, but the email could not be sent.");
+            }
+            finally {
+                projectService.cancelSeat(bookingId, userId, email);
+            }
+        }
 
-        emailService.send(email, subject, message);
-        projectService.cancelSeat(bookingDetailId,userid, email);
+        return ResponseEntity.ok(response);
     }
 
-    @RequestMapping("/cancelBooking/{bookingId}/{userId}")
+
+    @RequestMapping(value = "/cancelBooking/{bookingId}/{userId}", method = RequestMethod.POST)
     @ResponseBody
-    public void cancelBooking( @PathVariable("bookingId") int bookingId, @PathVariable("userId") int userid)
-    {
+    public ResponseEntity<Map<String, String>> cancelBooking(
+            @PathVariable("bookingId") int bookingId,
+            @PathVariable("userId") int userId) {
+
+        Map<String, String> response = new HashMap<>();
         List<Bookings> bookings = bookingDao.getBookingById(bookingId);
+
         if (bookings != null && !bookings.isEmpty()) {
-            Bookings bookings1 = bookings.get(0);
-            String email = bookings1.getEmail();
-            String route = bookings1.getSelectedSource() + " to " + bookings1.getSelectedDestination();
-            String date = bookings1.getScheduleId().getTripDate().toString();
-            String departureTime = bookings1.getDepatureTime();
+            Bookings booking = bookings.get(0);
+            String email = booking.getEmail();
+            String route = booking.getSelectedSource() + " to " + booking.getSelectedDestination();
+            String date = booking.getScheduleId().getTripDate().toString();
+            String departureTime = booking.getDepatureTime();
             String cancellationDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
             String subject = "Cancellation of Ticket";
-
             String message = "Dear Customer,\n\n" +
                     "We regret to inform you that your ticket for the following route has been cancelled:\n\n" +
                     "Route: " + route + "\n" +
@@ -424,13 +454,23 @@ public class ProjectController {
                     "Best regards,\n" +
                     "BusWise\n" +
                     "Customer Support Team";
-            emailService.send(email, subject, message);
-            projectService.cancelBooking(bookingId,userid, email);
+
+            try {
+                emailService.send(email, subject, message);
+
+                response.put("message", "Booking cancelled successfully.");
+            } catch (Exception e) {
+                response.put("message", "Booking cancelled, but the email could not be sent.");
+            }
+            finally {
+                projectService.cancelBooking(bookingId, userId, email);
+            }
+        } else {
+            response.put("message", "Booking not found.");
         }
 
-
+        return ResponseEntity.ok(response);
     }
-
 
     @GetMapping("/salesReports/{userId}")
     public String salesReports(Model model, @PathVariable("userId") int userId)

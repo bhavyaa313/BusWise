@@ -22,7 +22,7 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
-    <script src="<c:url value="/resources/js/validate.js" />"></script>
+
     <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
     <style>
         body {
@@ -110,7 +110,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="email" class="form-label">Email <span
@@ -128,7 +128,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-6">
                     <div class="form-group mb-4">
                         <label for="password" class="form-label">Password <span
@@ -147,11 +147,37 @@
                     </div>
                 </div>
             </div>
+            <div class="row mt-2">
+                <div class="col-md-2">
+                    <div class="form-group mb-4">
+                        <label for="password" class="form-label">Age</label>
+                        <form:input type="number" class="form-control custom-input" id="age" placeholder="" path="age"/>
+                        <form:errors path="age" cssClass="error-message" />
+
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group mb-4">
+                        <label for="city" class="form-label"> City </label>
+                        <form:input type="text" class="form-control custom-input" id="city" placeholder="" path="city"/>
+                        <form:errors path="city" cssClass="error-message" />
+
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group mb-4">
+                        <label for="state" class="form-label"> State </label>
+                        <form:input type="text" class="form-control custom-input" id="state" placeholder="" path="state"/>
+                        <form:errors path="state" cssClass="error-message" />
+
+                    </div>
+                </div>
+            </div>
 
             <button type="submit" class="btn btn-dark btn-block" id="saveButton">Sign up</button>
-            <div id="alertContainer mt-3"></div>
+            <div id="alertContainer" class="mt-3"></div>
         </form:form>
-        <p class="mt-4">Already have an account? <a href="#">Login Here</a></p>
+        <p class="mt-4">Already have an account? <a href="${pageContext.request.contextPath}/login">Login Here</a></p>
         <div id="loader" class="text-center mt-3" >
             <div class="spinner-border text-white " role="status">
 
@@ -252,6 +278,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="<c:url value="/resources/js/validate.js" />"></script>
 </body>
 
 </html>

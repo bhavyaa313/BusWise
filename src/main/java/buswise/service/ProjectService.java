@@ -2,12 +2,14 @@ package buswise.service;
 
 import buswise.dao.*;
 import buswise.dto.*;
+import buswise.exceptions.ResourceNotFoundException;
 import buswise.helper.PasswordHash;
 import buswise.helper.TokenGenerator;
 import buswise.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -53,7 +55,7 @@ public class ProjectService {
     public boolean login(LoginDto loginDto) throws NoSuchAlgorithmException {
 
         String email = loginDto.getEmail();
-        String password = loginDto.getPassword();
+        String password = loginDto.getPassword1();
         List<User> userList = userDao.checkEmail(email);
         if (userList.size() == 0) {
             return false;
@@ -79,102 +81,135 @@ public class ProjectService {
         if (userList.size() == 0) {
             return false;
         } else {
-           return true;
+            return true;
         }
 
     }
 
     public List<BusDto> viewBuses(String busNumber, int curPage) {
-        int startIndex = ((curPage - 1) * 5);
-        int endIndex = 5;
-        List<Buses> buses = busesDao.getBusesSearch(busNumber, startIndex, endIndex);
-        long count = busesDao.getBusesSearchCount(busNumber);
-        List<BusDto> busDtos = new ArrayList<BusDto>();
-        for (int i = 0; i < buses.size(); i++) {
-            BusDto busDto = new BusDto();
-            Buses buses1 = buses.get(i);
-            busDto.setBusId(buses1.getBusId());
-            busDto.setBusNumber(buses1.getBusNumber());
-            busDto.setCount(count);
-            busDto.setModifiedDate(buses1.getModifiedDate().toLocalDate().toString());
-            busDto.setSeatingCapacity(buses1.getSeatingCapacity());
-            busDto.setBusType(buses1.getBusType());
-            busDtos.add(busDto);
+        List<BusDto> busDtos = new ArrayList<>();
+        try {
+            int startIndex = ((curPage - 1) * 5);
+            int endIndex = 5;
+
+            List<Buses> buses = busesDao.getBusesSearch(busNumber, startIndex, endIndex);
+            long count = busesDao.getBusesSearchCount(busNumber);
+
+
+            for (Buses bus : buses) {
+                BusDto busDto = new BusDto();
+                busDto.setBusId(bus.getBusId());
+                busDto.setBusNumber(bus.getBusNumber());
+                busDto.setCount(count);
+                busDto.setModifiedDate(bus.getModifiedDate().toLocalDate().toString());
+                busDto.setSeatingCapacity(bus.getSeatingCapacity());
+                busDto.setBusType(bus.getBusType());
+                busDtos.add(busDto);
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred while fetching buses: " + e.getMessage());
+            e.printStackTrace();
+
         }
         return busDtos;
     }
 
+
     public List<RoutesDto> viewRoutes(String region, int curPage) {
-        int startIndex = ((curPage - 1) * 6);
-        int endIndex = 6;
-        List<Routes> routes = routesDao.getRoutesSearch(region, startIndex, endIndex);
-        long count = routesDao.getRoutesSearchCount(region);
-        List<RoutesDto> routesDtos = new ArrayList<RoutesDto>();
-        for (int i = 0; i < routes.size(); i++) {
-            RoutesDto routesDto = new RoutesDto();
-            Routes routes1 = routes.get(i);
-            routesDto.setRouteId(routes1.getRouteId());
-            routesDto.setSource(routes1.getSource());
-            routesDto.setDestination((routes1.getDestination()));
-            routesDto.setDistance(routes1.getDistance());
-            routesDto.setCount(count);
-            List<String> subroutes = routesDao.getsubRoutes(routes1);
-            List<Integer> subrouteDistance = routesDao.distanceSubRoute(routes1);
-            List<Integer> subrouteSequecne = routesDao.sequeceSubRoute(routes1);
-            List<Integer> idSubroute = routesDao.idSubRoute(routes1);
-            routesDto.setSequence(subrouteSequecne);
-            routesDto.setName(subroutes);
-            routesDto.setDistancesub(subrouteDistance);
-            routesDto.setSubrouteId(idSubroute);
-            routesDto.setSubroutesCount(routes1.getNoOfSubroutes());
-            String subRoutesString = subroutes.toString();
-            String subRoutesString1 = subroutes.toString().substring(1, subRoutesString.length() - 1);
-            routesDto.setSubRoutes(subRoutesString1);
-            routesDtos.add(routesDto);
+        List<RoutesDto> routesDtos = new ArrayList<>();
+        try {
+            int startIndex = ((curPage - 1) * 6);
+            int endIndex = 6;
+
+            List<Routes> routes = routesDao.getRoutesSearch(region, startIndex, endIndex);
+            long count = routesDao.getRoutesSearchCount(region);
+
+
+            for (Routes route : routes) {
+                RoutesDto routesDto = new RoutesDto();
+                routesDto.setRouteId(route.getRouteId());
+                routesDto.setSource(route.getSource());
+                routesDto.setDestination(route.getDestination());
+                routesDto.setDistance(route.getDistance());
+                routesDto.setCount(count);
+
+                List<String> subroutes = routesDao.getsubRoutes(route);
+                List<Integer> subrouteDistance = routesDao.distanceSubRoute(route);
+                List<Integer> subrouteSequecne = routesDao.sequeceSubRoute(route);
+                List<Integer> idSubroute = routesDao.idSubRoute(route);
+
+
+                routesDto.setSequence(subrouteSequecne);
+                routesDto.setName(subroutes);
+                routesDto.setDistancesub(subrouteDistance);
+                routesDto.setSubrouteId(idSubroute);
+                routesDto.setSubroutesCount(route.getNoOfSubroutes());
+
+                String subRoutesString = subroutes.toString();
+                String subRoutesString1 = subRoutesString.substring(1, subRoutesString.length() - 1);
+                routesDto.setSubRoutes(subRoutesString1);
+
+                routesDtos.add(routesDto);
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred while fetching routes: " + e.getMessage());
+            e.printStackTrace();
+
         }
         return routesDtos;
-
-
     }
 
-    public List<Schedule1Dto> viewSchedule(String region, int curPage, String sort)
-    {
-        int startIndex = ((curPage - 1) * 6);
-        int endIndex = 6;
-        List<Schedules> schedules = scheduleDao.getRoutesSearch(region, startIndex, endIndex, sort);
-        long count = scheduleDao.getRoutesSearchCount(region);
-        List<Schedule1Dto> schedule1Dtos = new ArrayList<Schedule1Dto>();
-        for (int i=0; i<schedules.size(); i++)
-        {
-            Schedule1Dto schedule1Dto = new Schedule1Dto();
-            Schedules schedules1 = schedules.get(i);
-            schedule1Dto.setScheduleId(schedules1.getScheduleId());
-            schedule1Dto.setSource(schedules1.getRouteId().getSource());
-            schedule1Dto.setDestination(schedules1.getRouteId().getDestination());
-            String date = schedules1.getTripDate().toString();
-            String time = schedules1.getArrivalTime().toString();
-            List<String> subroutes = routesDao.getsubRoutes(schedules1.getRouteId());
-            String subroutes1 = subroutes.toString();
-            String subRoutesString1 = subroutes.toString().substring(1, subroutes1.length() - 1);
-            int distance = schedules1.getRouteId().getDistance();
-            long speed = (long) 32;
-            long time1 = distance / speed;
-            String duration = time1 + " hours " + (time1 % 24) + " minutes";
-            long fare = distance * 2L;
-            String busDetails = schedules1.getBusId().getBusNumber() + " (" + schedules1.getBusId().getBusType() + ") ";
-            schedule1Dto.setDate(date);
-            schedule1Dto.setDuration(duration);
-            schedule1Dto.setFare(fare);
-            schedule1Dto.setBusDetails(busDetails);
-            schedule1Dto.setSubroutes("( via "  + subRoutesString1 + ")");
-            schedule1Dto.setTime(time);
-            schedule1Dto.setCount(count);
-            schedule1Dto.setBusId(schedules1.getBusId().getBusId());
-            schedule1Dto.setRouteId(schedules1.getRouteId().getRouteId());
-            schedule1Dtos.add(schedule1Dto);
+
+    public List<Schedule1Dto> viewSchedule(String region, int curPage, String sort) {
+        List<Schedule1Dto> schedule1Dtos = new ArrayList<>();
+        try {
+            int startIndex = ((curPage - 1) * 6);
+            int endIndex = 6;
+
+
+            List<Schedules> schedules = scheduleDao.getRoutesSearch(region, startIndex, endIndex, sort);
+            long count = scheduleDao.getRoutesSearchCount(region);
+
+
+            for (Schedules schedule : schedules) {
+                Schedule1Dto schedule1Dto = new Schedule1Dto();
+                schedule1Dto.setScheduleId(schedule.getScheduleId());
+                schedule1Dto.setSource(schedule.getRouteId().getSource());
+                schedule1Dto.setDestination(schedule.getRouteId().getDestination());
+
+                String date = schedule.getTripDate().toString();
+                String time = schedule.getArrivalTime().toString();
+
+                List<String> subroutes = routesDao.getsubRoutes(schedule.getRouteId());
+                String subRoutesString = subroutes.toString();
+                String subRoutesString1 = subRoutesString.substring(1, subRoutesString.length() - 1);
+
+                int distance = schedule.getRouteId().getDistance();
+                long speed = 50L;
+                long time1 = distance / speed;
+                String duration = time1 + " hours " + (time1 % 24) + " minutes";
+                long fare = distance * 2L;
+                String busDetails = schedule.getBusId().getBusNumber() + " (" + schedule.getBusId().getBusType() + ") ";
+
+                schedule1Dto.setDate(date);
+                schedule1Dto.setDuration(duration);
+                schedule1Dto.setFare(fare);
+                schedule1Dto.setBusDetails(busDetails);
+                schedule1Dto.setSubroutes("( via " + subRoutesString1 + ")");
+                schedule1Dto.setTime(time);
+                schedule1Dto.setCount(count);
+                schedule1Dto.setBusId(schedule.getBusId().getBusId());
+                schedule1Dto.setRouteId(schedule.getRouteId().getRouteId());
+
+                schedule1Dtos.add(schedule1Dto);
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred while fetching schedules: " + e.getMessage());
+            e.printStackTrace();
         }
         return schedule1Dtos;
     }
+
 
     public void addBus(BusDto busDto) {
         Buses buses = new Buses();
@@ -190,24 +225,35 @@ public class ProjectService {
 
     public void editBus(BusDto busDto, int id) {
         List<Buses> busesList = busesDao.getBusbyId(id);
+
+        if (busesList.isEmpty()) {
+            System.err.println("No bus found with ID: " + id);
+            return;
+        }
+
         Buses buses = busesList.get(0);
         buses.setBusNumber(busDto.getBusNumber());
         buses.setModifiedDate(LocalDateTime.now());
         buses.setBusType(busDto.getBusType());
         buses.setSeatingCapacity(busDto.getSeatingCapacity());
         busesDao.busUpdate(buses);
-
-
     }
+
 
     public void deleteBus(int busId) {
         List<Buses> busesList = busesDao.getBusbyId(busId);
+
+        if (busesList.isEmpty()) {
+            System.err.println("No bus found with ID: " + busId);
+            return;
+        }
+
         Buses buses = busesList.get(0);
         buses.setDeleted(true);
         buses.setModifiedDate(LocalDateTime.now());
         busesDao.busUpdate(buses);
-
     }
+
 
     public void registerUser(RegisterDto registerDto) throws NoSuchAlgorithmException {
         User user = new User();
@@ -233,28 +279,31 @@ public class ProjectService {
         userProfile.setFirstName(registerDto.getFirstName());
         userProfile.setLastName(registerDto.getLastName());
         userProfile.setCreatedDate(LocalDateTime.now());
+        userProfile.setCity(registerDto.getCity());
+        userProfile.setAge(registerDto.getAge());
+        userProfile.setState(registerDto.getState());
         userDao.userProfileSave(userProfile);
 
-            Wallet newWallet = new Wallet();
-            newWallet.setUser(user);
-            newWallet.setBalance(5000.0);
-            walletDao.walletSave(newWallet);
-            Transaction transaction = new Transaction();
-            transaction.setAmount(5000);
-            transaction.setDate(LocalDateTime.now());
-            transaction.setType("credit");
-            transaction.setWallet(newWallet);
-            transaction.setDescription("New User Bonus");
-            walletDao.transactionSave(transaction);
+        Wallet newWallet = new Wallet();
+        newWallet.setUser(user);
+        newWallet.setBalance(5000.0);
+        walletDao.walletSave(newWallet);
+        Transaction transaction = new Transaction();
+        transaction.setAmount(5000);
+        transaction.setDate(LocalDateTime.now());
+        transaction.setType("credit");
+        transaction.setWallet(newWallet);
+        transaction.setDescription("New User Bonus");
+        walletDao.transactionSave(transaction);
 
     }
 
     public boolean checkEmailRegister(String email){
-       List<User> userList =    userDao.checkEmail(email);
-       if(userList.isEmpty()){
-           return true;
-       }
-       return false;
+        List<User> userList =    userDao.checkEmail(email);
+        if(userList.isEmpty()){
+            return true;
+        }
+        return false;
 
     }
 
@@ -288,27 +337,34 @@ public class ProjectService {
     }
 
 
+
     public void editRoute(RoutesDto routesDto, int routeId) {
-        List<Routes> routes1 = routesDao.getRoutesById(routeId);
-        Routes routes = routes1.get(0);
+        List<Routes> routesList = routesDao.getRoutesById(routeId);
+
+        if (routesList.isEmpty()) {
+            System.err.println("No route found with ID: " + routeId);
+            return;
+        }
+
+        Routes routes = routesList.get(0);
         routes.setSource(routesDto.getSource());
         routes.setDistance(routesDto.getDistance());
         routes.setDestination(routesDto.getDestination());
         routes.setNoOfSubroutes(routesDto.getSubroutesCount());
         routes.setModifiedDate(LocalDateTime.now());
         routesDao.routeUpdate(routes);
+
         List<String> name = routesDto.getName();
         List<Integer> distancesub = routesDto.getDistancesub();
         List<Integer> sequence = routesDto.getSequence();
         List<SubRoute> subRoutes = routesDao.getSubRoutesByRouteID(routes);
-        int subroutesTobeDeleted = subRoutes.size();
-        for (int j = 0; j < subroutesTobeDeleted; j++) {
-            SubRoute subRoute = subRoutes.get(j);
+
+        for (SubRoute subRoute : subRoutes) {
             subRoute.setDeleted(true);
             routesDao.subrouteUpdate(subRoute);
         }
-        for (int i = 0; i < routesDto.getSubroutesCount(); i++) {
 
+        for (int i = 0; i < routesDto.getSubroutesCount(); i++) {
             SubRoute subRoute = new SubRoute();
             subRoute.setRouteId(routes);
             subRoute.setDistance(distancesub.get(i));
@@ -320,25 +376,35 @@ public class ProjectService {
 
 
     public void deleteRoute(int routeId) {
-        List<Routes> routes1 = routesDao.getRoutesById(routeId);
-        Routes routes = routes1.get(0);
+        List<Routes> routesList = routesDao.getRoutesById(routeId);
+
+        if (routesList.isEmpty()) {
+            System.err.println("No route found with ID: " + routeId);
+            return;
+        }
+
+        Routes routes = routesList.get(0);
         routes.setDeleted(true);
         routes.setModifiedDate(LocalDateTime.now());
         routesDao.routeUpdate(routes);
+
         List<SubRoute> subRoutes = routesDao.getSubRoutesByRouteID(routes);
-        int subroutesTobeDeleted = subRoutes.size();
-        for (int j = 0; j < subroutesTobeDeleted; j++) {
-            SubRoute subRoute = subRoutes.get(j);
+
+        for (SubRoute subRoute : subRoutes) {
             subRoute.setDeleted(true);
             routesDao.subrouteUpdate(subRoute);
-
         }
-
     }
+
 
     public boolean isRouteUsedInSchedule(int routeId) {
         List<Schedules> schedules = scheduleDao.findByRouteId(routeId);
         return !schedules.isEmpty();
+    }
+
+    public boolean isScheduleInBooking(int scheduleId) {
+        List<Bookings> bookings = bookingDao.getBookingsVyScheduleId(scheduleId);
+        return !bookings.isEmpty();
     }
 
     public boolean isBusUsedInSchedule(int busId) {
@@ -359,7 +425,7 @@ public class ProjectService {
             String source = routes1.getSource();
             String destination = routes1.getDestination();
             int distance = routes1.getDistance();
-            long speed = (long) 32;
+            long speed = (long) 50;
             long time = distance / speed;
             String formattedTime = time + " hours " + (time % 24) + " minutes";
             routes1Dto1.setDuration(formattedTime);
@@ -417,20 +483,33 @@ public class ProjectService {
 
 
     public void editSchedule(ScheduleDto scheduleDto, int id) {
-        List<Schedules> schedules1 = scheduleDao.getScheduleByID(id);
-        Schedules schedules = schedules1.get(0);
-        List<Buses> buses = busesDao.getBusbyId(scheduleDto.getBus());
-        Buses buses1 = buses.get(0);
-        schedules.setBusId(buses1);
-        schedules.setModifiedDate(LocalDateTime.now());
-        String receivedTimeString = scheduleDto.getTime();
-        String timeString = receivedTimeString;
-        DateTimeFormatter parserFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        LocalTime localTime = LocalTime.parse(timeString, parserFormatter);
-        schedules.setArrivalTime(localTime);
-        scheduleDao.scheduleUpdate(schedules);
+        List<Schedules> schedulesList = scheduleDao.getScheduleByID(id);
 
+        if (schedulesList.isEmpty()) {
+            System.err.println("No schedule found with ID: " + id);
+            return;
+        }
+
+        Schedules schedules = schedulesList.get(0);
+        List<Buses> busesList = busesDao.getBusbyId(scheduleDto.getBus());
+
+        if (busesList.isEmpty()) {
+            System.err.println("No bus found with ID: " + scheduleDto.getBus());
+            return;
+        }
+
+        Buses buses = busesList.get(0);
+        schedules.setBusId(buses);
+        schedules.setModifiedDate(LocalDateTime.now());
+
+        String receivedTimeString = scheduleDto.getTime();
+        DateTimeFormatter parserFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime localTime = LocalTime.parse(receivedTimeString, parserFormatter);
+        schedules.setArrivalTime(localTime);
+
+        scheduleDao.scheduleUpdate(schedules);
     }
+
 
     public boolean checkBusSchedule(int busId, String date, String time)
     {
@@ -446,16 +525,28 @@ public class ProjectService {
     }
 
     public void deleteSchedule(int scheduleId) {
-        List<Schedules> schedules1 = scheduleDao.getScheduleByID(scheduleId);
-        Schedules schedules = schedules1.get(0);
+        List<Schedules> schedulesList = scheduleDao.getScheduleByID(scheduleId);
+
+        if (schedulesList.isEmpty()) {
+            System.err.println("No schedule found with ID: " + scheduleId);
+            return;
+        }
+
+        Schedules schedules = schedulesList.get(0);
         schedules.setDeleted(true);
         schedules.setModifiedDate(LocalDateTime.now());
+
         scheduleDao.scheduleUpdate(schedules);
     }
 
-    public void myProfileEdit(UserProfileDto userProfileDto,int id)
-    {
+    public void myProfileEdit(UserProfileDto userProfileDto, int id) {
         List<UserProfile> userProfiles = userDao.userProfiles(id);
+
+        if (userProfiles.isEmpty()) {
+            System.err.println("No user profile found with ID: " + id);
+            return;
+        }
+
         UserProfile userProfile = userProfiles.get(0);
         userProfile.setModifiedDate(LocalDateTime.now());
         userProfile.setCity(userProfileDto.getCity());
@@ -465,8 +556,10 @@ public class ProjectService {
         userProfile.getUserId().setPhone(userProfileDto.getPhone());
         userProfile.getUserId().setModifiedDate(LocalDateTime.now());
         userProfile.setAge(userProfileDto.getAge());
+
         userDao.userProfileUpdate(userProfile);
     }
+
 
     public List<ViewSourceDto> viewSource()
     {
@@ -502,7 +595,7 @@ public class ProjectService {
         for(int i=0; i<routes.size(); i++)
         {
             Routes routes1 = routes.get(i);
-            String z =   routes1.getSource();
+            String z =   routes1.getSource().toUpperCase();
             list.add(z);
         }
         List<SubRoute> subRoutes = routesDao.getSubRoutesAll();
@@ -510,7 +603,7 @@ public class ProjectService {
         for(int i = 0 ;  i< subRoutes.size() ; i++ )
         {
             SubRoute subRoute = subRoutes.get(i);
-            String y=  subRoute.getStop();
+            String y=  subRoute.getStop().toUpperCase();
             list.add(y);
 
         }
@@ -529,7 +622,7 @@ public class ProjectService {
         for(int i=0; i<routes.size(); i++)
         {
             Routes routes1 = routes.get(i);
-            String z =   routes1.getDestination();
+            String z =   routes1.getDestination().toUpperCase();
             list.add(z);
         }
         List<SubRoute> subRoutes = routesDao.getSubRoutesAll();
@@ -537,70 +630,84 @@ public class ProjectService {
         for(int i = 0 ;  i< subRoutes.size() ; i++ )
         {
             SubRoute subRoute = subRoutes.get(i);
-            String y=  subRoute.getStop();
+            String y=  subRoute.getStop().toUpperCase();
             list.add(y);
 
         }
 
         Set<String> set = new HashSet<>(list);
         List<String> uniqueList = new ArrayList<>(set);
-        return  uniqueList;
+        return uniqueList;
 
     }
 
-    public List<Schedule1Dto> ticketDteails(String source, String destination, String date) {
-
+    public List<Schedule1Dto> ticketDteails(String source1, String destination1, String date) {
+        String source = source1.toUpperCase();
+        String destination = destination1.toUpperCase();
+        LocalDate today = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
         List<Schedules> schedules = scheduleDao.getSchedules(source, destination, date);
         List<Schedules> schedulesBySubroute = scheduleDao.getSchedulesBySubroute(source,destination,date);
         List<Schedules> schedulebySubrouteandRoute = scheduleDao.getSchedulesBySubrouteRoute(source,destination,date);
         List<Schedules> getSourceToSubroute = scheduleDao.getSourceToSubroute(source, destination, date);
         List<Schedule1Dto> schedule1Dtos = new ArrayList<Schedule1Dto>();
-        if(!schedules.isEmpty()) {
-            for (int i = 0; i < schedules.size(); i++) {
+        if(!schedules.isEmpty()  ) {
+
+            for (Schedules schedules1 : schedules) {
                 Schedule1Dto schedule1Dto = new Schedule1Dto();
-                Schedules schedules1 = schedules.get(i);
                 schedule1Dto.setDate(date);
-                List<String> seatBooked = scheduleDao.seatsBooked(schedules1.getScheduleId());
-                schedule1Dto.setBookedSeats(seatBooked);
                 schedule1Dto.setScheduleId(schedules1.getScheduleId());
                 schedule1Dto.setTime(schedules1.getArrivalTime().toString());
                 schedule1Dto.setSource(schedules1.getRouteId().getSource());
                 schedule1Dto.setDestination(schedules1.getRouteId().getDestination());
                 schedule1Dto.setYourSource(source);
                 schedule1Dto.setYourdestination(destination);
+
+//              List<String> seatBooked = scheduleDao.seatsBooked(schedules1.getScheduleId(), source1, destination1);
+                List<String> seatBooked = scheduleDao.getBookedSeats(schedules1.getScheduleId(), source1, destination1);
+                schedule1Dto.setBookedSeats(seatBooked);
+
                 List<String> subroutes = routesDao.getsubRoutes(schedules1.getRouteId());
-                String subroutes1 = subroutes.toString();
-                String subRoutesString1 = subroutes.toString().substring(1, subroutes1.length() - 1);
+                String subRoutesString = String.join(", ", subroutes);
+                schedule1Dto.setSubroutes("( via " + subRoutesString + ")");
+
                 double distance = schedules1.getRouteId().getDistance();
-                double speed = (double) 32;
+                long fare = (long) distance * 2L; // Example fare calculation
+                double speed = 50.0; // Speed in km/h
                 double timeInHours = distance / speed;
                 int totalMinutes = (int) (timeInHours * 60);
                 int hours = totalMinutes / 60;
                 int minutes = totalMinutes % 60;
                 String duration = hours + " hours " + minutes + " minutes";
-                long fare = (long) distance * 2L;
+
                 schedule1Dto.setDuration(duration);
                 schedule1Dto.setFare(fare);
                 schedule1Dto.setBusDetails(schedules1.getBusId().getBusType());
-                schedule1Dto.setSubroutes("( via " + subRoutesString1 + ")");
                 schedule1Dto.setBusId(schedules1.getBusId().getBusId());
                 schedule1Dto.setRouteId(schedules1.getRouteId().getRouteId());
                 schedule1Dto.setNoOfSeats(schedules1.getBusId().getSeatingCapacity());
                 schedule1Dto.setNoOfSeatsAvailable(schedules1.getAvailableSeats());
-                schedule1Dtos.add(schedule1Dto);
 
+
+                if (schedules1.getTripDate().isEqual(today) && schedules1.getArrivalTime().isAfter(currentTime)) {
+                    schedule1Dtos.add(schedule1Dto);
+                } else if (!schedules1.getTripDate().isEqual(today)) {
+
+                    schedule1Dtos.add(schedule1Dto);
+                }
             }
 
         }
 
-        else if (!schedulesBySubroute.isEmpty())
+        if (!schedulesBySubroute.isEmpty())
         {
             for (int i = 0; i < schedulesBySubroute.size(); i++) {
                 Schedule1Dto schedule1Dto = new Schedule1Dto();
                 Schedules schedules1 = schedulesBySubroute.get(i);
                 schedule1Dto.setScheduleId(schedules1.getScheduleId());
                 schedule1Dto.setDate(date);
-                List<String> seatBooked = scheduleDao.seatsBooked(schedules1.getScheduleId());
+//                List<String> seatBooked = scheduleDao.seatsBooked(schedules1.getScheduleId(), source1, destination1);
+                List<String> seatBooked = scheduleDao.getBookedSeats(schedules1.getScheduleId(), source1, destination1);
                 schedule1Dto.setBookedSeats(seatBooked);
                 schedule1Dto.setSource(schedules1.getRouteId().getSource());
                 schedule1Dto.setDestination(schedules1.getRouteId().getDestination());
@@ -612,7 +719,7 @@ public class ProjectService {
                 int sourceDistance = scheduleDao.getSubrouteDistance(schedules1.getRouteId().getRouteId(), source);
                 int destinationDistance = scheduleDao.getSubrouteDistance(schedules1.getRouteId().getRouteId(), destination);
                 double distance = destinationDistance-sourceDistance;
-                double speed = (double) 32;
+                double speed = (double) 50;
                 double timeInHours = distance / speed;
                 int totalMinutes = (int) (timeInHours * 60);
                 int hours = totalMinutes / 60;
@@ -632,30 +739,36 @@ public class ProjectService {
                 schedule1Dto.setRouteId(schedules1.getRouteId().getRouteId());
                 schedule1Dto.setNoOfSeats(schedules1.getBusId().getSeatingCapacity());
                 schedule1Dto.setNoOfSeatsAvailable(schedules1.getAvailableSeats());
-                schedule1Dtos.add(schedule1Dto);
+                if (schedules1.getTripDate().isEqual(today) && schedules1.getArrivalTime().isAfter(currentTime)) {
+                    schedule1Dtos.add(schedule1Dto);
+                } else if (!schedules1.getTripDate().isEqual(today)) {
+
+                    schedule1Dtos.add(schedule1Dto);
+                }
             }
 
 
-        } else if (!schedulebySubrouteandRoute.isEmpty()) {
+        } if (!schedulebySubrouteandRoute.isEmpty()) {
             for (int i = 0; i < schedulebySubrouteandRoute.size(); i++) {
                 Schedule1Dto schedule1Dto = new Schedule1Dto();
                 Schedules schedules1 = schedulebySubrouteandRoute.get(i);
                 schedule1Dto.setScheduleId(schedules1.getScheduleId());
                 schedule1Dto.setDate(date);
-                List<String> seatBooked = scheduleDao.seatsBooked(schedules1.getScheduleId());
+//                List<String> seatBooked = scheduleDao.seatsBooked(schedules1.getScheduleId(), source1, destination1);
+                List<String> seatBooked = scheduleDao.getBookedSeats(schedules1.getScheduleId(), source1, destination1);
                 schedule1Dto.setBookedSeats(seatBooked);
                 schedule1Dto.setTime(schedules1.getArrivalTime().toString());
                 schedule1Dto.setSource(schedules1.getRouteId().getSource());
                 schedule1Dto.setDestination(schedules1.getRouteId().getDestination());
-                schedule1Dto.setYourSource(source);
-                schedule1Dto.setYourdestination(destination);
+                schedule1Dto.setYourSource(source1);
+                schedule1Dto.setYourdestination(destination1);
                 List<String> subroutes = routesDao.getsubRoutes(schedules1.getRouteId());
                 String subroutes1 = subroutes.toString();
                 String subRoutesString1 = subroutes.toString().substring(1, subroutes1.length() - 1);
                 int sourceDistance = scheduleDao.getSubrouteDistance(schedules1.getRouteId().getRouteId(), source);
                 int destinationDistance = schedules1.getRouteId().getDistance();
                 double distance = destinationDistance-sourceDistance;
-                double speed = (double) 32;
+                double speed = (double) 50;
                 double timeInHours = distance / speed;
                 int totalMinutes = (int) (timeInHours * 60);
                 int hours = totalMinutes / 60;
@@ -675,17 +788,25 @@ public class ProjectService {
                 schedule1Dto.setRouteId(schedules1.getRouteId().getRouteId());
                 schedule1Dto.setNoOfSeats(schedules1.getBusId().getSeatingCapacity());
                 schedule1Dto.setNoOfSeatsAvailable(schedules1.getAvailableSeats());
-                schedule1Dtos.add(schedule1Dto);
+                if (schedules1.getTripDate().isEqual(today) && schedules1.getArrivalTime().isAfter(currentTime)) {
+                    schedule1Dtos.add(schedule1Dto);
+                } else if (!schedules1.getTripDate().isEqual(today)) {
+
+                    schedule1Dtos.add(schedule1Dto);
+                }
             }
         }
 
 
-        else if (!getSourceToSubroute.isEmpty()) {
+        if (!getSourceToSubroute.isEmpty()) {
             for (int i = 0; i < getSourceToSubroute.size(); i++) {
                 Schedule1Dto schedule1Dto = new Schedule1Dto();
                 Schedules schedules1 = getSourceToSubroute.get(i);
                 schedule1Dto.setDate(date);
-                List<String> seatBooked = scheduleDao.seatsBooked(schedules1.getScheduleId());
+//                List<String> seatBooked = scheduleDao.seatsBooked(schedules1.getScheduleId(), source1, destination1);
+
+                List<String> seatBooked = scheduleDao.getBookedSeats(schedules1.getScheduleId(), source1, destination1);
+
                 schedule1Dto.setBookedSeats(seatBooked);
                 schedule1Dto.setTime(schedules1.getArrivalTime().toString());
                 schedule1Dto.setScheduleId(schedules1.getScheduleId());
@@ -697,7 +818,7 @@ public class ProjectService {
                 String subroutes1 = subroutes.toString();
                 String subRoutesString1 = subroutes.toString().substring(1, subroutes1.length() - 1);
                 double distance = scheduleDao.getSubrouteDistance(schedules1.getRouteId().getRouteId(), destination);
-                double speed = (double) 32;
+                double speed = (double) 50;
                 double timeInHours = distance / speed;
                 int totalMinutes = (int) (timeInHours * 60);
                 int hours = totalMinutes / 60;
@@ -712,7 +833,12 @@ public class ProjectService {
                 schedule1Dto.setRouteId(schedules1.getRouteId().getRouteId());
                 schedule1Dto.setNoOfSeats(schedules1.getBusId().getSeatingCapacity());
                 schedule1Dto.setNoOfSeatsAvailable(schedules1.getAvailableSeats());
-                schedule1Dtos.add(schedule1Dto);
+                if (schedules1.getTripDate().isEqual(today) && schedules1.getArrivalTime().isAfter(currentTime)) {
+                    schedule1Dtos.add(schedule1Dto);
+                } else if (!schedules1.getTripDate().isEqual(today)) {
+
+                    schedule1Dtos.add(schedule1Dto);
+                }
             }
 
         }
@@ -740,6 +866,7 @@ public class ProjectService {
         bookings.setSelectedSource(source);
         bookings.setSelectedDestination(destination);
         bookings.setDepatureTime(bookTicketDto.getDepatureTime());
+        bookings.setBooked(true);
         bookings.setUserId(user);
         List<String> name = bookTicketDto.getName();
         List<Integer> age = bookTicketDto.getAge();
@@ -754,6 +881,7 @@ public class ProjectService {
         Bookings bookings2 = bookings1.get(bookings1.size()-1);
         int bookingId = bookings2.getBookingId();
 
+
         for (int i = 0; i < seats.size(); i++) {
 
             BookingDetails bookingDetails = new BookingDetails();
@@ -763,6 +891,7 @@ public class ProjectService {
             bookingDetails.setGender(gender.get(i));
             bookingDetails.setSeatNumber(seats.get(i));
             bookingDetails.setCreatedDate(LocalDateTime.now());
+
             bookingDao.bookingDetailsSave(bookingDetails);
 
         }
@@ -783,6 +912,20 @@ public class ProjectService {
 
         return(bookingId);
 
+    }
+
+    public void confirmBooking(int bookingId) {
+
+        List<Bookings> bookingsList = bookingDao.getBookingById(bookingId);
+
+        if (bookingsList.isEmpty()) {
+
+            throw new ResourceNotFoundException("Booking not found");
+        }
+        Bookings booking = bookingsList.get(0);
+        booking.setBooked(true);
+
+        bookingDao.bookingUpdate(booking);
     }
 
     public TicketDto ticketDetails(int bookingId)
@@ -811,155 +954,248 @@ public class ProjectService {
     }
 
 
-    public List<MyBookingsDto> myBookings(int userId, int curPage, int vauleOfSelectedFilter) {
-        int startIndex = ((curPage - 1) * 6);
-        int endIndex = 6;
-        List<Bookings> bookings = bookingDao.getBookingByUserId(userId, startIndex, endIndex,vauleOfSelectedFilter);
-        int count = bookingDao.getBookingCountByUserId(userId, vauleOfSelectedFilter);
+    public List<MyBookingsDto> myBookings(int userId, int curPage, int valueOfSelectedFilter) {
         List<MyBookingsDto> myBookingsDtos = new ArrayList<>();
 
-        for (Bookings booking : bookings) {
-            MyBookingsDto myBookingsDto = new MyBookingsDto();
-            myBookingsDto.setRoute(booking.getScheduleId().getRouteId().getSource().toString() + " to " + booking.getScheduleId().getRouteId().getDestination().toString());
-            myBookingsDto.setArrival(booking.getSelectedSource() + " " + booking.getScheduleId().getTripDate().toString() + " " + booking.getDepatureTime());
-            myBookingsDto.setDepature(booking.getSelectedDestination());
-            myBookingsDto.setBusNumber(booking.getScheduleId().getBusId().getBusNumber());
-            myBookingsDto.setBookingId(booking.getBookingId());
-            myBookingsDto.setEmail(booking.getEmail());
-            myBookingsDto.setPhone(booking.getPhone());
-            myBookingsDto.setCount(count);
-            myBookingsDto.setDate(booking.getScheduleId().getTripDate().toString());
-            List<BookingDetails> bookingDetailsList = bookingDao.getBookingDetailsById(booking.getBookingId());
-            List<MyBookingsDto.PassengerDto> passengers = new ArrayList<>();
-            for (BookingDetails details : bookingDetailsList) {
-                MyBookingsDto.PassengerDto passengerDto = new MyBookingsDto.PassengerDto();
-                passengerDto.setName(details.getName());
-                passengerDto.setAge(details.getAge());
-                passengerDto.setGender(details.getGender());
-                passengerDto.setSeatNumber(details.getSeatNumber());
-                passengerDto.setBookingDetailId(details.getId());
-                passengerDto.setBookingId(details.getBooking_id().getBookingId());
-                passengers.add(passengerDto);
+        try {
+            int startIndex = ((curPage - 1) * 6);
+            int endIndex = 6;
+
+            List<Bookings> bookings = bookingDao.getBookingByUserId(userId, startIndex, endIndex, valueOfSelectedFilter);
+            int count = bookingDao.getBookingCountByUserId(userId, valueOfSelectedFilter);
+
+            if (bookings.isEmpty()) {
+                System.out.println("No bookings found for user ID: " + userId);
+                return myBookingsDtos;
             }
-            myBookingsDto.setPassengers(passengers);
-            myBookingsDtos.add(myBookingsDto);
+
+            for (Bookings booking : bookings) {
+                MyBookingsDto myBookingsDto = new MyBookingsDto();
+                myBookingsDto.setRoute(booking.getScheduleId().getRouteId().getSource() + " to " + booking.getScheduleId().getRouteId().getDestination());
+                myBookingsDto.setDepature(booking.getSelectedSource() + " " + booking.getScheduleId().getTripDate().toString() + " " + booking.getDepatureTime());
+                myBookingsDto.setArrival(booking.getSelectedDestination());
+                myBookingsDto.setBusNumber(booking.getScheduleId().getBusId().getBusNumber());
+                myBookingsDto.setBookingId(booking.getBookingId());
+                myBookingsDto.setEmail(booking.getEmail());
+                myBookingsDto.setPhone(booking.getPhone());
+                myBookingsDto.setCount(count);
+                myBookingsDto.setDate(booking.getScheduleId().getTripDate().toString());
+
+                List<BookingDetails> bookingDetailsList = bookingDao.getBookingDetailsById(booking.getBookingId());
+                if (bookingDetailsList.isEmpty()) {
+                    System.out.println("No booking details found for booking ID: " + booking.getBookingId());
+                    myBookingsDto.setPassengers(new ArrayList<>());
+                } else {
+                    List<MyBookingsDto.PassengerDto> passengers = new ArrayList<>();
+                    for (BookingDetails details : bookingDetailsList) {
+                        MyBookingsDto.PassengerDto passengerDto = new MyBookingsDto.PassengerDto();
+                        passengerDto.setName(details.getName());
+                        passengerDto.setAge(details.getAge());
+                        passengerDto.setGender(details.getGender());
+                        passengerDto.setSeatNumber(details.getSeatNumber());
+                        passengerDto.setBookingDetailId(details.getId());
+                        passengerDto.setBookingId(details.getBooking_id().getBookingId());
+                        passengers.add(passengerDto);
+                    }
+                    myBookingsDto.setPassengers(passengers);
+                }
+
+                myBookingsDtos.add(myBookingsDto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while fetching bookings: " + e.getMessage());
         }
 
         return myBookingsDtos;
     }
 
 
-    public  void cancelSeat(int bookingdetailId, int userId, String email){
-        List<User> userList = userDao.getUserbyUserId(userId);
-        User user = userList.get(0);
-        List<BookingDetails>  bookingDetails = bookingDao.getBookingDetailsByBookingDetailId(bookingdetailId);
-        BookingDetails bookingDetails1 = bookingDetails.get(0);
-        bookingDetails1.setCancelled(true);
-        List<Bookings> bookings = bookingDao.getBookingById(bookingDetails1.getBooking_id().getBookingId());
-        Bookings bookings1 = bookings.get(0);
-        bookings1.setTotalAmount(bookings1.getTotalAmount()/2);
-        bookings1.setModifiedDate(LocalDateTime.now());
-        List<Schedules> schedules = scheduleDao.getScheduleByID(bookingDetails1.getBooking_id().getScheduleId().getScheduleId());
-        Schedules schedules1 = schedules.get(0);
-        schedules1.setAvailableSeats(schedules1.getAvailableSeats()+1);
-        Notifications notifications = new Notifications();
-        EmailLogs emailLogs = new EmailLogs();
-        notifications.setCreatedDate(LocalDateTime.now());
-        notifications.setMessage("Cancel Seat Information");
-        notifications.setType("Email");
-        notifications.setUserId(user);
-        emailLogs.setEmail(email);
-        emailLogs.setNotificationId(notifications);
-        emailLogs.setSentAt(LocalDateTime.now());
-        notificationDao.NotificationSave(notifications);
-        notificationDao.EmailLogsSave(emailLogs);
-        bookingDao.bookingDetailsUpdate(bookingDetails1);
-        scheduleDao.scheduleUpdate(schedules1);
-
-        if (user.getRoleId().getRoleId()==2) {
-            Wallet wallets = walletDao.getWalletByUserId(user);
-            wallets.setBalance(wallets.getBalance() + bookings1.getTotalAmount());
-            Transaction transaction = new Transaction();
-            transaction.setDescription("Seat Cancellation");
-            transaction.setDate(LocalDateTime.now());
-            transaction.setType("credit");
-            transaction.setAmount(bookings1.getTotalAmount());
-            transaction.setWallet(wallets);
-
-            walletDao.walletUpdate(wallets);
-            walletDao.transactionSave(transaction);
-            bookingDao.bookingUpdate(bookings1);
-        }
-
-
-
-    }
-
-    public void cancelBooking(int bookingId, int userId, String email)
-    {
-        List<User> userList = userDao.getUserbyUserId(userId);
-        User user = userList.get(0);
-        List<Bookings> bookings = bookingDao.getBookingById(bookingId);
-        Bookings bookings1 = bookings.get(0);
-        bookings1.setCancelled(true);
-        List<BookingDetails> bookingDetails = bookingDao.getBookingDetailsById(bookingId);
-        bookingDao.bookingUpdate(bookings1);
-        List<Schedules> schedules = scheduleDao.getScheduleByID(bookings1.getScheduleId().getScheduleId());
-        Schedules schedules1 = schedules.get(0);
-        {
-            for(int i=0; i<bookingDetails.size(); i++)
-            {
-                BookingDetails bookingDetails1 = bookingDetails.get(i);
-                bookingDetails1.setCancelled(true);
-                schedules1.setAvailableSeats(schedules1.getAvailableSeats()+1);
-                bookingDao.bookingDetailsUpdate(bookingDetails1);
-                scheduleDao.scheduleUpdate(schedules1);
+    public void cancelSeat(int bookingDetailId, int userId, String email) {
+        try {
+            List<User> userList = userDao.getUserbyUserId(userId);
+            if (userList.isEmpty()) {
+                System.out.println("User not found for user ID: " + userId);
+                return;
             }
+            User user = userList.get(0);
+
+            List<BookingDetails> bookingDetailsList = bookingDao.getBookingDetailsByBookingDetailId(bookingDetailId);
+            if (bookingDetailsList.isEmpty()) {
+                System.out.println("Booking details not found for booking detail ID: " + bookingDetailId);
+                return;
+            }
+            BookingDetails bookingDetails1 = bookingDetailsList.get(0);
+            bookingDetails1.setCancelled(true);
+            bookingDao.bookingDetailsUpdate(bookingDetails1);
+
+            List<Bookings> bookingsList = bookingDao.getBookingById(bookingDetails1.getBooking_id().getBookingId());
+            if (bookingsList.isEmpty()) {
+                System.out.println("Booking not found for booking ID: " + bookingDetails1.getBooking_id().getBookingId());
+                return;
+            }
+            Bookings bookings1 = bookingsList.get(0);
+            bookings1.setTotalAmount(bookings1.getTotalAmount() / 2);
+            bookings1.setModifiedDate(LocalDateTime.now());
+            bookingDao.bookingUpdate(bookings1);
+
+            List<Schedules> schedulesList = scheduleDao.getScheduleByID(bookingDetails1.getBooking_id().getScheduleId().getScheduleId());
+            if (schedulesList.isEmpty()) {
+                System.out.println("Schedule not found for schedule ID: " + bookingDetails1.getBooking_id().getScheduleId().getScheduleId());
+                return;
+            }
+            Schedules schedules1 = schedulesList.get(0);
+            schedules1.setAvailableSeats(schedules1.getAvailableSeats() + 1);
+            scheduleDao.scheduleUpdate(schedules1);
+
+            Notifications notifications = new Notifications();
+            EmailLogs emailLogs = new EmailLogs();
+            notifications.setCreatedDate(LocalDateTime.now());
+            notifications.setMessage("Cancel Seat Information");
+            notifications.setType("Email");
+            notifications.setUserId(user);
+            emailLogs.setEmail(email);
+            emailLogs.setNotificationId(notifications);
+            emailLogs.setSentAt(LocalDateTime.now());
+
+            notificationDao.NotificationSave(notifications);
+            notificationDao.EmailLogsSave(emailLogs);
+
+            if (user.getRoleId().getRoleId() == 2) {
+                Wallet wallets = walletDao.getWalletByUserId(user);
+                if (wallets == null) {
+                    System.out.println("Wallet not found for user ID: " + userId);
+                    return;
+                }
+                wallets.setBalance(wallets.getBalance() + bookings1.getTotalAmount());
+
+                Transaction transaction = new Transaction();
+                transaction.setDescription("Seat Cancellation");
+                transaction.setDate(LocalDateTime.now());
+                transaction.setType("credit");
+                transaction.setAmount(bookings1.getTotalAmount());
+                transaction.setWallet(wallets);
+
+                walletDao.walletUpdate(wallets);
+                walletDao.transactionSave(transaction);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred during seat cancellation: " + e.getMessage());
         }
-        Notifications notifications = new Notifications();
-        EmailLogs emailLogs = new EmailLogs();
-        notifications.setCreatedDate(LocalDateTime.now());
-        notifications.setMessage("Cancel Booking Information");
-        notifications.setType("Email");
-        notifications.setUserId(user);
-        emailLogs.setEmail(email);
-        emailLogs.setNotificationId(notifications);
-        emailLogs.setSentAt(LocalDateTime.now());
-        notificationDao.NotificationSave(notifications);
-        notificationDao.EmailLogsSave(emailLogs);
-
-        if (user.getRoleId().getRoleId()==2) {
-            Wallet wallets = walletDao.getWalletByUserId(user);
-            wallets.setBalance(wallets.getBalance() + bookings1.getTotalAmount());
-            Transaction transaction = new Transaction();
-            transaction.setDescription("Ticket Cancellation");
-            transaction.setDate(LocalDateTime.now());
-            transaction.setType("credit");
-            transaction.setWallet(wallets);
-            transaction.setAmount(bookings1.getTotalAmount());
-            walletDao.walletUpdate(wallets);
-            walletDao.transactionSave(transaction);
-        }
-
-
-
     }
 
-    public void saveEmailLogsWhileBooking(String email,int  userId)
-    {
-        List<User> userList = userDao.getUserbyUserId(userId);
-        User user = userList.get(0);
-        Notifications notifications = new Notifications();
-        EmailLogs emailLogs = new EmailLogs();
-        notifications.setCreatedDate(LocalDateTime.now());
-        notifications.setMessage("Booking Information");
-        notifications.setType("Email");
-        notifications.setUserId(user);
-        emailLogs.setEmail(email);
-        emailLogs.setNotificationId(notifications);
-        emailLogs.setSentAt(LocalDateTime.now());
-        notificationDao.NotificationSave(notifications);
-        notificationDao.EmailLogsSave(emailLogs);
+
+    public void cancelBooking(int bookingId, int userId, String email) {
+        try {
+            List<User> userList = userDao.getUserbyUserId(userId);
+            if (userList.isEmpty()) {
+                System.out.println("User not found for user ID: " + userId);
+                return;
+            }
+            User user = userList.get(0);
+
+
+            List<Bookings> bookingsList = bookingDao.getBookingById(bookingId);
+            if (bookingsList.isEmpty()) {
+                System.out.println("Booking not found for booking ID: " + bookingId);
+                return; // or throw a custom exception
+            }
+            Bookings bookings1 = bookingsList.get(0);
+            bookings1.setCancelled(true);
+
+
+            List<BookingDetails> bookingDetailsList = bookingDao.getBookingDetailsById(bookingId);
+            if (bookingDetailsList.isEmpty()) {
+                System.out.println("Booking details not found for booking ID: " + bookingId);
+                return;
+            }
+
+            bookingDao.bookingUpdate(bookings1);
+
+
+            List<Schedules> schedulesList = scheduleDao.getScheduleByID(bookings1.getScheduleId().getScheduleId());
+            if (schedulesList.isEmpty()) {
+                System.out.println("Schedule not found for schedule ID: " + bookings1.getScheduleId().getScheduleId());
+                return; // or throw a custom exception
+            }
+            Schedules schedules1 = schedulesList.get(0);
+
+
+            for (BookingDetails bookingDetails1 : bookingDetailsList) {
+                bookingDetails1.setCancelled(true);
+                bookingDao.bookingDetailsUpdate(bookingDetails1);
+            }
+            schedules1.setAvailableSeats(schedules1.getAvailableSeats() + bookingDetailsList.size());
+            scheduleDao.scheduleUpdate(schedules1);
+
+
+            Notifications notifications = new Notifications();
+            EmailLogs emailLogs = new EmailLogs();
+            notifications.setCreatedDate(LocalDateTime.now());
+            notifications.setMessage("Cancel Booking Information");
+            notifications.setType("Email");
+            notifications.setUserId(user);
+            emailLogs.setEmail(email);
+            emailLogs.setNotificationId(notifications);
+            emailLogs.setSentAt(LocalDateTime.now());
+
+            notificationDao.NotificationSave(notifications);
+            notificationDao.EmailLogsSave(emailLogs);
+
+
+            if (user.getRoleId().getRoleId() == 2) {
+                Wallet wallets = walletDao.getWalletByUserId(user);
+                if (wallets == null) {
+                    System.out.println("Wallet not found for user ID: " + userId);
+                    return;
+                }
+                wallets.setBalance(wallets.getBalance() + bookings1.getTotalAmount());
+
+                Transaction transaction = new Transaction();
+                transaction.setDescription("Ticket Cancellation");
+                transaction.setDate(LocalDateTime.now());
+                transaction.setType("credit");
+                transaction.setWallet(wallets);
+                transaction.setAmount(bookings1.getTotalAmount());
+
+                walletDao.walletUpdate(wallets);
+                walletDao.transactionSave(transaction);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred during booking cancellation: " + e.getMessage());
+        }
+    }
+
+
+    public void saveEmailLogsWhileBooking(String email, int userId) {
+        try {
+            List<User> userList = userDao.getUserbyUserId(userId);
+            if (userList.isEmpty()) {
+                System.out.println("User not found for user ID: " + userId);
+                return;
+            }
+            User user = userList.get(0);
+
+            Notifications notifications = new Notifications();
+            EmailLogs emailLogs = new EmailLogs();
+            notifications.setCreatedDate(LocalDateTime.now());
+            notifications.setMessage("Booking Information");
+            notifications.setType("Email");
+            notifications.setUserId(user);
+            emailLogs.setEmail(email);
+            emailLogs.setNotificationId(notifications);
+            emailLogs.setSentAt(LocalDateTime.now());
+
+            notificationDao.NotificationSave(notifications);
+            notificationDao.EmailLogsSave(emailLogs);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while saving email logs: " + e.getMessage());
+        }
     }
 
 
@@ -1006,7 +1242,7 @@ public class ProjectService {
                 .collect(Collectors.groupingBy(booking -> booking.getBookingDate().getMonthValue()));
 
         List<MonthlySalesData> monthlySalesDataList = new ArrayList<>();
-        for (int month = 1; month <= 12; month++) {
+        for (int month = 1; month <= 12; month++)   {
             List<Bookings> monthlyBookings = bookingsByMonth.getOrDefault(month, new ArrayList<>());
             double totalSales = monthlyBookings.stream().mapToDouble(Bookings::getTotalAmount).sum();
             int numberOfBookings = monthlyBookings.size();
@@ -1020,17 +1256,20 @@ public class ProjectService {
         return monthlySalesDataList;
     }
 
+
+
+
     public  List<OccupancyReportDto> getRoutesWiseMonthlyOccupancy(String date)
     {
         String[] parts = date.split("-");
         int year = Integer.parseInt(parts[0]);
         int month = Integer.parseInt(parts[1]);
-        return bookingDao.getMonthlyOccupancyDataGroupByRoutes(year, month);
+        return bookingDao.getMonthlyOccupancyData(year, month);
     }
 
     public  List<OccupancyReportDto> getRoutesWiseYearlyOccupancy(int year)
     {
-        return bookingDao.getYearlyOccupancyDataGroupByRoutes(year);
+        return bookingDao.getYearlyOccupancyData(year);
     }
 
 
@@ -1082,67 +1321,100 @@ public class ProjectService {
     }
 
     public void sendMailforReset(String mail) {
-        VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setEmail(mail);
-        verificationToken.setCreatedDate(LocalDateTime.now());
-        String token = new TokenGenerator().GenerateToken();
-        verificationToken.setToken(token);
-        String mailUrl = "http://localhost:8080/BusWise/reset/" + token  ;
-        String message = "Hello,\n\n" +
-                "We received a request to reset the password for your account associated with " + mail + ".\n" +
-                "You can reset your password by clicking the link below:\n\n" +
-                mailUrl + "\n\n" +
-                "If you did not request a password reset, please ignore this email or contact support if you have questions.\n\n" +
-                "Thank you,\n" +
-                "BusWise Team";
-        emailService.send(mail, "Reset Password", message );
-        List<VerificationToken> tokenList = verificationDao.checkMailStatusList(verificationToken.getEmail());
-        List<User> userList = userDao.checkEmail(verificationToken.getEmail());
-        User user = userList.get(0);
+        try {
+            VerificationToken verificationToken = new VerificationToken();
+            verificationToken.setEmail(mail);
+            verificationToken.setCreatedDate(LocalDateTime.now());
+            String token = new TokenGenerator().GenerateToken();
+            verificationToken.setToken(token);
+            String mailUrl = "http://localhost:8080/BusWise/reset/" + token;
+            String message = "Hello,\n\n" +
+                    "We received a request to reset the password for your account associated with " + mail + ".\n" +
+                    "You can reset your password by clicking the link below:\n\n" +
+                    mailUrl + "\n\n" +
+                    "If you did not request a password reset, please ignore this email or contact support if you have questions.\n\n" +
+                    "Thank you,\n" +
+                    "BusWise Team";
 
-        if (tokenList.size() != 0) {
-            VerificationToken lasVerificationToken = tokenList.get(tokenList.size() - 1);
-            lasVerificationToken.setValidation(false);
-            verificationToken.setValidation(true);
-            verificationDao.verificationTokenSave(verificationToken);
-            verificationDao.verificationTokenUpdate(lasVerificationToken);
-        } else {
-            verificationToken.setValidation(true);
-            verificationDao.verificationTokenSave(verificationToken);
+            // Send email
+            emailService.send(mail, "Reset Password", message);
+
+            List<VerificationToken> tokenList = verificationDao.checkMailStatusList(verificationToken.getEmail());
+            List<User> userList = userDao.checkEmail(verificationToken.getEmail());
+            User user = userList.get(0);
+
+            if (tokenList.size() != 0) {
+                VerificationToken lastVerificationToken = tokenList.get(tokenList.size() - 1);
+                lastVerificationToken.setValidation(false);
+                verificationToken.setValidation(true);
+                verificationDao.verificationTokenSave(verificationToken);
+                verificationDao.verificationTokenUpdate(lastVerificationToken);
+            } else {
+                verificationToken.setValidation(true);
+                verificationDao.verificationTokenSave(verificationToken);
+            }
+
+
+            Notifications notifications = new Notifications();
+            notifications.setUserId(user);
+            notifications.setType("Reset Password");
+            notifications.setCreatedDate(LocalDateTime.now());
+            notifications.setMessage("email send for reset password");
+            notificationDao.NotificationSave(notifications);
+
+            EmailLogs emailLogs = new EmailLogs();
+            emailLogs.setSentAt(LocalDateTime.now());
+            emailLogs.setNotificationId(notifications);
+            emailLogs.setEmail(verificationToken.getEmail());
+            notificationDao.EmailLogsSave(emailLogs);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while processing the password reset email: " + e.getMessage());
         }
-
-        Notifications notifications = new Notifications();
-        notifications.setUserId(user);
-        notifications.setType("Reset Password");
-        notifications.setCreatedDate(LocalDateTime.now());
-        notifications.setMessage("email send for reset password");
-        notificationDao.NotificationSave(notifications);
-
-        EmailLogs emailLogs = new EmailLogs();
-        emailLogs.setSentAt(LocalDateTime.now());
-        emailLogs.setNotificationId(notifications);
-        emailLogs.setEmail(verificationToken.getEmail());
-        notificationDao.EmailLogsSave(emailLogs);
-
-
-
     }
 
-    public void resetPassword( String password, String token) throws NoSuchAlgorithmException {
 
-
+    public void resetPassword(String password, String token) {
+        try {
             List<VerificationToken> verificationTokens = verificationDao.checkToken(token);
+            if (verificationTokens.isEmpty()) {
+                System.err.println("Invalid or expired token.");
+                return;
+            }
+
             VerificationToken verificationToken = verificationTokens.get(0);
-            String email =   verificationToken.getEmail();
+            String email = verificationToken.getEmail();
+
+
             List<User> userList = userDao.checkEmail(email);
+            if (userList.isEmpty()) {
+                System.err.println("User not found for the provided email.");
+                return;
+            }
+
             User user = userList.get(0);
+
             byte[] salt = passwordHash.getSalt();
             String passwordHashed = passwordHash.getSecurePassword(password, salt);
+
+
             user.setPassword(passwordHashed);
             user.setSalt(salt);
             user.setModifiedDate(LocalDateTime.now());
             userDao.userUpdate(user);
+
+            System.out.println("Password reset successfully.");
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            System.err.println("Error occurred while hashing the password: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+        }
     }
+
 
 
     public boolean checkToken(String token)  {
@@ -1158,74 +1430,165 @@ public class ProjectService {
 
 
     public Wallet getWalletByUserId(int userId) {
-       List<User> userList = userDao.getUserbyUserId(userId);
-       User user = userList.get(0);
-        return walletDao.getWalletByUserId(user);
+        try {
+            List<User> userList = userDao.getUserbyUserId(userId);
+            if (userList.isEmpty()) {
+                System.err.println("User not found for userId: " + userId);
+                return null;
+            }
+
+            User user = userList.get(0);
+
+            Wallet wallet = walletDao.getWalletByUserId(user);
+            if (wallet == null) {
+                System.err.println("Wallet not found for userId: " + userId);
+                return null;
+            }
+
+            return wallet;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while fetching the wallet: " + e.getMessage());
+            return null;
+        }
     }
+
 
     public void addFunds(int userId, double amount) {
-        Wallet wallet = getWalletByUserId(userId);
-        wallet.setBalance(wallet.getBalance() + amount);
-        walletDao.walletUpdate(wallet);
-        Transaction transaction = new Transaction();
-        transaction.setWallet(wallet);
-        transaction.setType("credit");
-        transaction.setAmount(amount);
-        transaction.setDate(LocalDateTime.now());
-        transaction.setDescription("fund added by user");
-        walletDao.transactionSave(transaction);
+        try {
+
+            Wallet wallet = getWalletByUserId(userId);
+            if (wallet == null) {
+                throw new RuntimeException("Wallet not found for userId: " + userId);
+            }
+
+            wallet.setBalance(wallet.getBalance() + amount);
+            walletDao.walletUpdate(wallet);
+
+            Transaction transaction = new Transaction();
+            transaction.setWallet(wallet);
+            transaction.setType("credit");
+            transaction.setAmount(amount);
+            transaction.setDate(LocalDateTime.now());
+            transaction.setDescription("Fund added by user");
+            walletDao.transactionSave(transaction);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while adding funds: " + e.getMessage());
+
+        }
     }
+
 
     public void deductFunds(int userId, double amount) {
-        Wallet wallet = getWalletByUserId(userId);
-        if (wallet.getBalance() < amount) {
-            throw new RuntimeException("Insufficient balance");
-        }
-        wallet.setBalance(wallet.getBalance() - amount);
-        walletDao.walletUpdate(wallet);
-        Transaction transaction = new Transaction();
-        transaction.setWallet(wallet);
-        transaction.setType("debit");
-        transaction.setAmount(amount);
-        transaction.setDate(LocalDateTime.now());
-        transaction.setDescription("Fund withdrawed by user");
-        walletDao.transactionSave(transaction);
-    }
-
-
-    public double getBalance(int userId){
-         return    walletDao.getBalanceByuserId(userId);
-    }
-
-    public List<TransactionHistoryDto> getTransactions(int userId, int curPage){
-        int startIndex = ((curPage - 1) * 6);
-        int endIndex = 6;
-        List<TransactionHistoryDto> transactionHistoryDtos = new ArrayList<>();
-        List<Transaction> transactions = walletDao.getTransactionsByUserId(userId, startIndex, endIndex);
-        long count = walletDao.getTransactionCountByUserId(userId);
-        double runningBalance = transactions.isEmpty() ? 0.0 : transactions.get(0).getWallet().getBalance();
-        for (int i=0; i<transactions.size(); i++){
-            Transaction transaction = transactions.get(i);
-            TransactionHistoryDto transactionHistoryDto = new TransactionHistoryDto();
-            transactionHistoryDto.setAmount(transaction.getAmount());
-            transactionHistoryDto.setCount(count);
-            transactionHistoryDto.setDate(transaction.getDate().toString().substring(0,10));
-            transactionHistoryDto.setDebit(transaction.getType());
-            transactionHistoryDto.setDescription(transaction.getDescription());
-            if (transaction.getType().equalsIgnoreCase("debit")) {
-                runningBalance -= transaction.getAmount() ;
-            } else if (transaction.getType().equalsIgnoreCase("credit")) {
-                runningBalance += transaction.getAmount();
+        try {
+            Wallet wallet = getWalletByUserId(userId);
+            if (wallet == null) {
+                throw new RuntimeException("Wallet not found for userId: " + userId);
             }
-            transactionHistoryDto.setBalance(runningBalance);
-            transactionHistoryDtos.add(transactionHistoryDto);
+
+
+            if (wallet.getBalance() < amount) {
+                throw new RuntimeException("Insufficient balance");
+            }
+
+            wallet.setBalance(wallet.getBalance() - amount);
+            walletDao.walletUpdate(wallet);
+
+            Transaction transaction = new Transaction();
+            transaction.setWallet(wallet);
+            transaction.setType("debit");
+            transaction.setAmount(amount);
+            transaction.setDate(LocalDateTime.now());
+            transaction.setDescription("Fund withdrawn by user");
+            walletDao.transactionSave(transaction);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while deducting funds: " + e.getMessage());
+
         }
+    }
+
+
+
+    public double getBalance(int userId) {
+        try {
+            double balance = walletDao.getBalanceByuserId(userId);
+            if (balance < 0) {
+                throw new RuntimeException("Error retrieving balance for userId: " + userId);
+            }
+            return balance;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while retrieving the balance: " + e.getMessage());
+            return 0.0;
+        }
+    }
+
+
+    public List<TransactionHistoryDto> getTransactions(int userId, int curPage) {
+        List<TransactionHistoryDto> transactionHistoryDtos = new ArrayList<>();
+        try {
+            int startIndex = ((curPage - 1) * 6);
+            int endIndex = 6;
+
+
+            List<Transaction> transactions = walletDao.getTransactionsByUserId(userId, startIndex, endIndex);
+            long count = walletDao.getTransactionCountByUserId(userId);
+
+            double runningBalance = 0.0;
+            if (!transactions.isEmpty()) {
+                runningBalance = transactions.get(0).getWallet().getBalance();
+            }
+
+
+            for (Transaction transaction : transactions) {
+                TransactionHistoryDto transactionHistoryDto = new TransactionHistoryDto();
+                transactionHistoryDto.setAmount(transaction.getAmount());
+                transactionHistoryDto.setCount(count);
+                transactionHistoryDto.setDate(transaction.getDate().toString().substring(0, 10));
+                transactionHistoryDto.setDebit(transaction.getType());
+                transactionHistoryDto.setDescription(transaction.getDescription());
+
+                if (transaction.getType().equalsIgnoreCase("debit")) {
+                    runningBalance -= transaction.getAmount();
+                } else if (transaction.getType().equalsIgnoreCase("credit")) {
+                    runningBalance += transaction.getAmount();
+                }
+
+                transactionHistoryDto.setBalance(runningBalance);
+
+                transactionHistoryDtos.add(transactionHistoryDto);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while fetching transaction history: " + e.getMessage());
+
+        }
+
         return transactionHistoryDtos;
     }
 
 
-}
+    public void resetReservationTimestamp(int bookingId) {
 
+        List<Bookings> bookings = bookingDao.getBookingById(bookingId);
+
+       if(!bookings.isEmpty()){
+           Bookings bookings1 = bookings.get(0);
+           bookings1.setBooked(false);
+           bookingDao.bookingUpdate(bookings1);
+       }
+    }
+
+
+
+}
 
 
 

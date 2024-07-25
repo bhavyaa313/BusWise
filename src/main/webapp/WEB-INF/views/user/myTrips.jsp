@@ -1,11 +1,4 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: PCA84
-  Date: 09-07-2024
-  Time: 11:53
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <%--
   Created by IntelliJ IDEA.
   User: PCA84
@@ -128,7 +121,7 @@
 </head>
 <body class="bg-light">
 <jsp:include page="userNavbar.jsp" />
-
+<div id="message"></div>
 
 <div id="loader-overlay" class="loader-overlay">
     <div class="loader "></div>
@@ -388,14 +381,14 @@
 
 
 
-        $.each(bookings, function (index, booking) {
-            var bookingDate = new Date(booking.date); // Convert booking date string to Date object
-            var today = new Date(); // Get today's date
+            $.each(bookings, function (index, booking) {
+                var bookingDate = new Date(booking.date); // Convert booking date string to Date object
+                var today = new Date(); // Get today's date
 
-            // Normalize the time portion of the dates to avoid time comparison issues
-            bookingDate.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
-            var bookingHtml = `
+                // Normalize the time portion of the dates to avoid time comparison issues
+                bookingDate.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
+                var bookingHtml = `
             <div class="col-md-4 mb-4">
                 <div class="card" data-passenger-count="` + booking.passengers.length + `">
                     <div class="card-header bg-dark opacity-50 text-white d-flex" data-bs-toggle="collapse" href="#details` + booking.bookingId + `" role="button" aria-expanded="false" aria-controls="details${booking.bookingId}">
@@ -412,18 +405,18 @@
                     <div id="details` + booking.bookingId + `" class="collapse">
                         <div class="card-body">
                             <h5 class="card-title mt-4">Passenger Information</h5>`;
-            $.each(booking.passengers, function (index, passenger) {
-                var bookingDate = new Date(booking.date); // Convert booking date string to Date object
-                var today = new Date(); // Get today's date
+                $.each(booking.passengers, function (index, passenger) {
+                    var bookingDate = new Date(booking.date); // Convert booking date string to Date object
+                    var today = new Date(); // Get today's date
 
-                // Normalize the time portion of the dates to avoid time comparison issues
-                bookingDate.setHours(0, 0, 0, 0);
-                today.setHours(0, 0, 0, 0);
+                    // Normalize the time portion of the dates to avoid time comparison issues
+                    bookingDate.setHours(0, 0, 0, 0);
+                    today.setHours(0, 0, 0, 0);
 
-                console.log("Booking Date:", bookingDate);
-                console.log("Today's Date:", today);
+                    console.log("Booking Date:", bookingDate);
+                    console.log("Today's Date:", today);
 
-                bookingHtml += `
+                    bookingHtml += `
     <div class="card-text mb-3">
         <strong>Name:</strong> ` + passenger.name + ` <br>
         <strong>Age:</strong> ` + passenger.age + ` <br>
@@ -431,49 +424,49 @@
         <strong>Seat Number:</strong> ` + passenger.seatNumber + `
         <div class="mt-2">`;
 
-                // Only show the Cancel Seat button if the booking date is greater than or equal to today's date
-                if (bookingDate >= today) {
-                    console.log("Showing Cancel Seat button for:", passenger.name);
-                    bookingHtml += `
+                    // Only show the Cancel Seat button if the booking date is greater than or equal to today's date
+                    if (bookingDate >= today) {
+                        console.log("Showing Cancel Seat button for:", passenger.name);
+                        bookingHtml += `
             <button class="btn btn-outline-danger btn-sm" onclick="cancelSeat('` + passenger.bookingDetailId + `', '` + passenger.bookingId + `')">Cancel Seat</button>
                     <div id="alertContainerCanelSeat" ></div>`;
-                }
+                    }
 
-                bookingHtml += `
+                    bookingHtml += `
         </div>
     </div>`;
-            });
+                });
 
-            bookingHtml += `
+                bookingHtml += `
         </div>
     </div>`;
 
 // Only add the footer with buttons if the booking date is greater than or equal to today's date
-            if (bookingDate >= today) {
-                console.log("Showing footer buttons for booking ID:", booking.bookingId);
-                bookingHtml += `
+                if (bookingDate >= today) {
+                    console.log("Showing footer buttons for booking ID:", booking.bookingId);
+                    bookingHtml += `
         <div class="card-footer text-center bg-white">
             <button class="btn btn-outline-primary" onclick="downloadTicket('` + booking.bookingId + `')">Download Ticket</button>
             <button class="btn btn-outline-danger" onclick="deleteBooking('` + booking.bookingId + `')">Cancel Booking</button>
 
      <div id="alertContainerDownload" ></div>
         </div>`;
-            } else if (bookingDate < today) {
-                console.log("Marking trip as completed for booking ID:", booking.bookingId);
-                bookingHtml += `
+                } else if (bookingDate < today) {
+                    console.log("Marking trip as completed for booking ID:", booking.bookingId);
+                    bookingHtml += `
     <div class="card-footer text-center bg-white"> This Trip is Completed!
     </div>`;
-            }
+                }
 
-            bookingsContainer.append(bookingHtml);
+                bookingsContainer.append(bookingHtml);
 
-            var temp = booking.count;
-            console.log(temp + 4333);
-            var totalFinal = Math.ceil(temp / 6);
-            init(totalFinal, curPage);
+                var temp = booking.count;
+                console.log(temp + 4333);
+                var totalFinal = Math.ceil(temp / 6);
+                init(totalFinal, curPage);
 
-        });
-    }
+            });
+        }
     }
 
 
@@ -494,9 +487,11 @@
 
             $.ajax({
                 url:  "${pageContext.request.contextPath}/user/cancelSeat/" + bookingDetailId +"/" + bookingId +"/"+ ${userId},
-                type: "GET", //
+                type: "POST", //
                 success: function (response) {
 
+
+                    $('#message').text(response.message);
                     var alert = `<div class="alert alert-success alert-dismissible fade show" id="successAlert" role="alert">`
                     alert += `<strong>Success! </strong>`;
                     alert+=`Your seat has been cancelled successfully, amount will be refunded soon in your wallet.`;
@@ -537,20 +532,14 @@
         $('#loader-overlay').show();
         $.ajax({
             url: "${pageContext.request.contextPath}/user/cancelBooking/" + bookingId +  "/" + ${userId},
-            type: "GET",
+            type: "POST",
             success: function(response) {
 
-
+                $('#message').text(response.message);
                 console.log("Booking deleted successfully:", response);
-                Notification.requestPermission().then(function(permission) {
-                    <%--if (permission === "granted") {--%>
-                    <%--    --%>
-                    <%--    new Notification(`New message from ${user}`, {--%>
-                    <%--        body: message,--%>
-                    <%--        icon: 'path/to/icon.png',--%>
-                    <%--    });--%>
-                    <%--}--%>
-                });
+
+
+
                 var alert = `<div class="alert alert-success alert-dismissible fade show" id="successAlert" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Your booking has been cancelled successfully, amount will be refunded soon in your wallet`;

@@ -85,7 +85,9 @@ public class TicketPDFService {
             e.printStackTrace();
         }
 
-        return filePath;
+        String pathTemp = String.format("/%s/%s/", "resources", "tickets");
+        String path = request.getContextPath() + pathTemp + "Ticket_" + bookingId + ".pdf";
+        return path;
     }
 
     private void addHeader(Document document) {

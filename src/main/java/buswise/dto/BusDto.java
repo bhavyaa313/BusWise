@@ -2,6 +2,7 @@ package buswise.dto;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ public class BusDto {
     private int busId;
     @NotBlank(message = "Please Enter busNumber")
     @Size(min =5, max = 12, message = "Your bus number's length should be between 5 and 12")
+    @Pattern(regexp = "^[A-Z]{1,2}\\d{2}[A-Z]{1,2}\\d{1,4}$")
     private String busNumber;
     @NotBlank(message = "Please select bus type")
     private String busType;

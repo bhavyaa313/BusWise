@@ -27,6 +27,14 @@ $("#myProfileForm").validate({
             minlength: 10,
             maxlength: 10
         },
+        city:{
+            regex: "/^[A-Za-z]+$/"
+        },
+
+        state:{
+            regex: "/^[A-Za-z]+$/"
+        }
+
 
 
 
@@ -52,6 +60,14 @@ $("#myProfileForm").validate({
             maxlength:
                 " Your phone number must be consist of 10 numbers"
         },
+        city:{
+            regex:"Please enter valid city",
+
+        },
+
+        state:{
+            regex: "Please enter valid state",
+        }
 
 
 

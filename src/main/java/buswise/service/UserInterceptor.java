@@ -26,7 +26,7 @@ public class UserInterceptor implements HandlerInterceptor {
                 return true;
             }
         }
-        response.sendRedirect("/BusWise/login"); // Redirect to login page if session is invalid
+        response.sendRedirect("/BusWise/login");
         return false;
     }
 

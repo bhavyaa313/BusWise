@@ -83,7 +83,9 @@ public class YearlySalesPdfService {
             e.printStackTrace();
         }
 
-        return filePath;
+        String pathTemp = String.format("/%s/%s/", "resources", "reports");
+        String path = request.getContextPath() + pathTemp + "YearlySalesReport_" + year + ".pdf";
+        return path;
     }
 
     private void addHeader(Document document, int year) {

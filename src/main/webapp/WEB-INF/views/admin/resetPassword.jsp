@@ -11,8 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
-    <title>Login</title>
-
+    <title>Reset Password</title>
+    <link rel="stylesheet" href="<c:url value="/resources/css/reset-forgot.css" />">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
@@ -20,62 +20,24 @@
 
 
 
+
     <script src="script.js"></script>
-<%--    <style>--%>
-<%--        body {--%>
-<%--            font-family: Arial, sans-serif;--%>
-<%--            background-color: #f1f1f1;--%>
-<%--        }--%>
+<style>
 
-<%--        .error-message--%>
-<%--        {--%>
-<%--            color: red;--%>
-<%--        }--%>
+    body {
+        background-color: #ffffff;
+        background-image: url("<c:url value="/resources/image/bg.jpeg"/>");
+        /* Replace with your image path */
+        background-size: cover;
+        /* Ensures the image covers the whole background */
+        background-position: center;
+        /* Centers the background image */
+        background-repeat: no-repeat;
+        /* Prevents the image from repeating */
 
-
-<%--        border-bottom: 1px solid #ccc;--%>
-<%--        border-radius: 0;--%>
-<%--        box-shadow: none;--%>
-<%--        }--%>
-
-<%--        .custom-input:focus {--%>
-<%--            border-bottom: 1px solid #000;--%>
-<%--            box-shadow: none;--%>
-<%--            outline: none;--%>
-<%--        }--%>
-
-
-
-
-<%--        body {--%>
-<%--            background-color: #ffffff;--%>
-<%--            background-image: url("<c:url value="/resources/image/bg.jpeg"/>");--%>
-<%--            /* Replace with your image path */--%>
-<%--            background-size: cover;--%>
-<%--            /* Ensures the image covers the whole background */--%>
-<%--            background-position: center;--%>
-<%--            /* Centers the background image */--%>
-<%--            background-repeat: no-repeat;--%>
-<%--            /* Prevents the image from repeating */--%>
-
-<%--            height: 100vh !important;--%>
-<%--        }--%>
-
-<%--        .card {--%>
-<%--            border-radius: 10px;--%>
-<%--        }--%>
-
-<%--        .form-floating label {--%>
-<%--            padding: 0 0.75rem;--%>
-<%--            background-color: white;--%>
-<%--            color: #007bff;--%>
-<%--            /* Match the color of the welcome text */--%>
-<%--            font-weight: bold;--%>
-<%--        }--%>
-<%--    </style>--%>
-<%--        .custom-input {--%>
-<%--            border: none;--%>
-<%--           --%>
+        height: 100vh !important;
+    }
+</style>
 </head>
 
 <body>

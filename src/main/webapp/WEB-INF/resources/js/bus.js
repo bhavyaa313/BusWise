@@ -1,5 +1,8 @@
 
-
+$.validator.addMethod("regex", function (value, element, regexp) {
+    var re = new RegExp(regexp);
+    return this.optional(element) || re.test(value);
+}, "Please check your input.");
 $("#myFormAdd").validate({
 
 
@@ -15,7 +18,8 @@ $("#myFormAdd").validate({
         busNumber: {
             required: true,
             minlength: 5,
-            maxlength: 12
+            maxlength: 11,
+            regex : /^[A-Z]{1,2}\d{2}[A-Z]{1,2}\d{1,4}$/,
         },
 
         seatingCapacity: {
@@ -30,7 +34,8 @@ $("#myFormAdd").validate({
         busNumber: {
             required: "Please enter a Bus Number",
             minlength: "Bus Number should contain atleast 5 characters ",
-            maxlength: "Bus Number should not contain more than 12 characters "
+            maxlength: "Bus Number should not contain more than 12 characters ",
+            regex: "Please enter valid Bus Number"
         },
 
         seatingCapacity: {
@@ -93,21 +98,46 @@ $(document).ready(function() {
      userId = $('#userId').val()
     console.log(userId)
 })
-    function updateBus(id, busNumber, busType, seatingCapacity) {
-    console.log("Successupdatebus!");
+function checkAndUpdateBus(busId, busNumber, busType, seatingCapacity) {
+    $.ajax({
+        url: 'checkBusUsage/' + busId + '/' + userId,
+        type: "GET",
+        success: function (response) {
+            if (response.isUsed) {
+                var alert = `<div class="alert alert-warning alert-dismissible fade show" role="alert">`;
+                alert += `<strong>Error! </strong>`;
+                alert += `Bus is used in schedules and cannot be edited.`;
+                alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                alert += `</div>`;
+                $('#alertContainerDelete').append(alert);
+            } else {
+                updateBus(busId, busNumber, busType, seatingCapacity);
 
-    $('#bid').attr('value', id);
+                // Trigger the modal
+                $('#edit').modal('show');
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`;
+            alert += `<strong>Error! </strong>`;
+            alert += `An error occurred while checking bus usage.`;
+            alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+            alert += `</div>`;
+            $('#alertContainerDelete').append(alert);
+        }
+    });
+}
+
+function updateBus(busId, busNumber, busType, seatingCapacity) {
+    $('#bid').attr('value', busId);
     $('#bn').attr('value', busNumber);
-
     $('#bt').attr('value', busType);
     $('#bc').attr('value', seatingCapacity);
-
-
-
 }
 
 
-    function init(totalFinal, curPage) {
+
+function init(totalFinal, curPage) {
 
     Pagination.Init(document.getElementById('pagination'), {
         size: parseInt(totalFinal, 10), // pages size
@@ -437,10 +467,11 @@ debugger
 							<td>` + buses.modifiedDate + `</td>
                             <td class="justify-content-end d-flex">
 
-                                <button type="button" class="btn btn-dark  " style="width: 18vh"
-                                   data-bs-toggle="modal" data-bs-target="#edit"
-                                   onclick="updateBus('`+buses.busId+`', '`+buses.busNumber+`', '`+buses.busType+`', '`+buses.seatingCapacity+`')">
-                                   Edit</button>
+                                <button type="button" class="btn btn-dark" style="width: 18vh"
+        onclick="checkAndUpdateBus('`+buses.busId+`', '`+buses.busNumber+`', '`+buses.busType+`', '`+buses.seatingCapacity+`')">
+    Edit
+</button>
+
                                 <button type="button" onclick="deletebutton(`+buses.busId+`)" class="btn btn-secondary mx-3 " style="width: 18vh">
                                   Delete</button>
                             </td>
@@ -479,7 +510,7 @@ debugger
     $('#myFormAdd')[0].reset();
 });
 
-    $(document).ready(function() {
+
     $("#myFormAdd").submit(function(event) {
         event.preventDefault(); // Prevent default form submission
         if ($("#myFormAdd").valid()) {
@@ -518,7 +549,7 @@ debugger
         }
 
     });
-});
+
 
     $(document).ready(function() {
     $("#myFormEdit").submit(function(event) {

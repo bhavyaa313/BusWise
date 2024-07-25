@@ -108,7 +108,9 @@ public class MonthlyOccupancyReportPdf {
             e.printStackTrace();
         }
 
-        return filePath;
+        String pathTemp = String.format("/%s/%s/", "resources", "reports");
+        String path = request.getContextPath() + pathTemp + "MonthlyOccupancyReport_" + dateString + ".pdf";
+        return path;
     }
 
 }

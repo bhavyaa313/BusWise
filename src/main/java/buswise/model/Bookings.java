@@ -4,6 +4,7 @@ import org.hibernate.annotations.ManyToAny;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "bookings")
@@ -36,7 +37,25 @@ public class Bookings {
     private String selectedDestination;
     @Column(name = "depature_time")
     private String depatureTime;
+    @Column(name = "is_booked")
+    private boolean isBooked;
+    private LocalTime timeStamp;
 
+    public boolean isBooked() {
+        return isBooked;
+    }
+
+    public void setBooked(boolean booked) {
+        isBooked = booked;
+    }
+
+    public LocalTime getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(LocalTime timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 
     public int getBookingId() {
         return bookingId;
@@ -150,7 +169,7 @@ public class Bookings {
         this.depatureTime = depatureTime;
     }
 
-    public Bookings(int bookingId, User userId, Schedules scheduleId, LocalDateTime bookingDate, double totalAmount, boolean isCancelled, User cancelledBy, LocalDateTime createdDate, LocalDateTime modifiedDate, String phone, String email, String selectedSource, String selectedDestination, String depatureTime) {
+    public Bookings(int bookingId, User userId, Schedules scheduleId, LocalDateTime bookingDate, double totalAmount, boolean isCancelled, User cancelledBy, LocalDateTime createdDate, LocalDateTime modifiedDate, String phone, String email, String selectedSource, String selectedDestination, String depatureTime, boolean isBooked, LocalTime timeStamp) {
         this.bookingId = bookingId;
         this.userId = userId;
         this.scheduleId = scheduleId;
@@ -165,6 +184,8 @@ public class Bookings {
         this.selectedSource = selectedSource;
         this.selectedDestination = selectedDestination;
         this.depatureTime = depatureTime;
+        this.isBooked = isBooked;
+        this.timeStamp = timeStamp;
     }
 
     public Bookings() {

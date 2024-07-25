@@ -22,11 +22,6 @@
 
 
     <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-            crossorigin="anonymous"></script>
-
-    <script
             src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 
     <script
@@ -175,7 +170,7 @@
     <div class="row mt-3 align-items-center">
         <div class="col-12 col-md-auto mb-3 mb-md-0">
             <div class="h5">Select a Date</div>
-            <input type="date" class="form-control form-control-lg" placeholder="date" id="reportDate" name="date">
+            <input type="date" class="form-control form-control-lg" placeholder="date" id="reportDate"  name="date">
         </div>
         <div class="col-12 col-md-auto mt-4 mb-md-0 text-center text-md-left">
             <button type="button" class="btn btn-lg btn-outline-dark mx-md-5" onclick="fetchSalesData()" id="fetch">Fetch Data</button>
@@ -353,7 +348,10 @@
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    padding: 30 // Adjust the padding between y-axis labels and axis
+                                    padding: 30, // Adjust the padding between y-axis labels and axis
+                                    callback: function(value) {
+                                        return Number.isInteger(value) ? value : ''; // Display only integer values
+                                    },
                                 }
                             }
                         }
@@ -378,7 +376,10 @@
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    padding: 30 // Adjust the padding between y-axis labels and axis
+                                    padding: 30, // Adjust the padding between y-axis labels and axis
+                                    callback: function(value) {
+                                        return Number.isInteger(value) ? value : ''; // Display only integer values
+                                    },
                                 }
                             }
                         }
@@ -538,6 +539,9 @@
                             y: {
                                 beginAtZero: true,
                                 ticks: {
+                                    callback: function(value) {
+                                        return Number.isInteger(value) ? value : ''; // Display only integer values
+                                    },
                                     padding: 30 // Adjust the padding between y-axis labels and axis
                                 }
                             }
@@ -559,6 +563,8 @@
             $('#dailyReport').removeClass("d-none")
             $('#reportDate').val(today);
             $('#fetch').click();
+           var dp = $('#reportDate').get(0)
+        dp.setAttribute('max', today);
 
 
         }
@@ -574,6 +580,8 @@
 
             success: function (response) {
                 console.log("success");
+                var fileUrl = response;
+                window.location.href= fileUrl;
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -581,6 +589,7 @@
                 alert+=`</div>`;
                 console.log(alert)
                 $('#alertContainerDaily').append(alert);
+
             },
             error: function () {
                 console.log("error");
@@ -604,6 +613,8 @@
 
             success: function (response) {
                 console.log("success");
+                var fileUrl = response;
+                window.location.href= fileUrl;
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -634,6 +645,8 @@
 
             success: function (response) {
                 console.log("success");
+                var fileUrl = response;
+                window.location.href= fileUrl;
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -690,6 +703,9 @@
 
         const reportMonthInput = document.getElementById('reportMonth');
         reportMonthInput.value = formattedDate;
+
+        var dp = $('#reportMonth').get(0)
+        dp.setAttribute('max', formattedDate);
         $('#fetch1').click();
 
 
@@ -795,6 +811,7 @@
         return monthNames[monthIndex - 1];
     }
     });
+
 
 
 </script>

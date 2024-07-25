@@ -162,6 +162,7 @@
 
 <body class="bg-dark" >
 
+
 <div class="container-fluid bg-white">
     <jsp:include page="navbar.jsp" />
 </div>
@@ -263,7 +264,7 @@
                 </div>
             </div>
             <form
-                    id="myFormAdd" method="post"  novalidate>
+                    id="myFormAdd" method="post" >
 
                 <div class="modal-body">
 
@@ -418,6 +419,7 @@
                     <button type="reset" class="btn btn-secondary text-white btn-lg rounded-end " style="width: 22vh;"
                             data-bs-dismiss="modal" onclick="clearFormData()">Cancel</button>
                 </div>
+                <div id="loader"  class="justify-content-center text-center h5 mt-3">Loading...</div>
 
             </form>
         </div>
@@ -611,7 +613,7 @@
     });
 
 $(document).ready(function() {
-
+$("#loader").hide()
     console.log("hello")
 debugger
 console.log("ajax to get routes")
@@ -737,6 +739,7 @@ debugger
 
 
         $(document).ready(function() {
+
             $("#myFormAdd").submit(function(event) {
                 debugger
                 event.preventDefault(); // Prevent default form submission
@@ -784,7 +787,7 @@ debugger
                                         var form = document.getElementById("myFormAdd");
                                         form.reset();
                                         $(".btn-close").click();
-                                        ajaxCallSearch("asc")
+                                        ajaxCallSearch("desc")
 
 
 
@@ -835,13 +838,13 @@ debugger
 
       $(document).ready(function() {
             console.log("in")
-            ajaxCallSearch("asc");
+            ajaxCallSearch("desc");
         });
 
 
         $("#searchSource").on('keyup', function ()
         {
-            ajaxCallSearch("asc");
+            ajaxCallSearch("desc");
         });
 
         function  ajaxCallSearch(sortDirection){
@@ -868,7 +871,7 @@ debugger
 
 
             if (!sortDirection || sortDirection === "") { // if no value is selected
-                sortDirection = "asc"; // set a default value (e.g., "asc" or "desc")
+                sortDirection = "desc"; // set a default value (e.g., "asc" or "desc")
             }
 
 
@@ -927,7 +930,9 @@ debugger
 							<td>` + trips.scheduleId + `
                                 <br>
 
-                        		`+trips.subroutes + `
+
+                               ` + (trips.subroutes !== '( via )' ? trips.subroutes : '') + `
+
                             </td>
                             <td>` + trips.date + `</td>
                             <td>` + trips.time + `</td>
@@ -938,12 +943,12 @@ debugger
 							<td>` + trips.fare + `</td>
 
                            <td class="justify-content-end d-flex">
-                <button type="button" class="btn btn-dark" style="width: 5vh"
-                        onclick="updateSchedule('` + trips.scheduleId + `', '` + trips.date + `', '` + trips.time + `', '` + trips.duration + `', '` + trips.fare + `', '` + trips.busId + `', '` + trips.routeId + `')"
-                        data-bs-toggle="modal" data-bs-target="#edit"
-                        ` + (disableButtons ? 'disabled' : '') + `>
-                    <i class="bi bi-pen-fill text-white"></i>
-                </button>
+            <button type="button" class="btn btn-dark" style="width: 5vh"
+    onclick="checkAndUpdateSchedule('` + trips.scheduleId + `', '` + trips.date + `', '` + trips.time + `', '` + trips.duration + `', '` + trips.fare + `', '` + trips.busId + `', '` + trips.routeId + `')"
+    ` + (disableButtons ? 'disabled' : '') + `>
+    <i class="bi bi-pen-fill text-white"></i>
+</button>
+
                 <button type="button" class="btn btn-secondary mx-3" style="width: 5vh"
                         onclick="deletebutton('` + trips.scheduleId + `')"
                         ` + (disableButtons ? 'disabled' : '') + `>
@@ -974,26 +979,54 @@ debugger
         }
 
     console.log("yeahhhhhhkkkk")
+    function checkAndUpdateSchedule(scheduleId, date, time, duration, fare, bus, route) {
+        $.ajax({
+            url: "checkScheduleUsage/" + scheduleId + "/" + ${userId},
+            type: "GET",
+            success: function (response) {
+                if (response.isUsed) {
+                    var alert = `<div class="alert alert-warning alert-dismissible fade show" role="alert">`;
+                    alert += `<strong>Error! </strong>`;
+                    alert += `Schedule is used in current bookings and cannot be edited.`;
+                    alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                    alert += `</div>`;
+                    $('#alertContainerDelete').append(alert);
+                } else {
+                    updateSchedule(scheduleId, date, time, duration, fare, bus, route);
 
-    function updateSchedule(id,date, time, duration, fare, bus, route) {
-        console.log("Successupdatebus!");
+                    // Trigger the modal
+                    $('#edit').modal('show');
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Error checking schedule usage:", textStatus, errorThrown);
+                var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`;
+                alert += `<strong>Error! </strong>`;
+                alert += `An error occurred while checking schedule usage.`;
+                alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                alert += `</div>`;
+                $('#alertContainerDelete').append(alert);
+            }
+        });
+    }
 
-        $('#sid').attr('value', id);
+    function updateSchedule(scheduleId, date, time, duration, fare, bus, route) {
+        $('#sid').attr('value', scheduleId);
         $('#date2').attr('value', date);
-
-        $('#time2').attr('value',time);
-        $('#duration2').attr('value',duration);
-        $('#fare2').attr('value',fare);
+        $('#time2').attr('value', time);
+        $('#duration2').attr('value', duration);
+        $('#fare2').attr('value', fare);
         $('#busSelect2').val(bus);
-        console.log(bus + "bus")
+        console.log(bus + " bus");
         $('#busSelect2 option[value="' + route + '"]').attr("selected", "selected");
         $('#routeSelect2').val(route);
-
         $('#routeSelect2 option[value="' + route + '"]').attr("selected", "selected");
-
-
-
     }
+
+
+
+
+
 
 
     $(document).ready(function() {
@@ -1050,11 +1083,14 @@ debugger
                                 },
 
                                 success: function(response) {
+                                    $('#loader').show()
                                     console.log("Form submitted successfully:", response);
 
 
                                     $(".btn-close").click();
-                                    ajaxCallSearch("asc")
+                                    ajaxCallSearch("desc")
+                                    $('#loader').hide()
+
 
 
 
@@ -1094,38 +1130,58 @@ debugger
         });
     });
 
-    function deletebutton(scheduleId){
-
-
+    function deletebutton(scheduleId) {
         $.ajax({
-            url: "deleteSchedule/" + scheduleId + "/" +  ${userId},
-            type: "POST", //
-            success: function(response) {
+            url: "checkScheduleUsage/" + scheduleId + "/" + ${userId},
+            type: "GET",
+            success: function (response) {
+                if (response.isUsed) {
+                    var alert = `<div class="alert alert-warning alert-dismissible fade show" role="alert">`;
+                    alert += `<strong>Error! </strong>`;
+                    alert += `Schedule is used in current bookings and cannot be deleted.`;
+                    alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                    alert += `</div>`;
+                    $('#alertContainerDelete').append(alert);
+                } else {
+                    $.ajax({
+                        url: "deleteSchedule/" + scheduleId + "/" + ${userId},
+                        type: "POST", //
+                        success: function (response) {
+                            ajaxCallSearch("desc");
 
-                ajaxCallSearch("asc");
-
-                console.log("Item deleted successfully:", response);
-                var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
-                alert += `<strong>Success! </strong>`;
-                alert+=`Schedule has been deleted successfully.`;
-                alert+=`<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-                alert+=`</div>`;
-                console.log(alert)
-                $('#alertContainerDelete').append(alert);
-
+                            console.log("Item deleted successfully:", response);
+                            var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
+                            alert += `<strong>Success! </strong>`;
+                            alert += `Schedule has been deleted successfully.`;
+                            alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                            alert += `</div>`;
+                            console.log(alert)
+                            $('#alertContainerDelete').append(alert);
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.error("Error deleting booking:", textStatus, errorThrown);
+                            var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`;
+                            alert += `<strong>Error! </strong>`;
+                            alert += `An error occurred while deleting schedule.`;
+                            alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                            alert += `</div>`;
+                            $('#alertContainerDelete').append(alert);
+                        }
+                    });
+                }
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error("Error deleting booking:", textStatus, errorThrown);
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Error checking schedule usage:", textStatus, errorThrown);
                 var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`;
-                alert+=`<strong>Error! </strong>`;
-                alert+=`An error occurred while deleting schedule.`;
-                alert+=`<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-                alert+=`</div>`
+                alert += `<strong>Error! </strong>`;
+                alert += `An error occurred while checking schedule usage.`;
+                alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                alert += `</div>`;
                 $('#alertContainerDelete').append(alert);
             }
         });
-
     }
+
 </script>
 <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 <script src="<c:url value="/resources/js/schedule.js"/>"></script>

@@ -29,10 +29,10 @@
 
 
 
-    <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-            crossorigin="anonymous"></script>
+<%--    <script--%>
+<%--            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"--%>
+<%--            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"--%>
+<%--            crossorigin="anonymous"></script>--%>
 
     <script
             src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
@@ -205,10 +205,12 @@
 
         <div class="h4  ms-auto  mx-5 ">  <span class="mx-5 mt-5"> Detailed Daily Report </span> <span class="ms-auto ">
 
-        <button class="btn-lg btn btn-danger" id="downloadDailyOccupancy">Downlaod Data</button>   </span></div>
+        <button class="btn-lg btn btn-danger" id="downloadDailyOccupancy">Download Data</button>   </span></div>
         <div id="alertContainerDaily" ></div>
     </div>
 </div>
+
+
 
 
 
@@ -303,6 +305,9 @@
             console.log("today" + today)
             $('#dailyReport').removeClass("d-none")
             $('#reportDate').val(today);
+
+        var dp = $('#reportDate').get(0)
+        dp.setAttribute('max', today);
             $('#fetch').click();
 
 
@@ -320,6 +325,8 @@
 
             success: function (response) {
                 console.log("success");
+                var fileUrl = response;
+                window.location.href= fileUrl;
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -350,6 +357,8 @@
 
             success: function (response) {
                 console.log("success");
+                var fileUrl = response;
+                window.location.href= fileUrl;
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -380,6 +389,8 @@
 
             success: function (response) {
                 console.log("success");
+                var fileUrl = response;
+                window.location.href= fileUrl;
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -436,6 +447,9 @@
 
         const reportMonthInput = document.getElementById('reportMonth');
         reportMonthInput.value = formattedDate;
+
+        var dp = $('#reportMonth').get(0)
+        dp.setAttribute('max', formattedDate);
         $('#fetch1').click();
 
 
@@ -459,8 +473,7 @@
 
 
 
-</script>
-<script>
+
     var occupancyChart;
 
     function fetchDailyOccupancy() {

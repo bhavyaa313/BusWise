@@ -24,11 +24,19 @@ public class RegisterDto {
     private String email;
     @NotBlank(message = "Please Enter Password")
     @Size(min = 8, max = 25, message = "Your password's length should be between 8 and 25")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+{};:,<.>]).{8,}$", message = "Please enter password with one uppercase and one number")
     private String password;
     @NotBlank(message = "Please confirm your Password")
     @Size(min = 8, max = 25, message = "Your password's length should be between 8 and 25")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+{};:,<.>]).{4,}$", message = "Please enter password with one uppercase and one number")
     private String confirmPassword;
     private String role;
+
+    @Pattern(regexp = "^[A-Za-z]+$")
+    private String city;
+    private Integer age;
+    @Pattern(regexp = "^[A-Za-z]+$")
+    private String state;
 
 
     public int getUserId() {
@@ -75,6 +83,30 @@ public class RegisterDto {
         return password;
     }
 
+    public @Pattern(regexp = "^[A-Za-z]+$") String getCity() {
+        return city;
+    }
+
+    public void setCity(@Pattern(regexp = "^[A-Za-z]+$") String city) {
+        this.city = city;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public @Pattern(regexp = "^[A-Za-z]+$") String getState() {
+        return state;
+    }
+
+    public void setState(@Pattern(regexp = "^[A-Za-z]+$") String state) {
+        this.state = state;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -95,7 +127,7 @@ public class RegisterDto {
         this.confirmPassword = confirmPassword;
     }
 
-    public RegisterDto(int userId, String firstName, String lastName, String phone, String email, String password, String confirmPassword, String role) {
+    public RegisterDto(int userId, String firstName, String lastName, String phone, String email, String password, String confirmPassword, String role, String city, Integer age, String state) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -104,6 +136,9 @@ public class RegisterDto {
         this.password = password;
         this.confirmPassword = confirmPassword;
         this.role = role;
+        this.city = city;
+        this.age = age;
+        this.state = state;
     }
 
     public RegisterDto() {

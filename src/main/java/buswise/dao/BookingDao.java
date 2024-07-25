@@ -66,7 +66,7 @@ public class BookingDao {
     public List<Bookings> getBooking() {
 
         Session session = sessionFactory.openSession();
-        String hqlString = "from buswise.model.Bookings where isCancelled=false ";
+        String hqlString = "from buswise.model.Bookings where isCancelled=false and isBooked=true ";
         Query query = session.createQuery(hqlString);
         List<Bookings> list = query.list();
         return list;
@@ -359,6 +359,7 @@ public class BookingDao {
                 reportData.setSelectedDestination(booking != null ? booking.getSelectedDestination() : null);
                 reportData.setDepartureTime(booking != null ? booking.getDepatureTime() : null);
                 reportData.setTotalSeats(schedule.getBusId().getSeatingCapacity());
+                reportData.setRouteId(schedule.getRouteId().getRouteId());
                 reportData.setRoute(schedule.getRouteId().getSource() + " to " + schedule.getRouteId().getDestination());
                 reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity());
                 List<BookingDetails> bookingDetails = getBookingDetailsById(booking != null ? booking.getBookingId() : null);
@@ -401,6 +402,7 @@ public class BookingDao {
                 reportData.setSelectedSource(booking.getSelectedSource());
                 reportData.setSelectedDestination(booking.getSelectedDestination());
                 reportData.setDepartureTime(booking.getDepatureTime());
+                reportData.setRouteId(schedule.getRouteId().getRouteId());
                 reportData.setTotalSeats(schedule.getBusId().getSeatingCapacity());
                 reportData.setRoute(schedule.getRouteId().getSource() + " to " + schedule.getRouteId().getDestination());
                 reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity());
@@ -422,105 +424,20 @@ public class BookingDao {
 
 
 
-    public List<OccupancyReportDto> getMonthlyOccupancyDataGroupByRoutes(int year, int month) {
+
+
+    public List<Bookings> getBookingsVyScheduleId(int id){
         Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            String hql = "SELECT s.routeId.routeId, SUM(b.seatingCapacity), SUM(b.seatingCapacity - s.availableSeats) " +
-                    "FROM Schedules s " +
-                    "JOIN s.busId b " +
-                    "WHERE MONTH(s.tripDate) = :month AND YEAR(s.tripDate) = :year AND s.isDeleted = FALSE " +
-                    "GROUP BY s.routeId.routeId";
-
-            Query query = session.createQuery(hql);
-            query.setParameter("month", month);
-            query.setParameter("year", year);
-            List<Object[]> results = query.list();
-            List<OccupancyReportDto> reportData = new ArrayList<>();
-            for (Object[] result : results) {
-                Integer routeId =(Integer) result[0];
-                Long totalSeats = (Long) result[1];
-                Long occupiedSeats = (Long) result[2];
-                OccupancyReportDto reportDto = new OccupancyReportDto();
-                reportDto.setRouteId(routeId);
-                List<Routes> routes = routesDao.getRoutesById(routeId);
-                Routes routes1 = routes.get(0);
-                String source = routes1.getSource();
-                String destination = routes1.getDestination();
-                reportDto.setRoute(source + " to " + destination);
-                reportDto.setTotalSeats(totalSeats != null ? totalSeats.intValue() : 0);
-                reportDto.setSeatsOccupied(occupiedSeats != null ? occupiedSeats.intValue() : 0);
-                reportDto.setOccupancyPercentage(totalSeats != null && totalSeats > 0 ?
-                        ((double) occupiedSeats / totalSeats) * 100 : 0.0);
-                reportData.add(reportDto);
-            }
-
-            transaction.commit();
-            return reportData;
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-            throw e;
-        } finally {
-            if (session.isOpen()) {
-                session.close();
-            }
-        }
+        String hql = "from buswise.model.Bookings where scheduleId.scheduleId=:id and isCancelled=false and scheduleId.tripDate>=CURRENT_DATE ";
+        Query query = session.createQuery(hql);
+        query.setParameter("id", id);
+        List<Bookings> bookings = query.list();
+        session.close();
+        return bookings;
     }
 
 
-    public List<OccupancyReportDto> getYearlyOccupancyDataGroupByRoutes(int year) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
 
-            String hql = "SELECT s.routeId.routeId, SUM(b.seatingCapacity), SUM(b.seatingCapacity - s.availableSeats) " +
-                    "FROM Schedules s " +
-                    "JOIN s.busId b " +
-                    "WHERE YEAR(s.tripDate) = :year AND s.isDeleted = FALSE " +
-                    "GROUP BY s.routeId.routeId";
-
-            Query query = session.createQuery(hql);
-            query.setParameter("year", year);
-            List<Object[]> results = query.list();
-            List<OccupancyReportDto> reportData = new ArrayList<>();
-            for (Object[] result : results) {
-                Integer routeId =(Integer) result[0];
-                Long totalSeats = (Long) result[1];
-                Long occupiedSeats = (Long) result[2];
-                OccupancyReportDto reportDto = new OccupancyReportDto();
-                reportDto.setRouteId(routeId);
-                List<Routes> routes = routesDao.getRoutesById(routeId);
-                Routes routes1 = routes.get(0);
-                String source = routes1.getSource();
-                String destination = routes1.getDestination();
-                reportDto.setRoute(source + " to " + destination);
-                reportDto.setTotalSeats(totalSeats != null ? totalSeats.intValue() : 0);
-                reportDto.setSeatsOccupied(occupiedSeats != null ? occupiedSeats.intValue() : 0);
-                reportDto.setOccupancyPercentage(totalSeats != null && totalSeats > 0 ?
-                        ((double) occupiedSeats / totalSeats) * 100 : 0.0);
-
-                reportData.add(reportDto);
-            }
-
-            transaction.commit();
-            return reportData;
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-            throw e;
-        } finally {
-            if (session.isOpen()) {
-                session.close();
-            }
-        }
-    }
 
 }
 

@@ -1,26 +1,4 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: PCA84
-  Date: 08-07-2024
-  Time: 17:39
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: PCA84
-  Date: 17-06-2024
-  Time: 17:48
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: PCA84
-  Date: 14-06-2024
-  Time: 10:15
-  To change this template use File | Settings | File Templates.
---%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -111,7 +89,7 @@
             outline: none;
         }
 
-        .modal.right .modal-dialog {
+        .modal1.right .modal-dialog1 {
             position: fixed;
             margin: auto;
             width: 50%;
@@ -120,12 +98,12 @@
             top: 0;
         }
 
-        .modal.right .modal-content {
+        .modal1.right .modal-content1 {
             height: 100%;
             overflow-y: auto;
         }
 
-        .modal.right .modal-body {
+        .modal1.right .modal-body1 {
             padding: 2rem;
         }
 
@@ -256,14 +234,34 @@
             /* Adjust hover color if needed */
         }
         <!-- Add some CSS for booked seats -->
-        <style>
+
          .seat.booked label {
              background-color: red;
              color: white;
          }
-    </style>
+
+        .custom-modal .modal-dialog {
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 1rem);
+        }
+
+        .custom-modal .modal-content {
+            margin: auto;
+            /* Optional: Add custom styles for the modal content */
+        }
+
     </style>
 
+    <script type="text/javascript">
+        function autoRefresh() {
+            // Reload the current page
+            window.location.reload();
+        }
+
+
+        setTimeout(autoRefresh, 250000);
+    </script>
 </head>
 
 <body class="">
@@ -283,9 +281,17 @@
             ${source} To ${destination}
         </div>
 
-        <div class="d-flex align-items-center m-auto  justify-content-center noData" id="error"><iframe src="https://lottie.host/embed/7e16bb56-6eff-46f0-af44-4b5d9c739553/ZunxByaaub.json"></iframe>
-            oops! No data found!
+<%--        <div class="d-flex align-items-center m-auto  justify-content-center noData" id="error"><iframe src="https://lottie.host/embed/7e16bb56-6eff-46f0-af44-4b5d9c739553/ZunxByaaub.json"></iframe>--%>
+<%--            oops! No data found!--%>
 
+<%--        </div>--%>
+
+        <div class="container nodataC mt-5">
+            <div id="nodata" class=" d-flex align-items-center justify-content-center flex-column">
+                <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
+
+                <div> <h3 class="text-dark">No data found!</h3></div>
+            </div>
         </div>
         <form class="row align-items-end mx-4 ms-auto mt-3 " id="searchForm"  action="${pageContext.request.contextPath}/search" method="post"  hidden>
             <!-- Source Input -->
@@ -381,7 +387,7 @@
                             </div>
                             <div class="col-12 col-md-2">
                                 <div type="button" class="btn btn-outline-danger btn-lg mt-4">Select Seats</div>
-                                <p class="font-duration text-center mt-2"> ${t.noOfSeatsAvailable} seats left</p>
+                                <p class="font-duration text-center mt-2">  ${t.noOfSeats -fn:length(t.bookedSeats)}  seats left</p>
                             </div>
                         </div>
                     </button>
@@ -416,9 +422,9 @@
                         ${isBooked ? 'booked' : ''}
                         ${disableSeat ? ' disabled' : ''}">
                                                     <input role="input-passenger-seat" name="passengers[1][seat]"
-                                                           id="seat-checkbox-1-${seatNumber}" value="${seatNumber}" required="" type="checkbox"
+                                                           id="seat-checkbox-1-${seatNumber}-${ticketDetails[loop.index].scheduleId}" value="${seatNumber}" required="" type="checkbox"
                                                            onclick="updateSelectedSeats()" ${isBooked ? 'disabled' : ''} ${disableSeat ? 'disabled' : ''}>
-                                                    <label for="seat-checkbox-1-${seatNumber}">${seatNumber}</label>
+                                                    <label for="seat-checkbox-1-${seatNumber}-${ticketDetails[loop.index].scheduleId}">${seatNumber}</label>
                                                 </li>
                                             </c:forEach>
                                         </ol>
@@ -475,10 +481,10 @@
 
 
 
-<div class="modal fade bd-example-modal-lg right mt-3 h-100" tabindex="-1" role="dialog"
-     aria-labelledby="myLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg h-100">
-        <div class="modal-content" id="modal-nav">
+<div class="modal fade bd-example-modal-lg modal1 right mt-3 h-100" tabindex="-1" role="dialog"
+     aria-labelledby="myLargeModalLabel" aria-hidden="true" id="modal-main">
+    <div class="modal-dialog modal-dialog1 modal-lg h-100">
+        <div class="modal-content modal-content1" id="modal-nav">
             <div class="modal-header d-flex ">
 
                 <div class="modal-title h5  " id="exampleModalToggleLabel">
@@ -489,10 +495,12 @@
                 <span class="ms-auto  me-0">${source} To ${destination} | ${ticketDetails[0].date} | <span id="depatureTime">${ticketDetails[0].time}</span>   </span>
 
             </div>
-            <div class="modal-body mt-4">
+            <div class="modal-body modal-body1 mt-4">
                 <div class="container-fluid">
                     <form action="" id="bookingDetails">
                         <div>Seat <span id="seatNumber"> </span></div>
+
+
 
 
 
@@ -576,6 +584,33 @@
 
                             <button class="btn text-white  ms-auto" type="submit"
                                     style="background-color:  rgb(179, 11, 11);">Confirm</button>
+
+<%--                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">--%>
+<%--                                Launch demo modal--%>
+<%--                            </button>--%>
+
+
+
+                            <div class=" modal fade  " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+                                <div class="modal-dialog" style="display: flex; align-items: center; max-height: calc(30% - 1rem);">
+                                    <div class="modal-content" style="margin: auto;">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Payment Confirmation</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            To continue with the payment, please click on confirm!
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-success" id="modalConfirmButton">Confirm</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
                         </div>
                         <div id="alertContainer"></div>
 
@@ -601,6 +636,11 @@
 
 
 <script>
+
+
+
+
+
     $(document).ready(function() {
         // Function to check and toggle button disable state
         function toggleContinueButton() {
@@ -831,8 +871,9 @@
         if ($('.accordion-item').length > 0) {
 
 
-
-            $('#error').addClass("d-none");
+console.log("jigjr")
+            $('.nodataC').addClass("d-none");
+            $('.nodataC').addClass("d-sm-none")
 
 
             console.log('Accordion items found.');
@@ -847,140 +888,159 @@
 </script>
 
 <script>
+
+
+
     $(document).ready(function () {
+        var bookingId; // Variable to store the booking ID
+        var reservationTimer; // Variable to store the reservation timer
+        const RESERVATION_TIMEOUT = 0.5 * 60 * 1000; // 10 minutes in milliseconds
 
         $("#bookingDetails").submit(function (event) {
-            event.preventDefault(event); // Prevent default form submission
 
-            var check;
+            if ($("#bookingDetails").valid()) {
+                console.log("vhgerdrugvffiegveiguf")
 
-            if ($('#wpCheck').is(':checked')) {
-                check= "yes"
-            } else {
-                console.log('Checkbox is not checked');
-                check = "no"
-            }
-            debugger
-
-            var email = $("#email").val();
-            var phone = $("#phone").val();
-            var wpCheck = check;
-            var scheduleId = $("#scheduleID2").val();
-            var amount = $("#totalAmount").text();
-            var name = [];
-            var age = [];
-            var gender = [];
-            var seat1 = $("#seatNumber").text();
-            var seat = seat1.split(",");
-            var hasError = false;
-            var depatureTime = $("#depatureTime").text();
-
-
-
-
-
-            $(".row2").each(function () {
-                var genderInput = 'Male';
+                event.preventDefault();
                 debugger
-                var nameInput = $(this).find("input[id^='name']");
-                var ageInput = $(this).find("input[id^='age']");
-                //
-                // $('input[name^="gender"]').each(function(index) {
-                //     genderInput = $(this).prop('checked') ? $(this).val() : 'Male';
-                //     console.log(genderInput +222222)
-                //
-                // });
+                // Prevent default form submission
 
-                var genderInput = $(this).find("input[name^='gender']:checked");
-                console.log(22)
-                console.log(genderInput)
-                console.log(11)
+                $('#exampleModal').modal('show');
 
-                if (nameInput.length > 0 && ageInput.length > 0 && genderInput.length ) {
-                    var name1 = nameInput.val();
-                    var age1 = parseInt(ageInput.val());
-                    var gender1 = genderInput.val() ;
+                var check = $('#wpCheck').is(':checked') ? "yes" : "no";
 
+                var email = $("#email").val();
+                var phone = $("#phone").val();
+                var wpCheck = check;
+                var scheduleId = $("#scheduleID2").val();
+                var amount = $("#totalAmount").text();
+                var name = [];
+                var age = [];
+                var gender = [];
+                var seat1 = $("#seatNumber").text();
+                var seat = seat1.split(",");
+                var depatureTime = $("#depatureTime").text();
 
-                    if (name1 && age1 && gender1 ) {
-                        name.push(name1);
-                        console.log(name)
-                        age.push(age1);
-                        console.log(age)
-                        console.log(seat)
-                        gender.push(gender1);
-                        console.log(gender)
-                        console.log("Genders Array: ", JSON.stringify(gender));
+                $(".row2").each(function () {
+                    var nameInput = $(this).find("input[id^='name']");
+                    var ageInput = $(this).find("input[id^='age']");
+                    var genderInput = $(this).find("input[name^='gender']:checked");
+
+                    if (nameInput.length > 0 && ageInput.length > 0 && genderInput.length) {
+                        var name1 = nameInput.val();
+                        var age1 = parseInt(ageInput.val());
+                        var gender1 = genderInput.val();
+
+                        if (name1 && age1 && gender1) {
+                            name.push(name1);
+                            age.push(age1);
+                            gender.push(gender1);
+                        }
                     }
-                }
-            })
+                });
 
-            $.ajax({
-                url:'${pageContext.request.contextPath}/getBalance/${userId}',
-                type:'POST',
-                success: function (data){
-                    if(data>amount){
+                $.ajax({
+                    url: "${pageContext.request.contextPath}/user/bookTicket/${source}/${destination}/${userId}",
+                    type: "POST",
+                    traditional: true,
+                    data: {
+                        email: email,
+                        phone: phone,
+                        wpCheck: wpCheck,
+                        scheduleId: scheduleId,
+                        amount: amount,
+                        name: name,
+                        age: age,
+                        gender: gender,
+                        seat: seat,
+                        depatureTime: depatureTime
+                    },
+                    success: function (response) {
+                        console.log("Form submitted successfully:", response);
+                        bookingId = response; // Store the booking ID
+
+
+
+                        reservationTimer = setTimeout(function () {
+                            debugger
+                            console.log("in")
+                            $.ajax({
+                                url: "${pageContext.request.contextPath}/resetReservation/" + bookingId , // Endpoint to reset reservation timestamp
+                                type: 'POST',
+                                success: function () {
+                                    debugger
+                                    console.log("Reservation timestamp reset due to inactivity.");
+                                    $('#exampleModal').modal('hide');
+                                    $('#modal-main').modal('hide');
+
+                                },
+                                error: function (error) {
+                                    console.error("Error resetting reservation timestamp:", error);
+                                }
+                            });
+                        }, RESERVATION_TIMEOUT);
+                    },
+                    error: function (error) {
+                        console.error("Error submitting form:", error);
+                    }
+                });
+            }
+        });
+
+        $("#modalConfirmButton").click(function () {
+            if (bookingId) {
+
+                clearTimeout(reservationTimer);
+
+
+                $.ajax({
+                    url: "${pageContext.request.contextPath}/confirmBooking/" + bookingId  +"/" +${userId},
+                    type: 'POST',
+                    success: function () {
+
                         $.ajax({
-                            url: "${pageContext.request.contextPath}/user/bookTicket/${source}/${destination}/${userId}", // Replace with your server-side script URL
-                            type: "POST",
-                            traditional: true,
-                            data: {
-
-
-                                email : email,
-                                phone : phone,
-                                wpCheck : wpCheck,
-                                scheduleId : scheduleId,
-                                amount: amount,
-                                name: name,
-                                age : age,
-                                gender: gender,
-                                seat: seat,
-                                depatureTime:depatureTime
-
-
-                            },
-
+                            url: '${pageContext.request.contextPath}/getBalance/${userId}',
+                            type: 'POST',
                             success: function (data) {
+                                var amount = $("#totalAmount").text();
 
+                                if (data > amount) {
 
-                                console.log("Form submitted successfully:", data);
-                                window.location.href="${pageContext.request.contextPath}/user/success/${source}/${destination}/"+data + "/"+${userId};
-                                $(".btn-close").click();
-                                $.ajax({
-                                    url: "${pageContext.request.contextPath}/sendEmail/"+email+"/"+data + "/"+ ${userId},
-                                    type: "GET",
-                                    success:function (){
-                                        console.log("Email send successfully");
-                                    },
-                                    error:function (error){
-                                        console.error("Error sending mail:", error);
-                                    }
-                                })
+                                    $.ajax({
+                                        url: "${pageContext.request.contextPath}/sendEmail/" + $("#email").val() + "/" + bookingId + "/" + ${userId},
+                                        type: "GET",
+                                        success: function () {
+                                            console.log("Email sent successfully");
+                                        },
+                                        error: function (error) {
+                                            console.error("Error sending mail:", error);
+                                        }
+                                    });
+
+                                    window.location.href = "${pageContext.request.contextPath}/user/success/${source}/${destination}/" + bookingId + "/" + ${userId};
+                                } else {
+                                    var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`;
+                                    alert += `<strong>Error! </strong>`;
+                                    alert += `Your Wallet has insufficient balance!`;
+                                    alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                                    alert += `</div>`;
+                                    $('#alertContainer').append(alert);
+                                }
                             },
                             error: function (error) {
-                                console.error("Error submitting form:", error);
-
+                                console.error("Error getting balance:", error);
                             }
-                        })
-
+                        });
+                    },
+                    error: function (error) {
+                        console.error("Error confirming booking:", error);
                     }
+                });
+            }
+        });
+    });
 
 
-                    else{
-                        var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`;
-                        alert += `<strong>Error! </strong>`;
-                        alert += `Your Wallet has insufficient balance!`;
-                        alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-                        alert += `</div>`;
-                        $('#alertContainer').append(alert);
-                    }
-                }
-            })
-
-
-        })
-    })
 </script>
 
 
@@ -989,6 +1049,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
         crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="<c:url value="/resources/js/searchForm.js" />"></script>
 <script src="<c:url value="/resources/js/bookingDetails.js" />"></script>

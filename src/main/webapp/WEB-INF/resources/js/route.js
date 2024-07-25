@@ -21,7 +21,7 @@ $("#myForm").validate({
     rules: {
 
         source: {
-            required: true,a
+            required: true,
 
         },
 

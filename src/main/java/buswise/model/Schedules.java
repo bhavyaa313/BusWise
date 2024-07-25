@@ -11,7 +11,7 @@ public class Schedules {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "schedule_id")
-    private int scheduleId;
+    private Integer scheduleId;
     @ManyToOne
     @JoinColumn(name = "bus_id")
     private Buses busId;
@@ -39,12 +39,11 @@ public class Schedules {
     @Column(name = "available_seats")
     private int availableSeats;
 
-
-    public int getScheduleId() {
+    public Integer getScheduleId() {
         return scheduleId;
     }
 
-    public void setScheduleId(int scheduleId) {
+    public void setScheduleId(Integer scheduleId) {
         this.scheduleId = scheduleId;
     }
 
@@ -136,7 +135,7 @@ public class Schedules {
         this.availableSeats = availableSeats;
     }
 
-    public Schedules(int scheduleId, Buses busId, Routes routeId, LocalTime depatureTime, LocalTime arrivalTime, User createdBy, User modifiedBy, LocalDateTime createdDate, LocalDateTime modifiedDate, boolean isDeleted, LocalDate tripDate, int availableSeats) {
+    public Schedules(Integer scheduleId, Buses busId, Routes routeId, LocalTime depatureTime, LocalTime arrivalTime, User createdBy, User modifiedBy, LocalDateTime createdDate, LocalDateTime modifiedDate, boolean isDeleted, LocalDate tripDate, int availableSeats) {
         this.scheduleId = scheduleId;
         this.busId = busId;
         this.routeId = routeId;

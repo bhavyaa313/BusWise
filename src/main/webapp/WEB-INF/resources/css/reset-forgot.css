@@ -26,19 +26,19 @@ body {
 
 
 
-body {
-    background-color: #ffffff;
-    background-image: url("<c:url value="/resources/image/bg.jpeg"/>");
-    /* Replace with your image path */
-    background-size: cover;
-    /* Ensures the image covers the whole background */
-    background-position: center;
-    /* Centers the background image */
-    background-repeat: no-repeat;
-    /* Prevents the image from repeating */
+/*body {*/
+/*    background-color: #ffffff;*/
+/*    background-image: url("<c:url value="/resources/image/bg.jpeg"/>");*/
+/*    !* Replace with your image path *!*/
+/*    background-size: cover;*/
+/*    !* Ensures the image covers the whole background *!*/
+/*    background-position: center;*/
+/*    !* Centers the background image *!*/
+/*    background-repeat: no-repeat;*/
+/*    !* Prevents the image from repeating *!*/
 
-    height: 100vh !important;
-}
+/*    height: 100vh !important;*/
+/*}*/
 
 .card {
     border-radius: 10px;

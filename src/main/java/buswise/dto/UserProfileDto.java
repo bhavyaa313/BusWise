@@ -2,6 +2,7 @@ package buswise.dto;
 
 import javax.validation.constraints.*;
 
+
 public class UserProfileDto {
     @NotNull(message = "Please enter UserProfile Id")
     private int userProfileId;
@@ -18,9 +19,9 @@ public class UserProfileDto {
     @Pattern(regexp = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$", message = "Please enter a valid email address")
     private String email;
     private Integer age;
-
+    @Pattern(regexp = "^[A-Za-z]+$")
     private String city;
-
+    @Pattern(regexp = "^[A-Za-z]+$")
     private String state;
     private int userId;
 

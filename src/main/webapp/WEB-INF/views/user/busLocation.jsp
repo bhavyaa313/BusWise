@@ -44,7 +44,7 @@
     let busMarkers = [];
     let intervals = [];
     let routes = [];
-    const speed = 36 * 1000 / 3600;
+    const speed = 50 * 1000 / 3600;
 
     function fetchBusLocations() {
 
@@ -63,7 +63,7 @@
     <div id="nodata" class=" d-flex align-items-center justify-content-center flex-column">
         <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
 
-        <div> <h3 class="text-white">No schedules today!</h3></div>
+        <div> <h3 class="text-white">No schedules now!</h3></div>
     </div>
 </div>`
                     $('#container-nodata').append(nodata);
@@ -166,18 +166,7 @@
                 scaledSize: new google.maps.Size(50, 50)
             }
         });
-        // Add listener for hover event to display bus number
-        busMarkers[index].addListener('mouseover', function() {
-            const infoWindow = new google.maps.InfoWindow({
-                content: `<strong>Bus Number:</strong> `+busData.busNumber+``
-            });
-            infoWindow.open(map, busMarkers[index]);
-        });
 
-        // Close info window on mouseout
-        busMarkers[index].addListener('mouseout', function() {
-            infoWindow.close();
-        });
 
         moveBus(stepTime, index, startTime);
     }
@@ -217,7 +206,7 @@
     <div id="nodata" class=" d-flex align-items-center justify-content-center flex-column">
         <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
 
-        <div> <h3 class="text-white">No schedules today!</h3></div>
+        <div> <h3 class="text-white">No schedules now!</h3></div>
     </div>
 </div>`
                 $('#container-nodata').append(nodata);

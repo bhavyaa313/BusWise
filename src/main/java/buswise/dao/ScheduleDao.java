@@ -1,24 +1,35 @@
 package buswise.dao;
 
+import buswise.model.Bookings;
 import buswise.model.Routes;
 import buswise.model.Schedules;
+import buswise.model.User;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class ScheduleDao {
@@ -27,6 +38,14 @@ public class ScheduleDao {
 
     @Autowired
     private HibernateTemplate template;
+
+
+    @PersistenceContext
+
+    private EntityManager entityManager;
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @Transactional
     public void scheduleSave(Schedules schedules) {
@@ -38,24 +57,45 @@ public class ScheduleDao {
         template.update(schedules);
     }
 
-    public boolean checkBus(int busId, LocalDate date, LocalTime time)
-    {
-        Session session = sessionFactory.openSession();
-        String hqlString = " select b.scheduleId from buswise.model.Schedules b where b.busId.busId=:busId and isDeleted=false and b.tripDate=:date and b.arrivalTime=:time";
-        Query query = session.createQuery(hqlString);
-        query.setParameter("busId", busId);
-        query.setParameter("date", date);
-        query.setParameter("time", time);
-        List<Integer> list = query.list();
-        if(list.size()>0){
-            boolean check = false;
-            return check;
-        }
-        else {
-            boolean check = true;
-            return check;
-        }
+//    public boolean checkBus(int busId, LocalDate date, LocalTime time)
+//    {
+//        Session session = sessionFactory.openSession();
+//        String hqlString = " select b.scheduleId from buswise.model.Schedules b where b.busId.busId=:busId and isDeleted=false and b.tripDate=:date and b.arrivalTime=:time";
+//        Query query = session.createQuery(hqlString);
+//        query.setParameter("busId", busId);
+//        query.setParameter("date", date);
+//        query.setParameter("time", time);
+//        List<Integer> list = query.list();
+//        if(list.size()>0){
+//            boolean check = false;
+//            return check;
+//        }
+//        else {
+//            boolean check = true;
+//            return check;
+//        }
+//
+//    }
 
+    public boolean checkBus(int busId, LocalDate date, LocalTime time) {
+        try (Session session = sessionFactory.openSession()) {
+            // Define the time window for 6 hours before and after the given time
+            LocalTime sixHoursBefore = time.minus(6, ChronoUnit.HOURS);
+            LocalTime sixHoursAfter = time.plus(6, ChronoUnit.HOURS);
+
+            String hqlString = "SELECT b.scheduleId FROM buswise.model.Schedules b " +
+                    "WHERE b.busId.busId = :busId AND b.isDeleted = false AND b.tripDate = :date " +
+                    "AND (b.arrivalTime BETWEEN :sixHoursBefore AND :sixHoursAfter)";
+
+            Query<Integer> query = session.createQuery(hqlString, Integer.class);
+            query.setParameter("busId", busId);
+            query.setParameter("date", date);
+            query.setParameter("sixHoursBefore", sixHoursBefore);
+            query.setParameter("sixHoursAfter", sixHoursAfter);
+
+            List<Integer> list = query.list();
+            return list.isEmpty(); // return true if no conflicting schedules are found
+        }
     }
 
 
@@ -146,14 +186,13 @@ public class ScheduleDao {
 
 
     }
-
     public List<Schedules> getSchedules(String source, String destination, String tripDateString) {
         Session session = sessionFactory.openSession();
         String hqlString = "from buswise.model.Schedules b " +
                 "where b.isDeleted=false " +
-                "and b.routeId.source=:source " +
-                "and b.routeId.destination=:destination " +
-                "and DATE_FORMAT(b.tripDate, '%Y-%m-%d')=:tripDateString or (b.tripDate = CURRENT_DATE and b.arrivalTime > CURRENT_TIME)";
+                "and upper(b.routeId.source) =:source " +
+                "and upper(b.routeId.destination) =:destination " +
+                "and DATE_FORMAT(b.tripDate, '%Y-%m-%d')=:tripDateString ";
         Query query = session.createQuery(hqlString);
         query.setParameter("source", source);
         query.setParameter("destination", destination);
@@ -164,34 +203,42 @@ public class ScheduleDao {
     }
 
 
-    public List<Schedules> getSchedules1(String source, String destination, String tripDateString, int startIndex, int endIndex) {
-        Session session = null;
-        try {
-            session = sessionFactory.openSession();
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<Schedules> criteriaQuery = builder.createQuery(Schedules.class);
-            Root<Schedules> root = criteriaQuery.from(Schedules.class);
-            criteriaQuery.where(
-                    builder.and(
-                            builder.equal(root.get("isDeleted"), false),
-                            builder.equal(root.get("routeId").get("source"), source),
-                            builder.equal(root.get("routeId").get("destination"), destination),
-                            builder.equal(builder.function("DATE_FORMAT", String.class, root.get("tripDate"), builder.literal("%Y-%m-%d")), tripDateString)
-                    )
-            );
 
-            Query<Schedules> query = session.createQuery(criteriaQuery);
-            query.setFirstResult(startIndex);
-            query.setMaxResults(endIndex); // Max results is exclusive, so adjust accordingly
-            List<Schedules> results = query.getResultList();
-            return results;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
-    }
 
+
+
+
+
+
+//    public List<Schedules> getSchedules1(String source, String destination, String tripDateString, int startIndex, int endIndex) {
+//        Session session = null;
+//        try {
+//            session = sessionFactory.openSession();
+//            CriteriaBuilder builder = session.getCriteriaBuilder();
+//            CriteriaQuery<Schedules> criteriaQuery = builder.createQuery(Schedules.class);
+//            Root<Schedules> root = criteriaQuery.from(Schedules.class);
+//            criteriaQuery.where(
+//                    builder.and(
+//                            builder.equal(root.get("isDeleted"), false),
+//                            builder.equal(root.get("routeId").get("source"), source),
+//                            builder.equal(root.get("routeId").get("destination"), destination),
+//                            builder.equal(builder.function("DATE_FORMAT", String.class, root.get("tripDate"), builder.literal("%Y-%m-%d")), tripDateString)
+//                    )
+//            );
+//
+//            Query<Schedules> query = session.createQuery(criteriaQuery);
+//            query.setFirstResult(startIndex);
+//            query.setMaxResults(endIndex); // Max results is exclusive, so adjust accordingly
+//            List<Schedules> results = query.getResultList();
+//            return results;
+//        } finally {
+//            if (session != null) {
+//                session.close();
+//            }
+//        }
+//    }
+
+    // subroute to subroute
     public List<Schedules> getSchedulesBySubroute(String source, String destination, String tripDateString) {
         Session session = null;
         List<Schedules> results = new ArrayList<>();
@@ -205,10 +252,10 @@ public class ScheduleDao {
                     "AND r.isDeleted = false " +
                     "AND src.isDeleted = false " +
                     "AND dest.isDeleted = false " +
-                    "AND src.stop = :source " +
-                    "AND dest.stop = :destination " +
+                    "AND upper(src.stop) = :source " +
+                    "AND upper(dest.stop) = :destination " +
                     "AND s.tripDate = :tripDateString " +
-                    "AND src.sequence < dest.sequence or (s.tripDate = CURRENT_DATE and s.arrivalTime > CURRENT_TIME)";
+                    "AND src.sequence < dest.sequence";
 
             Query<Schedules> query = session.createQuery(hql, Schedules.class);
             query.setParameter("source", source);
@@ -226,6 +273,7 @@ public class ScheduleDao {
     }
 
 
+    //subroute to destination
     public List<Schedules> getSchedulesBySubrouteRoute(String source, String destination, String tripDateString) {
         Session session = null;
         List<Schedules> results = new ArrayList<>();
@@ -237,9 +285,9 @@ public class ScheduleDao {
                     "WHERE s.isDeleted = false " +
                     "AND r.isDeleted = false " +
                     "AND src.isDeleted = false " +
-                    "AND src.stop = :source " +
-                    "AND r.destination = :destination " +
-                    "AND s.tripDate = :tripDateString or (s.tripDate = CURRENT_DATE and s.arrivalTime > CURRENT_TIME)";
+                    "AND upper(src.stop) = :source " +
+                    "AND upper(r.destination) = :destination " +
+                    "AND s.tripDate = :tripDateString ";
 
             Query<Schedules> query = session.createQuery(hql, Schedules.class);
             query.setParameter("source", source);
@@ -267,9 +315,9 @@ public class ScheduleDao {
                     "WHERE s.isDeleted = false " +
                     "AND r.isDeleted = false " +
                     "AND dest.isDeleted = false " +
-                    "AND r.source = :source " +
-                    "AND dest.stop = :destination " +
-                    "AND s.tripDate = :tripDateString or (s.tripDate = CURRENT_DATE and s.arrivalTime > CURRENT_TIME)" ;
+                    "AND upper(r.source) = :source " +
+                    "AND upper(dest.stop) = :destination " +
+                    "AND s.tripDate = :tripDateString" ;
 
             Query<Schedules> query = session.createQuery(hql, Schedules.class);
             query.setParameter("source", source);
@@ -312,40 +360,86 @@ public class ScheduleDao {
     }
 
 
-    public List<String> seatsBooked(int scheduleId)
-    {
+
+
+
+
+
+
+
+
+//    public List<Schedules> getScheduleAll()
+////    {
+////        Session session = sessionFactory.openSession();
+////        String hqlString = "from buswise.model.Schedules b where b.isDeleted=false AND b.tripDate= CURRENT_DATE AND b.arrivalTime<=CURRENT_TIME";
+////        Query query = session.createQuery(hqlString);
+////        List<Schedules> list = query.list();
+////        return list;
+////
+////    }
+
+    public List<Schedules> getScheduleAll() {
         Session session = sessionFactory.openSession();
-        String hql =  "SELECT bd.seatNumber " +
-                "FROM BookingDetails bd " +
-                "JOIN bd.booking_id b " +
-                "JOIN b.scheduleId s " +
-                "WHERE s.scheduleId = :scheduleId AND b.isCancelled = false AND bd.isCancelled = false ";
 
-        Query query = session.createQuery(hql);
-        query.setParameter("scheduleId", scheduleId);
-        List<String> list = query.list();
-        return list;
 
+        double speedMetersPerSec = 50.0;
+
+        // Get the list of all schedules
+        String hqlString = "from buswise.model.Schedules b " +
+                "where b.isDeleted = false " +
+                "and b.tripDate = CURRENT_DATE " +
+                "and b.arrivalTime <= CURRENT_TIME";
+
+        Query<Schedules> query = session.createQuery(hqlString, Schedules.class);
+        List<Schedules> schedules = query.list();
+
+
+        List<Schedules> filteredSchedules = schedules.stream()
+                .filter(schedule -> {
+                    Integer distance = schedule.getRouteId().getDistance();
+                    Integer distanceInMeters = distance*1000;
+                    double durationInSeconds = distanceInMeters / speedMetersPerSec;
+
+                    // Calculate the time difference in seconds between arrivalTime and CURRENT_TIME
+                    LocalTime arrivalTime = schedule.getArrivalTime();
+                    LocalTime currentTime = LocalTime.now();
+                    long timeDifferenceInSeconds = Duration.between(arrivalTime, currentTime).getSeconds();
+
+                    return timeDifferenceInSeconds < durationInSeconds;
+                })
+                .collect(Collectors.toList());
+
+        session.close();
+
+        return filteredSchedules;
     }
 
-    public List<Schedules> getScheduleAll()
-    {
-        Session session = sessionFactory.openSession();
-        String hqlString = "from buswise.model.Schedules b where b.isDeleted=false ";
-        Query query = session.createQuery(hqlString);
-        List<Schedules> list = query.list();
-        return list;
-
-    }
 
     public List<Schedules> getScheduleByUserID(int userID) {
+        double speedMetersPerSec = 50.0;
+
         Session session = sessionFactory.openSession();
-        String hqlString = "select b.scheduleId from buswise.model.Bookings b where b.isCancelled=false and b.userId.id=:userID";
+        String hqlString = "select distinct b.scheduleId from buswise.model.Bookings b where b.isCancelled=false and b.userId.id=:userID AND b.scheduleId.tripDate= CURRENT_DATE AND b.scheduleId.arrivalTime<=CURRENT_TIME";
         Query<Schedules> query = session.createQuery(hqlString, Schedules.class);
         query.setParameter("userID", userID);
-        List<Schedules> list = query.list();
+        List<Schedules> schedules = query.list();
+        List<Schedules> filteredSchedules = schedules.stream()
+                .filter(schedule -> {
+                    Integer distance = schedule.getRouteId().getDistance();
+                    Integer distanceInMeters = distance*1000;
+                    double durationInSeconds = distanceInMeters / speedMetersPerSec;
+
+                    LocalTime arrivalTime = schedule.getArrivalTime();
+                    LocalTime currentTime = LocalTime.now();
+                    long timeDifferenceInSeconds = Duration.between(arrivalTime, currentTime).getSeconds();
+
+                    return timeDifferenceInSeconds < durationInSeconds;
+                })
+                .collect(Collectors.toList());
+
         session.close();
-        return list;
+
+        return filteredSchedules;
     }
 
     public List<Schedules> findByRouteId(int routeId){
@@ -368,7 +462,177 @@ public class ScheduleDao {
         return list;
     }
 
+    public List<User> getUsersByScheduleId(int scheduleId) {
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> cq = cb.createQuery(User.class);
+        Root<Bookings> root = cq.from(Bookings.class);
+        cq.select(root.get("userId"))
+                .where(cb.equal(root.get("scheduleId").get("scheduleId"), scheduleId));
+
+        return entityManager.createQuery(cq).getResultList();
+    }
+
+
+
+
+
+
+
+    public Map<String, String> getSourceAndDestinationByRouteId(int routeId) {
+        Session session = sessionFactory.openSession();
+        String hql = "SELECT r.source, r.destination " +
+                "FROM Routes r " +
+                "WHERE r.routeId = :routeId";
+
+        Query<Object[]> query = session.createQuery(hql, Object[].class);
+        query.setParameter("routeId", routeId);
+        Object[] result = query.uniqueResult();
+        session.close();
+
+        if (result != null) {
+            String source = (String) result[0];
+            String destination = (String) result[1];
+            Map<String, String> sourceAndDestination = new HashMap<>();
+            sourceAndDestination.put("source", source);
+            sourceAndDestination.put("destination", destination);
+            return sourceAndDestination;
+        } else {
+            return Collections.emptyMap();
+        }
+    }
+
+    public List<String> getSubRoutesByRouteId(int routeId) {
+        Session session = sessionFactory.openSession();
+        String hql = "SELECT sr.stop " +
+                "FROM SubRoute sr " +
+                "WHERE sr.routeId.routeId = :routeId " +
+                "ORDER BY sr.sequence";
+
+        Query<String> query = session.createQuery(hql, String.class);
+        query.setParameter("routeId", routeId);
+        List<String> subRoutes = query.getResultList();
+        session.close();
+        return subRoutes;
+    }
+
+    public List<String> getRouteStops(int routeId) {
+        Map<String, String> sourceAndDestination = getSourceAndDestinationByRouteId(routeId);
+        String source = sourceAndDestination.get("source");
+        String destination = sourceAndDestination.get("destination");
+
+        List<String> subRoutes = getSubRoutesByRouteId(routeId);
+        List<String> stops = new ArrayList<>();
+        if (source != null) {
+            stops.add(source);
+        }
+        stops.addAll(subRoutes);
+        if (destination != null) {
+            stops.add(destination);
+        }
+        stops = stops.stream()
+                .map(String::toUpperCase)
+                .collect(Collectors.toList());
+        return stops;
+    }
+
+
+    public List<String> getBookedSeats(Integer scheduleId, String selectedSource, String selectedDestination) {
+
+        int routeId = getRouteIdByScheduleId(scheduleId);
+
+
+        List<String> routeStops = getRouteStops(routeId);
+
+
+        List<Object[]> bookedSeatsDetails = seatsBookedDetails(scheduleId);
+
+
+        List<String> bookedSeats = new ArrayList<>();
+
+
+        int sourceIndex = routeStops.indexOf(selectedSource);
+        int destinationIndex = routeStops.indexOf(selectedDestination);
+
+        for (Object[] detail : bookedSeatsDetails) {
+            String seatNumber = (String) detail[0];
+            String bookedSource = (String) detail[1];
+            String bookedDestination = (String) detail[2];
+
+            int bookedSourceIndex = routeStops.indexOf(bookedSource);
+            int bookedDestinationIndex = routeStops.indexOf(bookedDestination);
+
+
+            if (!(destinationIndex <= bookedSourceIndex || sourceIndex >= bookedDestinationIndex)) {
+                bookedSeats.add(seatNumber);
+            }
+        }
+
+        return bookedSeats;
+    }
+
+
+
+
+    private int getRouteIdByScheduleId(int scheduleId) {
+        Session session = sessionFactory.openSession();
+        int routeId = 0;
+        try {
+            String hqlString = "SELECT s.routeId.routeId FROM Schedules s WHERE s.scheduleId = :scheduleId";
+            Query<Integer> query = session.createQuery(hqlString, Integer.class);
+            query.setParameter("scheduleId", scheduleId);
+            routeId = query.uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return routeId;
+    }
+
+
+
+
+
+
+
+
+
+    public List<Object[]> seatsBookedDetails(Integer scheduleId)
+    {
+
+
+        Session session = sessionFactory.openSession();
+//        String hql = "SELECT bd.seatNumber, b.selectedSource, b.selectedDestination " +
+//            "FROM BookingDetails bd " +
+//            "JOIN bd.booking_id b " +
+//            "WHERE b.scheduleId = :scheduleId " +
+//            "AND b.isCancelled = false " +
+//            "AND bd.isCancelled = false "
+//        +"AND b.isBooked = true ";
+
+        String hql = "select b.seatNumber, b.booking_id.selectedSource, b.booking_id.selectedDestination  from BookingDetails b where b.booking_id.scheduleId.scheduleId = :scheduleId and b.booking_id.isBooked= true and b.isCancelled=false and b.booking_id.isCancelled= false";
+
+        Query<Object[]> query = session.createQuery(hql);
+        query.setParameter("scheduleId", scheduleId);
+        List<Object[]> list = query.getResultList();
+        return list;
+
+    }
+
+
+
+
+
+
+
 }
+
+
+
+
 
 
 

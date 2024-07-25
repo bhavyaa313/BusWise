@@ -116,28 +116,30 @@
 
 <script>
     $(document).ready(function() {
-        console.log("cxome")
         $('#ticket').click(function() {
-
             $.ajax({
                 url: '${pageContext.request.contextPath}/ticketDownlaod/${id}',
                 type: 'GET',
-
                 success: function(response) {
-                    console.log("succes")
-                    var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
-                    alert += `<strong>Success! </strong>`;
-                    alert+=`Ticket Downloaded Successfully!`;
-                    alert+=`<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-                    alert+=`</div>`;
+                    // The response is expected to be a URL
+                    var fileUrl = response;
+                    window.location.href= fileUrl;
 
-                    console.log(alert)
+                    var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`;
+                    alert += `<strong>Success! </strong>`;
+                    alert += `Ticket downloaded successfully!. `;
+                    alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                    alert += `</div>`;
                     $('#alertContainer').append(alert);
 
                 },
                 error: function() {
-                    console.log("error")
-
+                    var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`;
+                    alert += `<strong>Error! </strong>`;
+                    alert += `There was an issue downloading the ticket.`;
+                    alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                    alert += `</div>`;
+                    $('#alertContainer').append(alert);
                 }
             });
         });

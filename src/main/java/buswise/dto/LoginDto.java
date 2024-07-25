@@ -13,7 +13,7 @@ public class LoginDto {
     private String email;
     @NotBlank(message = "Please Enter Password")
     @Size(min = 8, max = 25, message = "Your password's length should be between 8 and 25")
-    private String password;
+    private String password1;
 
     public @NotBlank(message = "Please Enter Your Email") @Email(message = "Please enter a valid email address") @Pattern(regexp = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$", message = "Please enter a valid email address") String getEmail() {
         return email;
@@ -23,17 +23,18 @@ public class LoginDto {
         this.email = email;
     }
 
-    public @NotBlank(message = "Please Enter Password") @Size(min = 8, max = 25, message = "Your password's length should be between 8 and 25") String getPassword() {
-        return password;
+    public @NotBlank(message = "Please Enter Password") @Size(min = 8, max = 25, message = "Your password's length should be between 8 and 25") String getPassword1() {
+        return password1;
     }
 
-    public void setPassword(@NotBlank(message = "Please Enter Password") @Size(min = 8, max = 25, message = "Your password's length should be between 8 and 25") String password) {
-        this.password = password;
+    public void setPassword1(@NotBlank(message = "Please Enter Password") @Size(min = 8, max = 25, message = "Your password's length should be between 8 and 25") String password1) {
+        this.password1 = password1;
     }
 
-    public LoginDto(String email, String password) {
+
+    public LoginDto(String email, String password1) {
         this.email = email;
-        this.password = password;
+        this.password1 = password1;
     }
 
     public LoginDto() {

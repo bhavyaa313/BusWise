@@ -38,7 +38,7 @@ public class YearlyOccupancyReportPdf {
         try {
             PdfWriter writer = new PdfWriter(filePath);
             PdfDocument pdfDoc = new PdfDocument(writer);
-            pdfDoc.setDefaultPageSize(PageSize.A4);
+            pdfDoc.setDefaultPageSize(PageSize.A1);
             Document document = new Document(pdfDoc);
             PdfFont boldFont = PdfFontFactory.createFont();
 
@@ -58,7 +58,7 @@ public class YearlyOccupancyReportPdf {
                     .setMarginBottom(20);
             document.add(dateParagraph);
 
-            Table table = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1, 1, 1, 1, 1}));
+            Table table = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1, 1, 1, 1, 1,1}));
             table.setWidth(UnitValue.createPercentValue(100));
 
             table.addHeaderCell(new Cell().add(new Paragraph("Schedule ID").setFont(boldFont)));
@@ -102,7 +102,10 @@ public class YearlyOccupancyReportPdf {
             e.printStackTrace();
         }
 
-        return filePath;
+        String pathTemp = String.format("/%s/%s/", "resources", "reports");
+        String path = request.getContextPath() + pathTemp + "YearlyOccupancyReport_" + yearString + ".pdf";
+        return path;
+
     }
 
 }

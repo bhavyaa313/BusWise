@@ -47,6 +47,14 @@
             height: 7vh;
             width: 27vh;
         }
+
+        @media (max-width: 576px) {
+            .capsule {
+                min-height: 82vh;
+                padding: 10px;
+            }
+
+        }
     </style>
 </head>
 
@@ -90,7 +98,7 @@
                             </div>
                             <div class="col-md-3 ">
 
-                                <input type="date" class="form-control form-control-lg" placeholder="date" name="date"
+                                <input type="date" class="form-control form-control-lg" placeholder="date" name="date" id="date"
                                        style="height: 80px; width: 100%;">
                             </div>
                         </div>
@@ -366,22 +374,6 @@
         });
     });
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

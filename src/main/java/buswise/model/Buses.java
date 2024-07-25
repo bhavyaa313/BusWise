@@ -6,7 +6,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "buses")
+@Table(name = "buses",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"bus_number"})
+)
 public class Buses {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

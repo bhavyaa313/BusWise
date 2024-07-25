@@ -19,13 +19,13 @@
     <title>My Profile</title>
 
 
-    <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-            crossorigin="anonymous"></script>
+<%--    <script--%>
+<%--            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"--%>
+<%--            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"--%>
+<%--            crossorigin="anonymous"></script>--%>
 
-    <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<%--    <script--%>
+<%--            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>--%>
 
     <script
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -73,7 +73,7 @@
     <jsp:include page="navbar.jsp"/>
 </div>
 
-
+<input type="text"  id="userId"  value="${userId}" hidden>
 <div class="container mt-5 bg-light">
     <form id="myProfileForm" method="post">
         <h2 class="mb-4 mt-5 p-4 mx-5">My Profile</h2>
@@ -173,99 +173,12 @@
         </p>
     </div>
 </div>
-<script>
-    function show5() {
 
-        console.log("clicked")
-        $('.hide1').removeClass("hide1");
-        $('.random1').addClass("hide1");
-        $('.enable1').removeAttr("disabled");
-        $('.come1').removeAttr("hidden");
-        $('.xx1').attr("hidden", "hidden");
-
-    }
-
-    function show6() {
-        $('.hide1').removeClass("hide1");
-        $('.see1').addClass("hide1");
-        $('.enable1').attr("disabled", "disabled");
-        $('.come1').attr("hidden", "hidden");
-        $('.xx1').removeAttr("hidden");
-
-    }
-</script>
-
-<script>
-
-
-
-
-
-        $(document).ready(function() {
-            debugger
-            $("#myProfileForm").submit(function(event) {
-                /*  $('#routeSelect2').attr('disabled', false);
-                    $('#date2').attr('disabled', false);
-                    $('#fare2').attr('disabled', false);
-                    $('#duration2').attr('disabled', false);*/
-                $(':disabled').each(function (e) {
-                    $(this).removeAttr('disabled');
-                });
-                debugger;
-                event.preventDefault(); // Prevent default form submission
-                if ($("#myProfileForm").valid()) {
-                    // Get form data using Spring form tag IDs
-                    var firstName = $("#fname").val();
-                    var lastName = $("#lname").val();
-                    var email = $("#email").val();
-                    var phone = $("#phone").val();
-                    var age = $("#age").val();
-                    var city = $("#city").val();
-                    var state = $("#state").val();
-
-                    $.ajax({
-                        url: "editProfile/" + ${userId},
-                        type: "POST",
-                        data: {
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            phone: phone,
-                            age: age,
-                            city: city,
-                            state: state
-                        },
-                        success: function(response) {
-                            console.log("Form submitted successfully:", response);
-
-                            $('#phone').prop('disabled', true);
-                            $('#email').prop('disabled', true);
-                            $('#city').prop('disabled', true);
-                            $('#state').prop('disabled', true);
-                            $('#fname').prop('disabled', true);
-                            $('#lname').prop('disabled', true);
-                            $('#age').prop('disabled', true);
-
-
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            console.error("Error submitting form:", textStatus, errorThrown);
-                        }
-                    });
-                }
-            });
-        });
-
-
-
-
-
-
-</script>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="<c:url value="/resources/js/myProfile.js"/>"></script>
+<script src="<c:url value="/resources/js/myProfileAdmin.js"/>"></script>
 </body>
 
 </html>

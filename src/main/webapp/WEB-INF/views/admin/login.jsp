@@ -18,40 +18,16 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <title>Login</title>
-
+    <link rel="stylesheet" href="<c:url value="/resources/css/reset-forgot.css" />">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="<c:url value="/resources/js/validate.js" />"></script>
+
     <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 
-<%--    --%>
-    <script src="script.js"></script>
+
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f1f1f1;
-        }
-
-        .error-message
-        {
-            color: red;
-        }
-
-
-
-        .custom-input {
-            border: none;
-            border-bottom: 1px solid #ccc;
-            border-radius: 0;
-            box-shadow: none;
-        }
-
-        .custom-input:focus {
-            border-bottom: 1px solid #000;
-            box-shadow: none;
-            outline: none;
-        }
 
 
 
@@ -70,17 +46,7 @@
             height: 100vh !important;
         }
 
-        .card {
-            border-radius: 10px;
-        }
 
-        .form-floating label {
-            padding: 0 0.75rem;
-            background-color: white;
-            color: #007bff;
-            /* Match the color of the welcome text */
-            font-weight: bold;
-        }
     </style>
 </head>
 
@@ -103,7 +69,7 @@
             <div class="form-group mb-4">
                 <label for="password" class="form-label">Password<span
                         class="text-danger">*</span></label>
-                <input type="password" class="form-control custom-input" id="password" name="password" />
+                <input type="password" class="form-control custom-input" id="password" name="password1" />
 <%--                <form:errors path="password" cssClass="error-message" />--%>
             </div>
 
@@ -144,6 +110,8 @@
     });
 
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="<c:url value="/resources/js/validate.js" />"></script>
 </body>
 
 </html>

@@ -47,10 +47,19 @@
             height: 7vh;
             width: 27vh;
         }
+
+        @media (max-width: 576px) {
+            .capsule {
+                min-height: 82vh;
+                padding: 10px;
+            }
+
+        }
+
     </style>
 </head>
 
-<body>
+<body >
 
 
 <jsp:include page="navbar.jsp" />
@@ -92,14 +101,14 @@
                     </div>
                     <div class="col-md-3 ">
 
-                        <input type="date" class="form-control form-control-lg" placeholder="date" name="date"
+                        <input type="date" class="form-control form-control-lg" placeholder="date" name="date" id="date"
                                style="height: 80px; width: 100%;">
                     </div>
                 </div>
 
                 <div class="row">
                     <div>
-<%--                        <button type="button" class="btn btn-danger btn-lg btn-big "><span><i class="bi bi-search"></i><h3> Search</h3></span></button>--%>
+
 
                 <button type="submit" class="btn btn-danger btn-lg btn-big ">
                 <i class="bi bi-search me-2"></i>
@@ -120,12 +129,8 @@
                     </div>
                 </div>
             </div>
-
-
-
         </div>
     </div>
-
 
 
 
@@ -235,8 +240,7 @@
                      data-bs-parent="#accordionFlushExample">
                     <div class="accordion-body font-accordian-body">
                         <div>
-                            Book tickets easily - no login required! However, logging in unlocks additional
-                            benefits.
+                           Yes, You can see details of available busues without login, but you need to login for booking.
                         </div>
                     </div>
                 </div>
@@ -246,7 +250,7 @@
                     <button class="accordion-button collapsed font-accordian" type="button"
                             data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false"
                             aria-controls="flush-collapseTwo">
-                        How can I book bus tickets on redBus?
+                        How can I book bus tickets on BusWise?
                     </button>
                 </h2>
                 <div id="flush-collapseTwo" class="accordion-collapse collapse"
@@ -255,9 +259,7 @@
                         tickets,
                         go to the main page and enter your source city and destination city in the “From” and “To”
                         fields, respectively. Enter the travel date and hit the search button. Now, you will see the
-                        bus list available on the given bus route. You can use the filter option, such as duration,
-                        fare, bus type, etc., to rearrange the list accordingly. This makes it easier for customers
-                        to book their bus tickets online with BusWise.
+                        bus list available.
                     </div>
                 </div>
             </div>
@@ -288,89 +290,86 @@
     </div>
 </div>
 <jsp:include page="loader.jsp" />
-<%--<script>--%>
-<%--    $(document).ready(function() {--%>
-<%--        debugger--%>
-<%--        console.log("ajax to get source")--%>
-<%--        const sourceSelect = $('.sourceSelect');--%>
-<%--        const destinationSelect = $('.destinationSelect');--%>
+<script>
+    $(document).ready(function() {
+        debugger
+        console.log("ajax to get source")
+        const sourceSelect = $('.sourceSelect');
+        const destinationSelect = $('.destinationSelect');
 
 
-<%--        debugger--%>
-
-
-
-
-<%--        $.ajax({--%>
-<%--            url: "getSources/"+${userId},--%>
-<%--            type: 'GET',--%>
-
-<%--            success: function(data) {--%>
-<%--                console.log(data)--%>
-<%--                if (data.length > 0) {--%>
-<%--                    sourceSelect.empty();--%>
-<%--                    const defaultOption = $('<option>');--%>
-<%--                    defaultOption.val("");--%>
-<%--                    defaultOption.text("Select Source");--%>
-<%--                    sourceSelect.append(defaultOption);--%>
-<%--                    data.forEach(function(source) {--%>
-<%--                        const option = $('<option>');--%>
-<%--                        option.val(source);--%>
-
-<%--                        option.text(source);--%>
-
-<%--                        sourceSelect.append(option);--%>
-
-<%--                    });--%>
-<%--                } else {--%>
-
-<%--                    console.log("No data found for routes");--%>
-<%--                }--%>
-<%--                sourceSelect.prop('selectedIndex', 0);--%>
-<%--            },--%>
-<%--            error: function(jqXHR, textStatus, errorThrown) {--%>
-<%--                console.error("Error fetching routes:", textStatus, errorThrown);--%>
-
-<%--            }--%>
-<%--        });--%>
-
-<%--        $.ajax({--%>
-<%--            url: "getDestination/"+${userId},--%>
-<%--            type: 'GET',--%>
-
-<%--            success: function(data) {--%>
-<%--                console.log(data)--%>
-<%--                if (data.length > 0) {--%>
-<%--                    destinationSelect.empty();--%>
-<%--                    const defaultOption = $('<option>');--%>
-<%--                    defaultOption.val("");--%>
-<%--                    defaultOption.text("Select destination");--%>
-<%--                    destinationSelect.append(defaultOption);--%>
-<%--                    data.forEach(function(des) {--%>
-<%--                        const option = $('<option>');--%>
-<%--                        option.val(des);--%>
-
-<%--                        option.text(des);--%>
-
-<%--                        destinationSelect.append(option);--%>
-
-<%--                    });--%>
-<%--                } else {--%>
-
-<%--                    console.log("No data found for routes");--%>
-<%--                }--%>
-<%--                destinationSelect.prop('selectedIndex', 0);--%>
-<%--            },--%>
-<%--            error: function(jqXHR, textStatus, errorThrown) {--%>
-<%--                console.error("Error fetching routes:", textStatus, errorThrown);--%>
-
-<%--            }--%>
-<%--        });--%>
-<%--        });--%>
-<%--</script>--%>
+        debugger
 
 
 
+
+        $.ajax({
+            url: "getSources/"+${userId},
+            type: 'GET',
+
+            success: function(data) {
+                console.log(data)
+                if (data.length > 0) {
+                    sourceSelect.empty();
+                    const defaultOption = $('<option>');
+                    defaultOption.val("");
+                    defaultOption.text("Select Source");
+                    sourceSelect.append(defaultOption);
+                    data.forEach(function(source) {
+                        const option = $('<option>');
+                        option.val(source);
+
+                        option.text(source);
+
+                        sourceSelect.append(option);
+
+                    });
+                } else {
+
+                    console.log("No data found for routes");
+                }
+                sourceSelect.prop('selectedIndex', 0);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("Error fetching routes:", textStatus, errorThrown);
+
+            }
+        });
+
+        $.ajax({
+            url: "getDestination/"+${userId},
+            type: 'GET',
+
+            success: function(data) {
+                console.log(data)
+                if (data.length > 0) {
+                    destinationSelect.empty();
+                    const defaultOption = $('<option>');
+                    defaultOption.val("");
+                    defaultOption.text("Select destination");
+                    destinationSelect.append(defaultOption);
+                    data.forEach(function(des) {
+                        const option = $('<option>');
+                        option.val(des);
+
+                        option.text(des);
+
+                        destinationSelect.append(option);
+
+                    });
+                } else {
+
+                    console.log("No data found for routes");
+                }
+                destinationSelect.prop('selectedIndex', 0);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("Error fetching routes:", textStatus, errorThrown);
+
+            }
+        });
+        });
+</script>
 
 
 
@@ -386,9 +385,15 @@
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+
+
+
+
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
+
 <script src="<c:url value="/resources/js/searchForm.js" />"></script>
 
 </body>

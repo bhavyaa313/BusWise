@@ -114,8 +114,11 @@ public class DailyOccupancyReportPdf {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        String pathTemp = String.format("/%s/%s/", "resources", "reports");
+        String path = request.getContextPath() + pathTemp + "DailyOccupancyReport_" + dateString + ".pdf";
+        return path;
 
-        return filePath;
+
     }
 
 }
