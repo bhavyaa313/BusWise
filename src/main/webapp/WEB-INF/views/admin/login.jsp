@@ -16,14 +16,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Login</title>
     <link rel="stylesheet" href="<c:url value="/resources/css/reset-forgot.css" />">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+        <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 
 
 
@@ -58,7 +58,7 @@
     <div class=" p-5 bg-white">
         <h2 class="mb-3">Good to see you again!</h2>
 
-        <form  action="${pageContext.request.contextPath}/success" method="post" id="loginForm" >
+        <form  action="${pageContext.request.contextPath}/success" method="post" id="loginForm" class="Form">
             <div class="form-group">
                 <label for="email" class="form-label">Email <span
                         class="text-danger">*</span></label>
@@ -75,7 +75,7 @@
 
             <h6 class="text-danger text-center">${message }</h6>
 
-            <button type="submit" class="btn btn-dark btn-block">Login</button>
+            <button type="submit" class="btn btn-dark btn-block" id ="loginbtn">Login</button>
             <a href="${pageContext.request.contextPath}/forgot" class="d-block text-center mt-2">Forgot password?</a>
         </form>
         <p class="mt-4">Don't have an account? <a href="${pageContext.request.contextPath}/register">Sign up here.</a></p>
@@ -98,14 +98,23 @@
         $('#loader').hide();
         $('#loginForm').submit(function(event) {
 
+            event.preventDefault()
+            if ($('.Form').valid()) {
+                var password = $('#password').val()
+                console.log(password)
+
+            $('#loginbtn').prop("disabled", true);
+
+
             $('#loader').show();
 
 
-            setTimeout(function() {
+            setTimeout(function () {
                 $('#loader').hide();
+                $('#loginForm')[0].submit();
             }, 4000);
 
-
+        }
         });
     });
 

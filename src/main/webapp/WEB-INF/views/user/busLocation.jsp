@@ -12,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Bus locations</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDCIb4xyEV8ok30VlxsidKGHw1NAlrfFM&libraries=places"></script>
     <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>

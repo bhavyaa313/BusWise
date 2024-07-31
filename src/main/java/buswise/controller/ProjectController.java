@@ -418,7 +418,7 @@ public class ProjectController {
                 response.put("message", "Booking cancelled, but the email could not be sent.");
             }
             finally {
-                projectService.cancelSeat(bookingId, userId, email);
+                projectService.cancelSeat(bookingDetailId, userId, email);
             }
         }
 

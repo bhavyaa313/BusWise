@@ -23,6 +23,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Occupancy Reports</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
@@ -306,8 +307,7 @@
             $('#dailyReport').removeClass("d-none")
             $('#reportDate').val(today);
 
-        var dp = $('#reportDate').get(0)
-        dp.setAttribute('max', today);
+
             $('#fetch').click();
 
 
@@ -448,8 +448,8 @@
         const reportMonthInput = document.getElementById('reportMonth');
         reportMonthInput.value = formattedDate;
 
-        var dp = $('#reportMonth').get(0)
-        dp.setAttribute('max', formattedDate);
+        // var dp = $('#reportMonth').get(0)
+        // dp.setAttribute('max', formattedDate);
         $('#fetch1').click();
 
 
@@ -489,7 +489,7 @@
                     occupancyChart.destroy();
                 }
 
-                const labels = data.map(item => `Schedule `+item.scheduleId+`: `+item.route+``);
+                const labels = data.map(item => `Route `+item.routeId+`: `+item.route+``);
                 const occupancyPercentages = data.map(item => item.occupancyPercentage);
 
                 const ctx = document.getElementById('occupancyChart').getContext('2d');

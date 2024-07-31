@@ -17,7 +17,7 @@ public class EmailService {
 
     public void send(String toMail, String subject, String message) {
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setFrom("bhavya.shah313@outlook.com");
+        email.setFrom("bhavya.shah3133@outlook.com");
         email.setTo(toMail);
         email.setSubject(subject);
         email.setText(message);
@@ -28,7 +28,7 @@ public class EmailService {
     public void sendWithAttachment(String toMail, String subject, String message, String attachmentPath) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-        helper.setFrom("bhavya.shah313@outlook.com");
+        helper.setFrom("bhavya.shah3133@outlook.com");
         helper.setTo(toMail);
         helper.setSubject(subject);
         helper.setText(message);

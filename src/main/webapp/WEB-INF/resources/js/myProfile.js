@@ -28,11 +28,11 @@ $("#myProfileForm").validate({
             maxlength: 10
         },
         city:{
-            regex: "/^[A-Za-z]+$/"
+            regex: /^[A-Za-z]+$/
         },
 
         state:{
-            regex: "/^[A-Za-z]+$/"
+            regex: /^[A-Za-z]+$/
         }
 
 

@@ -176,6 +176,7 @@ public class ProjectService {
                 schedule1Dto.setScheduleId(schedule.getScheduleId());
                 schedule1Dto.setSource(schedule.getRouteId().getSource());
                 schedule1Dto.setDestination(schedule.getRouteId().getDestination());
+                schedule1Dto.setCreatedDate(schedule.getCreatedDate().toLocalDate().toString());
 
                 String date = schedule.getTripDate().toString();
                 String time = schedule.getArrivalTime().toString();
@@ -308,33 +309,68 @@ public class ProjectService {
     }
 
 
+//    public void saveRoute(RoutesDto routesDto) {
+//        Routes routes = new Routes();
+//        routes.setSource(routesDto.getSource());
+//        routes.setDistance(routesDto.getDistance());
+//        routes.setDestination(routesDto.getDestination());
+//        routes.setNoOfSubroutes(routesDto.getSubroutesCount());
+//        routes.setCreatedDate(LocalDateTime.now());
+//        routesDao.routeSave(routes);
+//        List<String> name = routesDto.getName();
+//        List<Integer> distancesub = routesDto.getDistancesub();
+//        List<Integer> sequence = routesDto.getSequence();
+//
+//
+//        for (int i = 0; i < routesDto.getSubroutesCount(); i++) {
+//
+//            SubRoute subRoute = new SubRoute();
+//            subRoute.setRouteId(routes);
+//            subRoute.setDistance(distancesub.get(i));
+//            subRoute.setStop(name.get(i));
+//            subRoute.setSequence(sequence.get(i));
+//            routesDao.subrouteSave(subRoute);
+//
+//
+//        }
+//
+//
+//    }
+
+
     public void saveRoute(RoutesDto routesDto) {
         Routes routes = new Routes();
         routes.setSource(routesDto.getSource());
         routes.setDistance(routesDto.getDistance());
         routes.setDestination(routesDto.getDestination());
-        routes.setNoOfSubroutes(routesDto.getSubroutesCount());
+        routes.setNoOfSubroutes(routesDto.getSubroutesCount() != null ? routesDto.getSubroutesCount() : 0);
         routes.setCreatedDate(LocalDateTime.now());
         routesDao.routeSave(routes);
+
         List<String> name = routesDto.getName();
         List<Integer> distancesub = routesDto.getDistancesub();
         List<Integer> sequence = routesDto.getSequence();
 
 
-        for (int i = 0; i < routesDto.getSubroutesCount(); i++) {
+        if (routesDto.getSubroutesCount() != null && routesDto.getSubroutesCount() > 0 &&
+                name != null && !name.isEmpty() &&
+                distancesub != null && !distancesub.isEmpty() &&
+                sequence != null && !sequence.isEmpty()) {
 
-            SubRoute subRoute = new SubRoute();
-            subRoute.setRouteId(routes);
-            subRoute.setDistance(distancesub.get(i));
-            subRoute.setStop(name.get(i));
-            subRoute.setSequence(sequence.get(i));
-            routesDao.subrouteSave(subRoute);
+            for (int i = 0; i < routesDto.getSubroutesCount(); i++) {
+                SubRoute subRoute = new SubRoute();
+                subRoute.setRouteId(routes);
+                subRoute.setDistance(distancesub.get(i));
+                subRoute.setStop(name.get(i));
+                subRoute.setSequence(sequence.get(i));
+                routesDao.subrouteSave(subRoute);
+            }
+        } else {
 
-
+            System.out.println("No subroutes to save.");
         }
-
-
     }
+
 
 
 
@@ -895,38 +931,75 @@ public class ProjectService {
             bookingDao.bookingDetailsSave(bookingDetails);
 
         }
-
-        if (user.getRoleId().getRoleId()==2) {
-            Wallet wallets = walletDao.getWalletByUserId(user);
-            wallets.setBalance(wallets.getBalance() - bookTicketDto.getAmount());
-
-            Transaction transaction = new Transaction();
-            transaction.setDescription("Ticket Booking");
-            transaction.setDate(LocalDateTime.now());
-            transaction.setType("debit");
-            transaction.setAmount(bookTicketDto.getAmount());
-            transaction.setWallet(wallets);
-            walletDao.walletUpdate(wallets);
-            walletDao.transactionSave(transaction);
-        }
+//
+//        if (user.getRoleId().getRoleId()==2) {
+//            Wallet wallets = walletDao.getWalletByUserId(user);
+//            wallets.setBalance(wallets.getBalance() - bookTicketDto.getAmount());
+//
+//            Transaction transaction = new Transaction();
+//            transaction.setDescription("Ticket Booking");
+//            transaction.setDate(LocalDateTime.now());
+//            transaction.setType("debit");
+//            transaction.setAmount(bookTicketDto.getAmount());
+//            transaction.setWallet(wallets);
+//            walletDao.walletUpdate(wallets);
+//            walletDao.transactionSave(transaction);
+//        }
 
         return(bookingId);
 
     }
 
-    public void confirmBooking(int bookingId) {
+    public void confirmBooking(int bookingId, int userID) {
+        try {
 
-        List<Bookings> bookingsList = bookingDao.getBookingById(bookingId);
+            List<Bookings> bookingsList = bookingDao.getBookingById(bookingId);
+            if (bookingsList.isEmpty()) {
+                throw new ResourceNotFoundException("Booking not found");
+            }
 
-        if (bookingsList.isEmpty()) {
 
-            throw new ResourceNotFoundException("Booking not found");
+            Bookings booking = bookingsList.get(0);
+            booking.setBooked(true);
+            bookingDao.bookingUpdate(booking);
+            Double amount = booking.getTotalAmount();
+
+            List<User> userList = userDao.getUserbyUserId(userID);
+
+            if (userList.isEmpty()) {
+                throw new ResourceNotFoundException("User not found");
+            }
+
+            User user = userList.get(0);
+
+            if (user.getRoleId().getRoleId() == 2) {
+                Wallet wallets = walletDao.getWalletByUserId(user);
+
+                if (wallets == null) {
+                    throw new ResourceNotFoundException("Wallet not found for the user");
+                }
+
+                wallets.setBalance(wallets.getBalance() - amount);
+
+                Transaction transaction = new Transaction();
+                transaction.setDescription("Ticket Booking");
+                transaction.setDate(LocalDateTime.now());
+                transaction.setType("debit");
+                transaction.setAmount(amount);
+                transaction.setWallet(wallets);
+
+                walletDao.walletUpdate(wallets);
+                walletDao.transactionSave(transaction);
+            }
+        } catch (ResourceNotFoundException e) {
+            System.out.println("Error: " + e.getMessage());
+
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+
         }
-        Bookings booking = bookingsList.get(0);
-        booking.setBooked(true);
-
-        bookingDao.bookingUpdate(booking);
     }
+
 
     public TicketDto ticketDetails(int bookingId)
     {

@@ -137,16 +137,19 @@ public class NewController {
             ticketPDFService.createPdf(request, id);
 
             System.out.println("Sending email with attachment...");
-            emailService.sendWithAttachment(toMail, subject, message, filePath);
+          emailService.sendWithAttachment(toMail, subject, message, filePath);
 
             System.out.println("Saving email logs...");
             projectService.saveEmailLogsWhileBooking(toMail, userId);
 
             return "Email sent successfully with attachment!";
-        } catch (MessagingException e) {
+
+     }
+        catch (MessagingException e) {
             e.printStackTrace();
             return "Failed to send email with attachment.";
-        } catch (Exception e) {
+        }
+      catch (Exception e) {
             e.printStackTrace();
             return "An error occurred.";
         }

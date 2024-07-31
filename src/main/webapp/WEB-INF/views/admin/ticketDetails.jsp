@@ -26,6 +26,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Ticket Details</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -38,223 +39,223 @@
     <link rel="stylesheet" href="<c:url value="/resources/css/ticketDetails.css" />">
 
 
-<style>
-    .error-message1{
-        display: block;
-        margin-top: 10px;
-        font-size: 0.6em;
-        color: red;
-        word-spacing: normal;
-    }
-
-    .seat {
-        display: inline-block;
-        margin: 5px;
-    }
-    .seat input[type="checkbox"] {
-        display: none;
-    }
-
-    .lato-regular {
-        font-family: "Lato", sans-serif;
-        font-weight: 400;
-        font-style: normal;
-        word-spacing: 20px;
-        letter-spacing: 2px;
-    }
-
-    .lato-regular2 {
-        font-family: "Lato", sans-serif;
-        font-weight: 300;
-        font-style: normal;
-        word-spacing: 20px;
-        letter-spacing: 2px;
-    }
-    .form-group {
-        margin-bottom: 1rem; /* Add some spacing between input fields */
-    }
-    .form-control-line {
-        border: none; /* Remove default border */
-        border-bottom: 1px solid #ced4da; /* Add bottom border */
-        border-radius: 0; /* Remove rounded corners */
-        background-color: transparent; /* Transparent background */
-        box-shadow: none; /* Remove box shadow */
-        height: 30px; /* Adjust height as needed */
-        padding: 0; /* Remove padding */
-    }
-
-    .hidden-content {
-        display: none; /* Initially hidden */
-        margin-top: 20px; /* Adjust margin as needed */
-    }
-
-    .form-select-line2 {
-        appearance: none; /* Remove default appearance */
-        -webkit-appearance: none; /* For older versions of Chrome */
-        -moz-appearance: none; /* For older versions of Firefox */
-        background-color: transparent; /* Transparent background */
-        border: none; /* Remove default border */
-        border-bottom: 1px solid #ced4da; /* Add bottom border */
-        padding: 0; /* Remove default padding */
-        height: 30px; /* Adjust height as needed */
-        width: 100%; /* Full width */
-    }
-    .form-control-line:focus {
-        outline: none;
-    }
-
-    .modal.right .modal-dialog {
-        position: fixed;
-        margin: auto;
-        width: 50%;
-        height: 100%;
-        right: 0;
-        top: 0;
-    }
-
-    .modal.right .modal-content {
-        height: 100%;
-        overflow-y: auto;
-    }
-
-    .modal.right .modal-body {
-        padding: 2rem;
-    }
-
-    .form-group {
-        margin-bottom: 1rem;
-        /* Add some spacing between input fields */
-    }
-
-    .form-control-line {
-        border: none;
-        /* Remove default border */
-        border-bottom: 1px solid #ced4da;
-        /* Add bottom border */
-        border-radius: 0;
-        /* Remove rounded corners */
-        background-color: transparent;
-        /* Transparent background */
-        box-shadow: none;
-        /* Remove box shadow */
-        height: 25px;
-        /* Adjust height as needed */
-        padding: 0;
-        /* Remove padding */
-    }
-
-    .form-control-line:focus {
-        outline: none;
-        /* Remove outline on focus */
-        border-color: #80bdff;
-        /* Change border color on focus if needed */
-    }
-
-
-
-    /* Custom styles for radio buttons */
-    .form-check-input[type="radio"] {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        width: 18px;
-        height: 18px;
-        border: 2px solid #ced4da;
-        /* Default Bootstrap border color */
-        border-radius: 50%;
-        outline: none;
-        cursor: pointer;
-        vertical-align: middle;
-        position: relative;
-    }
-
-    /* Checked state */
-    .form-check-input[type="radio"]:checked {
-        background-color: rgb(179, 11, 11);
-        /* Half-filled color */
-    }
-
-    /* Inner circle */
-    .form-check-input[type="radio"]:checked::after {
-        content: "";
-        display: block;
-        width: 50%;
-        height: 50%;
-        background-color: white;
-        /* Inner half-filled color */
-        border-radius: 50%;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    /* Label styling */
-    .form-check-label {
-        margin-left: 8px;
-        /* Space between radio button and label */
-        cursor: pointer;
-    }
-
-    /* Hide the default checkbox */
-    .form-check-input[type="checkbox"] {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        width: 18px;
-        /* Set the size of the checkbox */
-        height: 18px;
-        border: 2px solid #ced4da;
-        /* Default Bootstrap border color */
-        border-radius: 4px;
-        outline: none;
-        cursor: pointer;
-        vertical-align: middle;
-        position: relative;
-        background-color: white;
-        /* Background color of the checkbox */
-    }
-
-    /* Checked state - use a custom white checkmark image */
-    .form-check-input[type="checkbox"]:checked {
-        background-color: rgb(179, 11, 11);
-    ;
-        /* Change to your desired checked color */
-        background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41,-1.41z"/></svg>');
-        /* White checkmark SVG data */
-        background-size: 100% 100%;
-        background-repeat: no-repeat;
-    }
-
-    /* Hide the actual checkbox */
-    .form-check-input[type="checkbox"]::after {
-        content: "";
-        /* No content for the pseudo-element */
-        display: block;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 70%;
-        /* Adjust size of the checkbox */
-        height: 70%;
-        opacity: 0;
-        /* Initially hide the checkbox */
-    }
-
-    /* Optional: Hover effect */
-    .form-check-input[type="checkbox"]:hover {
-        background-color: lightgray;
-        /* Adjust hover color if needed */
-    }
-    <!-- Add some CSS for booked seats -->
     <style>
-     .seat.booked label {
-         background-color: red;
-         color: white;
-     }
-</style>
-</style>
+        .error-message1{
+            display: block;
+            margin-top: 10px;
+            font-size: 0.6em;
+            color: red;
+            word-spacing: normal;
+        }
+
+        .seat {
+            display: inline-block;
+            margin: 5px;
+        }
+        .seat input[type="checkbox"] {
+            display: none;
+        }
+
+        .lato-regular {
+            font-family: "Lato", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            word-spacing: 20px;
+            letter-spacing: 2px;
+        }
+
+        .lato-regular2 {
+            font-family: "Lato", sans-serif;
+            font-weight: 300;
+            font-style: normal;
+            word-spacing: 20px;
+            letter-spacing: 2px;
+        }
+        .form-group {
+            margin-bottom: 1rem; /* Add some spacing between input fields */
+        }
+        .form-control-line {
+            border: none; /* Remove default border */
+            border-bottom: 1px solid #ced4da; /* Add bottom border */
+            border-radius: 0; /* Remove rounded corners */
+            background-color: transparent; /* Transparent background */
+            box-shadow: none; /* Remove box shadow */
+            height: 30px; /* Adjust height as needed */
+            padding: 0; /* Remove padding */
+        }
+
+        .hidden-content {
+            display: none; /* Initially hidden */
+            margin-top: 20px; /* Adjust margin as needed */
+        }
+
+        .form-select-line2 {
+            appearance: none; /* Remove default appearance */
+            -webkit-appearance: none; /* For older versions of Chrome */
+            -moz-appearance: none; /* For older versions of Firefox */
+            background-color: transparent; /* Transparent background */
+            border: none; /* Remove default border */
+            border-bottom: 1px solid #ced4da; /* Add bottom border */
+            padding: 0; /* Remove default padding */
+            height: 30px; /* Adjust height as needed */
+            width: 100%; /* Full width */
+        }
+        .form-control-line:focus {
+            outline: none;
+        }
+
+        .modal.right .modal-dialog {
+            position: fixed;
+            margin: auto;
+            width: 50%;
+            height: 100%;
+            right: 0;
+            top: 0;
+        }
+
+        .modal.right .modal-content {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .modal.right .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+            /* Add some spacing between input fields */
+        }
+
+        .form-control-line {
+            border: none;
+            /* Remove default border */
+            border-bottom: 1px solid #ced4da;
+            /* Add bottom border */
+            border-radius: 0;
+            /* Remove rounded corners */
+            background-color: transparent;
+            /* Transparent background */
+            box-shadow: none;
+            /* Remove box shadow */
+            height: 25px;
+            /* Adjust height as needed */
+            padding: 0;
+            /* Remove padding */
+        }
+
+        .form-control-line:focus {
+            outline: none;
+            /* Remove outline on focus */
+            border-color: #80bdff;
+            /* Change border color on focus if needed */
+        }
+
+
+
+        /* Custom styles for radio buttons */
+        .form-check-input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ced4da;
+            /* Default Bootstrap border color */
+            border-radius: 50%;
+            outline: none;
+            cursor: pointer;
+            vertical-align: middle;
+            position: relative;
+        }
+
+        /* Checked state */
+        .form-check-input[type="radio"]:checked {
+            background-color: rgb(179, 11, 11);
+            /* Half-filled color */
+        }
+
+        /* Inner circle */
+        .form-check-input[type="radio"]:checked::after {
+            content: "";
+            display: block;
+            width: 50%;
+            height: 50%;
+            background-color: white;
+            /* Inner half-filled color */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Label styling */
+        .form-check-label {
+            margin-left: 8px;
+            /* Space between radio button and label */
+            cursor: pointer;
+        }
+
+        /* Hide the default checkbox */
+        .form-check-input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 18px;
+            /* Set the size of the checkbox */
+            height: 18px;
+            border: 2px solid #ced4da;
+            /* Default Bootstrap border color */
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            vertical-align: middle;
+            position: relative;
+            background-color: white;
+            /* Background color of the checkbox */
+        }
+
+        /* Checked state - use a custom white checkmark image */
+        .form-check-input[type="checkbox"]:checked {
+            background-color: rgb(179, 11, 11);
+        ;
+            /* Change to your desired checked color */
+            background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M9,16.17L4.83,12l-1.42,1.41L9,19 21,7l-1.41,-1.41z"/></svg>');
+            /* White checkmark SVG data */
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        }
+
+        /* Hide the actual checkbox */
+        .form-check-input[type="checkbox"]::after {
+            content: "";
+            /* No content for the pseudo-element */
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            /* Adjust size of the checkbox */
+            height: 70%;
+            opacity: 0;
+            /* Initially hide the checkbox */
+        }
+
+        /* Optional: Hover effect */
+        .form-check-input[type="checkbox"]:hover {
+            background-color: lightgray;
+            /* Adjust hover color if needed */
+        }
+        <!-- Add some CSS for booked seats -->
+        <style>
+         .seat.booked label {
+             background-color: red;
+             color: white;
+         }
+    </style>
+    </style>
 
 </head>
 
@@ -264,7 +265,7 @@
 
     <div class="d-flex h5 mb-5  lato-regular flex-row">
         <div class="mt-4">
-        ${source} To ${destination}
+            ${source} To ${destination}
         </div>
         <div class="container nodataC mt-5">
             <div id="nodata" class=" d-flex align-items-center justify-content-center flex-column">
@@ -273,47 +274,51 @@
                 <div> <h3 class="text-dark">No data found!</h3></div>
             </div>
         </div>
-            <form class="row align-items-end mx-4 ms-auto mt-3 " id="searchForm"  action="${pageContext.request.contextPath}/admin/search/${userId}" method="post"  hidden>
-                <!-- Source Input -->
-                <div class="col">
-                    <div class="form-group">
-                        <select class="form-select   sourceSelect " aria-label="Large select example" id="source" name="source"
-                                style="width: 20vh"
-                           >
-                            <option selected>From</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                        </select>
-                    </div>
+        <form class="row align-items-end mx-4 ms-auto mt-3 " id="searchForm"  action="${pageContext.request.contextPath}/admin/search/${userId}" method="post"  hidden>
+            <!-- Source Input -->
+            <div class="col">
+                <div class="form-group">
+                    <select class="form-select   sourceSelect " aria-label="Large select example" id="source" name="source"
+                            style="width: 20vh"
+                    >
+                        <option selected>From</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
                 </div>
+            </div>
 
-                <!-- Destination Input -->
-                <div class="col">
-                    <div class="form-group">
-                        <select class="form-select  destinationSelect " aria-label="Large select example" id="destination" name="destination"
-                                style="width: 20vh" >
-                            <option selected>To</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                        </select>
-                    </div>
+
+            <p id="current-count" hidden></p>
+
+
+            <!-- Destination Input -->
+            <div class="col">
+                <div class="form-group">
+                    <select class="form-select  destinationSelect " aria-label="Large select example" id="destination" name="destination"
+                            style="width: 20vh" >
+                        <option selected>To</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
                 </div>
+            </div>
 
-                <!-- Date Input -->
-                <div class="col">
-                    <div class="form-group">
+            <!-- Date Input -->
+            <div class="col">
+                <div class="form-group">
 
-                        <input type="date" class="form-control-line lato-regular2" id="date" name="date"  >
-                    </div>
+                    <input type="date" class="form-control-line lato-regular2" id="date" name="date"  >
                 </div>
+            </div>
 
-                <!-- Search Button -->
-                <div class="col-auto mt-2 mx-2" >
-                    <button type="submit" class="btn btn-outline-danger  ">Search</button>
-                </div>
-            </form>
+            <!-- Search Button -->
+            <div class="col-auto mt-2 mx-2" >
+                <button type="submit" class="btn btn-outline-danger  ">Search</button>
+            </div>
+        </form>
         <div class="ms-auto mx-2 ">
             <button type="button" class="btn btn-outline-danger btn-lg mt-4" onclick="showContent()" id="searchButton">Modify Search</button>
         </div>
@@ -322,136 +327,137 @@
 
     <div class="accordion card bg-light lato-regular" id="accordionExample">
         <c:forEach items="${ticketDetails}" var="t" varStatus="loop">
-        <div class="accordion-item">
-            <h2 class="accordion-header bg-light">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapse-${loop.index}" aria-expanded="true" aria-controls="collapse-${loop.index}">
-                    <div class="row w-100">
-                        <div class="col-12 col-md-3">
-                            <div class="d-none" id=""> ${t.scheduleId}  </div>
-                            <div class="d-flex h6">
-                                ${t.date} <span class="mx-4"> ${t.time} </span>
-                            </div>
-                            <hr>
-                            <div class="d-flex h4 mb-0">
-                                ${t.busDetails}  <span class="mx-4">AC Luxury </span>
-                            </div>
-                            <br>
-                            <c:if test="${t.subroutes != '( via )'}">
-                                <div class="d-flex h5 text-muted opacity-75">
-                                        ${t.subroutes}
+            <div class="accordion-item">
+                <h2 class="accordion-header bg-light">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse-${loop.index}" aria-expanded="true" aria-controls="collapse-${loop.index}">
+                        <div class="row w-100">
+                            <div class="col-12 col-md-3">
+                                <div class="d-none" id=""> ${t.scheduleId}  </div>
+                                <div class="d-flex h6">
+                                        ${t.date} <span class="mx-4" id="times-${t.scheduleId}"> ${t.time} </span>
                                 </div>
-                            </c:if>
-                        </div>
-                        <div class="col-12 col-md-5">
-                            <p class="mx-5 ms-5">Origin</p>
-                            <div class="d-flex flex-column justify-content-center align-items-center mt-4 position-relative">
-                                <div class="d-flex align-items-center h5">
-                                        ${t.source}
-                                    <span class="arrow1 mx-5 position-relative">
+                                <hr>
+                                <div class="d-flex h4 mb-0">
+                                        ${t.busDetails}  <span class="mx-4">AC Luxury </span>
+                                </div>
+                                <br>
+                                <c:if test="${t.subroutes != '( via )'}">
+                                    <div class="d-flex h5 text-muted opacity-75">
+                                            ${t.subroutes}
+                                    </div>
+                                </c:if>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <p class="mx-5 ms-5">Origin</p>
+                                <div class="d-flex flex-column justify-content-center align-items-center mt-4 position-relative">
+                                    <div class="d-flex align-items-center h5">
+                                            ${t.source}
+                                        <span class="arrow1 mx-5 position-relative">
                 <p class="font-duration text-center mt-3">${t.duration}</p>
             </span>
-                                        ${t.destination}
-                                </div>
-                                <div class="position-absolute" style="top: -40px; right: 50px;"> <!-- Adjust top value as needed -->
-                                    <p class="text-center">Destination</p>
+                                            ${t.destination}
+                                    </div>
+                                    <div class="position-absolute" style="top: -40px; right: 50px;"> <!-- Adjust top value as needed -->
+                                        <p class="text-center">Destination</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-12 col-md-2">
-                            <div class="d-flex h3 fw-5 text-success align-items-center mt-4 ms-5">
-                                <i class="bi bi-currency-rupee"></i>
-                                    ${t.fare}
+                            <div class="col-12 col-md-2">
+                                <div class="d-flex h3 fw-5 text-success align-items-center mt-4 ms-5" id="fare-${t.scheduleId}">
+                                    <i class="bi bi-currency-rupee"></i>
+                                        ${t.fare}
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-2">
+                                <div type="button" class="btn btn-outline-danger btn-lg mt-4">Select Seats</div>
+                                <p class="font-duration text-center mt-2"> ${t.noOfSeats -fn:length(t.bookedSeats)}  seats left</p>
                             </div>
                         </div>
-                        <div class="col-12 col-md-2">
-                            <div type="button" class="btn btn-outline-danger btn-lg mt-4">Select Seats</div>
-                            <p class="font-duration text-center mt-2"> ${t.noOfSeats -fn:length(t.bookedSeats)}  seats left</p>
-                        </div>
-                    </div>
-                </button>
+                    </button>
 
 
 
-            </h2>
+                </h2>
 
-            <div id="collapse-${loop.index}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                <div class="accordion-body d-flex  justify-content-center">
-                    <div class="d-flex flex-column justify-content-center align-items-center">
-                        <label class="h4">Select Seat</label>
-                        <div id="scheduleID" class="d-none d-sm-none">${ticketDetails[loop.index].scheduleId}</div>
+                <div id="collapse-${loop.index}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body d-flex  justify-content-center">
+                        <div class="d-flex flex-column justify-content-center align-items-center">
+                            <label class="h4">Select Seat</label>
+                            <div id="scheduleID" class="d-none d-sm-none">${ticketDetails[loop.index].scheduleId}</div>
 
 
 
-                        <div class="bus seat2-2 border-0 p-0">
-                            <c:set var="seatsPerRow" value="4"/>
-                            <c:set var="totalSeats" value="${ticketDetails[loop.index].noOfSeats}"/>
-                            <c:set var="bookedSeats" value="${ticketDetails[loop.index].bookedSeats}"/>
-                            <c:set var="rows" value="${totalSeats % seatsPerRow == 0 ? totalSeats / seatsPerRow : Math.floor(totalSeats / seatsPerRow) + 1}"/>
+                            <div class="bus seat2-2 border-0 p-0">
+                                <c:set var="seatsPerRow" value="4"/>
+                                <c:set var="totalSeats" value="${ticketDetails[loop.index].noOfSeats}"/>
+                                <c:set var="bookedSeats" value="${ticketDetails[loop.index].bookedSeats}"/>
+                                <c:set var="rows" value="${totalSeats % seatsPerRow == 0 ? totalSeats / seatsPerRow : Math.floor(totalSeats / seatsPerRow) + 1}"/>
 
-                            <c:forEach var="row" begin="0" end="${rows - 1}" step="1">
-                                <div class="seat-row-${row}">
-                                    <ol class="seats">
-                                        <c:forEach var="col" begin="0" end="${seatsPerRow - 1}" step="1">
-                                            <c:set var="seatNumber" value="${row * seatsPerRow + col + 1}"/>
-                                            <c:set var="isBooked" value="${fn:contains(bookedSeats, seatNumber)}"/>
-                                            <c:set var="disableSeat" value="${row == rows - 1 && col >= totalSeats % seatsPerRow}"/>
+                                <c:forEach var="row" begin="0" end="${rows - 1}" step="1">
+                                    <div class="seat-row-${row}">
+                                        <ol class="seats">
+                                            <c:forEach var="col" begin="0" end="${seatsPerRow - 1}" step="1">
+                                                <c:set var="seatNumber" value="${row * seatsPerRow + col + 1}"/>
+                                                <c:set var="isBooked" value="${fn:contains(bookedSeats, seatNumber)}"/>
+                                                <c:set var="disableSeat" value="${row == rows - 1 && col >= totalSeats % seatsPerRow}"/>
 
-                                            <li class="seat
+                                                <li class="seat
                         ${isBooked ? 'booked' : ''}
                         ${disableSeat ? ' disabled' : ''}">
-                                                <input role="input-passenger-seat" name="passengers[1][seat]"
-                                                       id="seat-checkbox-1-${seatNumber}-${ticketDetails[loop.index].scheduleId}" value="${seatNumber}" required="" type="checkbox"
-                                                       onclick="updateSelectedSeats()" ${isBooked ? 'disabled' : ''} ${disableSeat ? 'disabled' : ''}>
-                                                <label for="seat-checkbox-1-${seatNumber}-${ticketDetails[loop.index].scheduleId}">${seatNumber}</label>
-                                            </li>
-                                        </c:forEach>
-                                    </ol>
-                                </div>
-                            </c:forEach>
+                                                    <input role="input-passenger-seat" class="class-seat-update" name="passengers[1][seat][${ticketDetails[loop.index].scheduleId}]"
+                                                           id="seat-checkbox-${seatNumber}-${ticketDetails[loop.index].scheduleId}" value="${seatNumber}" required="" type="checkbox"
+                                                           ${isBooked ? 'disabled' : ''} ${disableSeat ? 'disabled' : ''}>
+                                                    <label for="seat-checkbox-${seatNumber}-${ticketDetails[loop.index].scheduleId}">${seatNumber}</label>
+<%--                                                    onclick="updateSelectedSeats(${ticketDetails[loop.index].scheduleId})"--%>
+                                                </li>
+                                            </c:forEach>
+                                        </ol>
+                                    </div>
+                                </c:forEach>
 
+                            </div>
+
+
+
+
+
+
+
+
+
+
+                            <div class="text-left mt-2 ">
+                                <button class="btn btn-primary btn-xs mb-2">Available</button>
+                                <button class="btn btn-success btn-xs mb-2">Choosen</button>
+                                <button class="btn btn-danger btn-xs mb-2">Booked</button>
+                            </div>
                         </div>
 
+                        <form action="/" method="POST" class="d-flex flex-column mt-5">
+                            <div class="mx-5 h4">
+                                Selected Seats:
+                                <span id="selected-seats-display-${t.scheduleId}">None</span>
+                                <input  name="selected_seats" id="selected-seats-input-${t.scheduleId}" class="d-none" >
+                                <span id="number-of-seats-display-${t.scheduleId}"></span>
+                                <input name="number_of_seats" id="number-of-seats-input-${t.scheduleId}"  value="0" hidden>
+                            </div>
+                            <div class="mx-5 h4">
+                                Total Fare:
+                                <span id="total-fare-display-${t.scheduleId}">0</span>
+                                <input type="hidden" name="total_fare" id="total-fare-input-${t.scheduleId}">
+                            </div>
+                            <div class="mx-5 mt-5">
+                                <button type="button" class="btn btn-primary opacity-75 btn-lg" id="modalClick-${t.scheduleId}"  data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg" >
+                                    <span class="h5 mb-3">Continue Booking <i class="bi bi-arrow-right h3 mx-2"></i></span>
+                                </button>
+                            </div>
+                        </form>
 
-
-
-
-
-
-
-
-
-                        <div class="text-left mt-2 ">
-                            <button class="btn btn-primary btn-xs mb-2">Available</button>
-                            <button class="btn btn-success btn-xs mb-2">Choosen</button>
-                            <button class="btn btn-danger btn-xs mb-2">Booked</button>
-                        </div>
                     </div>
-
-                    <form action="/" method="POST" class="d-flex flex-column mt-5">
-                        <div class="mx-5 h4">
-                            Selected Seats:
-                            <span id="selected-seats-display">None</span>
-                            <input  name="selected_seats" id="selected-seats-input" class="d-none" >
-                            <span id="number-of-seats-display"></span>
-                            <input name="number_of_seats" id="number-of-seats-input"  value="0" hidden>
-                        </div>
-                        <div class="mx-5 h4">
-                            Total Fare:
-                            <span id="total-fare-display">0</span>
-                            <input type="hidden" name="total_fare" id="total-fare-input">
-                        </div>
-                        <div class="mx-5 mt-5">
-                            <button type="button" class="btn btn-primary opacity-75 btn-lg" data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg" id="modalClick">
-                                <span class="h5 mb-3">Continue Booking <i class="bi bi-arrow-right h3 mx-2"></i></span>
-                            </button>
-                        </div>
-                    </form>
-
                 </div>
             </div>
-        </div>
 
         </c:forEach>
     </div>
@@ -542,10 +548,10 @@
 
                         <div class="d-flex mt-5">
                             <div class="h5" >Total Amount: INR <span id="totalAmount"></span> </div>
-                            <input id="scheduleID2" type="text" hidden>
+                            <input id="scheduleID2" type="text" >
 
 
-                            <button class="btn text-white  ms-auto"
+                            <button class="btn text-white  ms-auto" id="fbtn"
                                     style="background-color:  rgb(179, 11, 11);">Confirm</button>
 
 
@@ -594,104 +600,180 @@
 
 
 
-     $(document).ready(function() {
-         // Function to check and toggle button disable state
-         function toggleContinueButton() {
-             var selectedSeats = $('#selected-seats-display').text().trim();
-             if (selectedSeats === 'None') {
-                 $('#modalClick').prop('disabled', true);
-             } else {
-                 $('#modalClick').prop('disabled', false);
-             }
-         }
-         toggleContinueButton();
-         $('.seat input[type="checkbox"]').on('change', function() {
-             updateSelectedSeats(); // Example function that updates selected seats
-             toggleContinueButton();
-         });
 
-     })
+        // Function to check and toggle button disable state
+        const scheduleIdElement = document.getElementById("scheduleID");
+        const scheduleIdValue = scheduleIdElement.textContent || scheduleIdElement.innerText;
+        function toggleContinueButton(scheduleId) {
+            debugger
 
+            var selectedSeats = $('#selected-seats-display-'+scheduleId).text().trim();
+            var continueButton = $('#modalClick-' + scheduleId);
+            console.log('Continue Button:', continueButton); // Log the continue button element for debugging
 
-    // const seatFare = '`+ticketDetails.fare+`';
-    var seatFare = ${ticketDetails[0].fare};
-
-
-    function updateSelectedSeats() {
-        debugger
-        console.log("yyyyyyyyyyyyyyyyyyyy")
-        const checkboxes = document.querySelectorAll('.seat input[type="checkbox"]');
-        const selectedSeats = [];
-        checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                selectedSeats.push(checkbox.value);
+            if (selectedSeats === 'None' || selectedSeats === '') {
+                console.log('Disabling button for scheduleId:', scheduleId);
+                continueButton.prop('disabled', true);
+            } else {
+                console.log('Enabling button for scheduleId:', scheduleId);
+                continueButton.prop('disabled', false);
             }
+        }
+
+        $('.seat input[type="checkbox"]').on('change', function() {
+            // updateSelectedSeats(scheduleIdValue);
+            // $('.class-seat-update').click()
+
+
+
         });
 
-        const totalFare = selectedSeats.length * seatFare;
-        document.getElementById('selected-seats-display').textContent = selectedSeats.join(', ') || 'None';
-        document.getElementById('total-fare-display').textContent = totalFare;
+
+
+    //
+    // const seatFare = '`+ticketDetails.fare+`';
+    <%--var seatFare = ${ticketDetails[0].fare}--%>
+    scheduleId1 = $("#scheduleID").text();
+    var fareId = "fare-" + scheduleId1;
+    var seatFare = $('#' + fareId).text();
+    var arrivalTime = "times-"+scheduleId1;
+    var arrivalTimeText = $("#arrivalTime").text();
+        console.log(arrivalTimeText)
+        $("#depatureTime").text(arrivalTimeText);
 
 
 
 
-        document.getElementById('selected-seats-input').value = selectedSeats.join(', ');
-        document.getElementById('total-fare-input').value = totalFare;
-
-        const numberOfSeats = selectedSeats.length;
 
 
-
-        // Update the hidden input with the number of selected seats
-        document.getElementById('number-of-seats-input').value = numberOfSeats.toString();
-
-    }
-
-    $('#modalClick').click(function () {
-        debugger
-        console.log("clickeddddddd")
-        var x = $('#total-fare-input').val();
-        $('#totalAmount').text(x);
-        var w = $('#selected-seats-input').val();
-        var selecte_seats = w.split(",");
-        console.log(selecte_seats);
-        $('#seatNumber').text(selecte_seats);
-        var y = $('#selected-seats-input')
-        var numSeats = $('#number-of-seats-input').val();
-        var z = $('#scheduleID').text();
-        $('#scheduleID2').val(z);
+    var selectedSeats = [];
+    $(".class-seat-update").click(function(){
+debugger
+        var idString = $(this).attr("id");
+        var splitArray = idString.split("-");
+        var scheduleIdValue =parseInt(splitArray[splitArray.length-1]);
 
 
-        $('#passengerDetailsContainer').empty();
+        if($(this).is(':checked')){
+            var currentCount=$("#current-count").text();
+            if(currentCount==""){
+                $("#current-count").text(scheduleIdValue);
+            }
+
+            currentCount = $("#current-count").text();
+
+            var value = $(this).attr("value");
+            if(parseInt(currentCount)==scheduleIdValue) {
+                selectedSeats.push(value);
+                const totalFare = selectedSeats.length * seatFare;
+                document.getElementById('selected-seats-display-' + scheduleIdValue).textContent = selectedSeats.join(', ') || 'None';
+                document.getElementById('total-fare-display-' + scheduleIdValue).textContent = totalFare;
+                document.getElementById('selected-seats-input-'+scheduleIdValue).value = selectedSeats.join(', ');
+                document.getElementById('total-fare-input-'+scheduleIdValue).value = totalFare;
+                var numberOfSeats = selectedSeats.length;
+                document.getElementById('number-of-seats-input-'+scheduleIdValue).value = numberOfSeats.toString();
+
+            }
+            else{
+                selectedSeats=[];
+                selectedSeats.push(value);
+                $("#current-count").text(scheduleIdValue);
+                const totalFare = selectedSeats.length * seatFare;
+                document.getElementById('selected-seats-display-' + scheduleIdValue).textContent = selectedSeats.join(', ') || 'None';
+                document.getElementById('selected-seats-input-'+scheduleIdValue).value = selectedSeats.join(', ');
+                document.getElementById('total-fare-display-' + scheduleIdValue).textContent = totalFare;
+                document.getElementById('total-fare-input-'+scheduleIdValue).value = totalFare;
+                var numberOfSeats = selectedSeats.length;
+                document.getElementById('number-of-seats-input-'+scheduleIdValue).value = numberOfSeats.toString();
+            }
 
 
-        for (var i = 1; i <= numSeats; i++) {
-            var passengerRow = `
-              <div>Passenger `+i+` </div>
+        }
+
+        else{
+            debugger
+            var value = $(this).attr("value");
+            selectedSeats = selectedSeats.filter(item => item !== value);
+            const totalFare = selectedSeats.length * seatFare;
+            document.getElementById('selected-seats-display-' + scheduleIdValue).textContent = selectedSeats.join(', ') || 'None';
+            document.getElementById('selected-seats-input-'+scheduleIdValue).value = selectedSeats.join(', ');
+            document.getElementById('total-fare-display-' + scheduleIdValue).textContent = totalFare;
+            document.getElementById('total-fare-input-'+scheduleIdValue).value = totalFare;
+            var numberOfSeats = selectedSeats.length;
+            document.getElementById('number-of-seats-input-'+scheduleIdValue).value = numberOfSeats.toString();
+        }
+
+
+        toggleContinueButton(scheduleIdValue);
+
+
+
+    });
+
+
+
+        $(document).ready(function() {
+            // Initial call to set the button state
+            $('[id^=selected-seats-display-]').each(function () {
+                var scheduleId = $(this).attr('id').split('-')[3];
+                toggleContinueButton(scheduleId);
+            });
+        });
+
+
+
+
+        $(document).ready(function() {
+
+            $(document).on('click', '[id^=modalClick-]', function () {
+                debugger
+                var scheduleId = $(this).attr('id').split('-')[1];
+                console.log("Button clicked for schedule ID:", scheduleId);
+                var arrivalTimeId = "times-" + scheduleId;
+                var arrivalTimeText = $("#" + arrivalTimeId).text().trim();
+                $("#depatureTime").text(arrivalTimeText);
+                var x = $('#total-fare-input-' + scheduleId).val();
+                $('#totalAmount').text(x);
+                var w = $('#selected-seats-input-' + scheduleId).val();
+                var selecte_seats = w.split(",");
+                console.log(selecte_seats);
+                $('#seatNumber').text(selecte_seats);
+                var y = $('#selected-seats-input-' + scheduleId)
+                var numSeats = $('#number-of-seats-input-' + scheduleId).val();
+                var z = $('#current-count').text();
+                $('#scheduleID2').val(z);
+
+
+                $('#passengerDetailsContainer').empty();
+
+
+                for (var i = 1; i <= numSeats; i++) {
+                    var passengerRow = `
+              <div>Passenger ` + i + ` </div>
                 <div class="row row2">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="name`+i+` " class="d-flex mt-3">Name</label>
-                            <input type="text" class="form-control-line name" id="name`+i+` " name="passenger`+i+` _name">
+                            <label for="name` + i + ` " class="d-flex mt-3">Name</label>
+                            <input type="text" class="form-control-line name" id="name` + i + ` " name="passenger` + i + ` _name">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="age`+i+` " class="d-flex mt-3">Age</label>
-                            <input type="text" class="form-control-line age" id="age`+i+` " name="passenger`+i+` _age">
+                            <label for="age` + i + ` " class="d-flex mt-3">Age</label>
+                            <input type="text" class="form-control-line age" id="age` + i + ` " name="passenger` + i + ` _age">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="d-flex mt-3 mb-3">Gender</label>
-                            <input class="form-check-input" type="radio" name="gender`+i+`"
-                                   id="male`+i+` " value="Male" checked >
-                            <label class="form-check-label" for="male`+i+` ">
+                            <input class="form-check-input" type="radio" name="gender` + i + `"
+                                   id="male` + i + ` " value="Male" checked >
+                            <label class="form-check-label" for="male` + i + ` ">
                                 Male
                             </label>
-                            <input class="form-check-input" type="radio" name="gender`+i+`"
-                                   id="female`+i+` " value="Female">
-                            <label class="form-check-label" for="female`+i+` ">
+                            <input class="form-check-input" type="radio" name="gender` + i + `"
+                                   id="female` + i + ` " value="Female">
+                            <label class="form-check-label" for="female` + i + ` ">
                                 Female
                             </label>
                         </div>
@@ -699,16 +781,14 @@
                 </div>`;
 
 
-            $('#passengerDetailsContainer').append(passengerRow);
-        }
+                    $('#passengerDetailsContainer').append(passengerRow);
+                }
+            });
 
-     });
+        });
 
 
-    function updateForm() {
-        // Additional form validation can be added here if necessary
-        return true;
-    }
+
 
 
 </script>
@@ -716,13 +796,13 @@
 
 
     $(document).ready(function() {
-        debugger
+        
         console.log("ajax to get source")
         const sourceSelect = $('.sourceSelect');
         const destinationSelect = $('.destinationSelect');
 
 
-        debugger
+        
 
 
         $(document).ready(function() {
@@ -840,15 +920,16 @@
     $(document).ready(function () {
         var bookingId; // Variable to store the booking ID
         var reservationTimer; // Variable to store the reservation timer
-        const RESERVATION_TIMEOUT = 0.5 * 60 * 1000; // 10 minutes in milliseconds
+        const RESERVATION_TIMEOUT = 2 * 60 * 1000; // 10 minutes in milliseconds
 
         $("#bookingDetails").submit(function (event) {
 
             if ($("#bookingDetails").valid()) {
                 console.log("vhgerdrugvffiegveiguf")
-
-                event.preventDefault();
                 debugger
+                event.preventDefault();
+                $('#fbtn').prop("disabled", true);
+                
                 // Prevent default form submission
 
                 $('#exampleModal').modal('show');
@@ -908,13 +989,13 @@
 
 
                         reservationTimer = setTimeout(function () {
-                            debugger
+                            
                             console.log("in")
                             $.ajax({
                                 url: "${pageContext.request.contextPath}/resetReservation/" + bookingId , // Endpoint to reset reservation timestamp
                                 type: 'POST',
                                 success: function () {
-                                    debugger
+                                    
                                     console.log("Reservation timestamp reset due to inactivity.");
                                     $('#exampleModal').modal('hide');
                                     $('#modal-main').modal('hide');
@@ -936,6 +1017,7 @@
         $("#modalConfirmButton").click(function () {
             if (bookingId) {
 
+
                 clearTimeout(reservationTimer);
 
 
@@ -943,19 +1025,20 @@
                     url: "${pageContext.request.contextPath}/confirmBooking/" + bookingId  +"/" +${userId},
                     type: 'POST',
                     success: function () {
+                        $('#modalConfirmButton').prop("disabled", true);
 
                         window.location.href = "${pageContext.request.contextPath}/admin/success/${source}/${destination}/" + bookingId + "/" + ${userId};
 
-                                    $.ajax({
-                                        url: "${pageContext.request.contextPath}/sendEmail/" + $("#email").val() + "/" + bookingId + "/" + ${userId},
-                                        type: "GET",
-                                        success: function () {
-                                            console.log("Email sent successfully");
-                                        },
-                                        error: function (error) {
-                                            console.error("Error sending mail:", error);
-                                        }
-                                    });
+                        $.ajax({
+                            url: "${pageContext.request.contextPath}/sendEmail/" + $("#email").val() + "/" + bookingId + "/" + ${userId},
+                            type: "GET",
+                            success: function () {
+                                console.log("Email sent successfully");
+                            },
+                            error: function (error) {
+                                console.error("Error sending mail:", error);
+                            }
+                        });
 
 
 
@@ -963,6 +1046,8 @@
                     },
                     error: function (error) {
                         console.error("Error confirming booking:", error);
+                        $('#modalConfirmButton').prop("disabled", false);
+
                     }
                 });
             }

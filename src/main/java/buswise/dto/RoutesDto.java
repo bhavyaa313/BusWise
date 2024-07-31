@@ -22,7 +22,7 @@ public class RoutesDto {
     private List<Integer> distancesub;
     private List<Integer> sequence;
     private List<Integer> subrouteId;
-    private int subroutesCount;
+    private Integer subroutesCount = 0;
 
 
     public List<Integer> getSubrouteId() {
@@ -113,15 +113,15 @@ public class RoutesDto {
         this.sequence = sequence;
     }
 
-    public int getSubroutesCount() {
+    public Integer getSubroutesCount() {
         return subroutesCount;
     }
 
-    public void setSubroutesCount(int subroutesCount) {
+    public void setSubroutesCount(Integer subroutesCount) {
         this.subroutesCount = subroutesCount;
     }
 
-    public RoutesDto(int routeId, String source, String destination, int distance, List<SubRoute> subRouteList, String subRoutes, Long count, List<String> name, List<Integer> distancesub, List<Integer> sequence, List<Integer> subrouteId, int subroutesCount) {
+    public RoutesDto(int routeId, String source, String destination, int distance, List<SubRoute> subRouteList, String subRoutes, Long count, List<String> name, List<Integer> distancesub, List<Integer> sequence, List<Integer> subrouteId, Integer subroutesCount) {
         this.routeId = routeId;
         this.source = source;
         this.destination = destination;

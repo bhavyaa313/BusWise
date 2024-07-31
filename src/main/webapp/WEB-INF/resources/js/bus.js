@@ -98,7 +98,10 @@ $(document).ready(function() {
      userId = $('#userId').val()
     console.log(userId)
 })
-function checkAndUpdateBus(busId, busNumber, busType, seatingCapacity) {
+function checkAndUpdateBus(busId, busNumber, busType, seatingCapacity)
+{
+    $('#alertContainerDelete').empty();
+
     $.ajax({
         url: 'checkBusUsage/' + busId + '/' + userId,
         type: "GET",
@@ -345,6 +348,7 @@ function init(totalFinal, curPage) {
 
 
     function deletebutton(busId) {
+        $('#alertContainerDelete').empty();
     $.ajax({
         url: 'checkBusUsage/'+busId  +'/'+ userId,
         type: "GET",
@@ -404,7 +408,7 @@ function init(totalFinal, curPage) {
 
 
 debugger
-    var busNumber = $("#searchBusNumber").val();
+    var busNumber = $("#searchBusNumber").val().trim();
     console.log(busNumber)
 
     if(busNumber=="")
@@ -460,7 +464,7 @@ debugger
 
     var row = `<tr class="w-100">
 
-							<td>` + buses.busId + `</td>
+					
 							<td>` + buses.busNumber + `</td>
 							<td>` + buses.busType + `</td>
 							<td>` + buses.seatingCapacity + `</td>

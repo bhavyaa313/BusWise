@@ -12,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Ticket Details</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -260,7 +261,7 @@
         }
 
 
-        setTimeout(autoRefresh, 250000);
+        setTimeout(autoRefresh, 200000);
     </script>
 </head>
 
@@ -321,6 +322,8 @@
                 </div>
             </div>
 
+            <p id="current-count" hidden></p>
+
             <!-- Date Input -->
             <div class="col">
                 <div class="form-group">
@@ -350,7 +353,7 @@
                             <div class="col-12 col-md-3">
                                 <div class="d-none" id=""> ${t.scheduleId}  </div>
                                 <div class="d-flex h6">
-                                        ${t.date} <span class="mx-4"> ${t.time} </span>
+                                        ${t.date} <span class="mx-4" id="times-${t.scheduleId}"> ${t.time} </span>
                                 </div>
                                 <hr>
                                 <div class="d-flex h4 mb-0">
@@ -380,7 +383,7 @@
                             </div>
 
                             <div class="col-12 col-md-2">
-                                <div class="d-flex h3 fw-5 text-success align-items-center mt-4 ms-5">
+                                <div class="d-flex h3 fw-5 text-success align-items-center mt-4 ms-5" id="fare-${t.scheduleId}">
                                     <i class="bi bi-currency-rupee"></i>
                                         ${t.fare}
                                 </div>
@@ -421,10 +424,11 @@
                                                 <li class="seat
                         ${isBooked ? 'booked' : ''}
                         ${disableSeat ? ' disabled' : ''}">
-                                                    <input role="input-passenger-seat" name="passengers[1][seat]"
-                                                           id="seat-checkbox-1-${seatNumber}-${ticketDetails[loop.index].scheduleId}" value="${seatNumber}" required="" type="checkbox"
-                                                           onclick="updateSelectedSeats()" ${isBooked ? 'disabled' : ''} ${disableSeat ? 'disabled' : ''}>
-                                                    <label for="seat-checkbox-1-${seatNumber}-${ticketDetails[loop.index].scheduleId}">${seatNumber}</label>
+                                                    <input role="input-passenger-seat" class="class-seat-update" name="passengers[1][seat][${ticketDetails[loop.index].scheduleId}]"
+                                                           id="seat-checkbox-${seatNumber}-${ticketDetails[loop.index].scheduleId}" value="${seatNumber}" required="" type="checkbox"
+                                                        ${isBooked ? 'disabled' : ''} ${disableSeat ? 'disabled' : ''}>
+                                                    <label for="seat-checkbox-${seatNumber}-${ticketDetails[loop.index].scheduleId}">${seatNumber}</label>
+                                                        <%--                                                    onclick="updateSelectedSeats(${ticketDetails[loop.index].scheduleId})"--%>
                                                 </li>
                                             </c:forEach>
                                         </ol>
@@ -452,18 +456,18 @@
                         <form action="/" method="POST" class="d-flex flex-column mt-5">
                             <div class="mx-5 h4">
                                 Selected Seats:
-                                <span id="selected-seats-display">None</span>
-                                <input  name="selected_seats" id="selected-seats-input" class="d-none" >
-                                <span id="number-of-seats-display"></span>
-                                <input name="number_of_seats" id="number-of-seats-input"  value="0" hidden>
+                                <span id="selected-seats-display-${t.scheduleId}">None</span>
+                                <input  name="selected_seats" id="selected-seats-input-${t.scheduleId}" class="d-none" >
+                                <span id="number-of-seats-display-${t.scheduleId}"></span>
+                                <input name="number_of_seats" id="number-of-seats-input-${t.scheduleId}"  value="0" hidden>
                             </div>
                             <div class="mx-5 h4">
                                 Total Fare:
-                                <span id="total-fare-display">0</span>
-                                <input type="hidden" name="total_fare" id="total-fare-input">
+                                <span id="total-fare-display-${t.scheduleId}">0</span>
+                                <input type="hidden" name="total_fare" id="total-fare-input-${t.scheduleId}">
                             </div>
                             <div class="mx-5 mt-5">
-                                <button type="button" class="btn btn-primary opacity-75 btn-lg" data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg" id="modalClick">
+                                <button type="button" class="btn btn-primary opacity-75 btn-lg" id="modalClick-${t.scheduleId}"  data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg">
                                     <span class="h5 mb-3">Continue Booking <i class="bi bi-arrow-right h3 mx-2"></i></span>
                                 </button>
                             </div>
@@ -492,7 +496,7 @@
                             aria-label="Close"></button>
                     Complete Your Booking
                 </div>
-                <span class="ms-auto  me-0">${source} To ${destination} | ${ticketDetails[0].date} | <span id="depatureTime">${ticketDetails[0].time}</span>   </span>
+                <span class="ms-auto  me-0">${source} To ${destination} | ${ticketDetails[0].date} | <span id="depatureTime"></span>   </span>
 
             </div>
             <div class="modal-body modal-body1 mt-4">
@@ -582,7 +586,7 @@
 
 
 
-                            <button class="btn text-white  ms-auto" type="submit"
+                            <button class="btn text-white  ms-auto" type="submit" id="fbtn"
                                     style="background-color:  rgb(179, 11, 11);">Confirm</button>
 
 <%--                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">--%>
@@ -634,135 +638,216 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
 
-
 <script>
 
 
 
-
-
-    $(document).ready(function() {
-        // Function to check and toggle button disable state
-        function toggleContinueButton() {
-            var selectedSeats = $('#selected-seats-display').text().trim();
-            if (selectedSeats === 'None') {
-                $('#modalClick').prop('disabled', true);
-            } else {
-                $('#modalClick').prop('disabled', false);
-            }
-        }
-        toggleContinueButton();
-        $('.seat input[type="checkbox"]').on('change', function() {
-            updateSelectedSeats(); // Example function that updates selected seats
-            toggleContinueButton();
-        });
-
-    })
-
-
-    // const seatFare = '`+ticketDetails.fare+`';
-    var seatFare = ${ticketDetails[0].fare};
-
-
-    function updateSelectedSeats() {
-        const checkboxes = document.querySelectorAll('.seat input[type="checkbox"]');
-        const selectedSeats = [];
-        checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                selectedSeats.push(checkbox.value);
-            }
-        });
-
-        const totalFare = selectedSeats.length * seatFare;
-        document.getElementById('selected-seats-display').textContent = selectedSeats.join(', ') || 'None';
-        document.getElementById('total-fare-display').textContent = totalFare;
-
-
-
-
-        document.getElementById('selected-seats-input').value = selectedSeats.join(', ');
-        document.getElementById('total-fare-input').value = totalFare;
-
-        const numberOfSeats = selectedSeats.length;
-
-
-
-        // Update the hidden input with the number of selected seats
-        document.getElementById('number-of-seats-input').value = numberOfSeats.toString();
-
-    }
-
-    $('#modalClick').click(function () {
+    // Function to check and toggle button disable state
+    const scheduleIdElement = document.getElementById("scheduleID");
+    const scheduleIdValue = scheduleIdElement.textContent || scheduleIdElement.innerText;
+    function toggleContinueButton(scheduleId) {
         debugger
-        var isLoggedIn = <c:out value="${not empty sessionScope.email}"/>;
-        if (isLoggedIn) {
+console.log("kuldeeep")
+        var selectedSeats = $('#selected-seats-display-'+scheduleId).text().trim();
+        var continueButton = $('#modalClick-' + scheduleId);
+        console.log('Continue Button:', continueButton); // Log the continue button element for debugging
 
-            console.log("clickeddddddd")
-            var x = $('#total-fare-input').val();
-            $('#totalAmount').text(x);
-            var w = $('#selected-seats-input').val();
-            var selecte_seats = w.split(",");
-            console.log(selecte_seats);
-            $('#seatNumber').text(selecte_seats);
-            var y = $('#selected-seats-input')
-            var numSeats = $('#number-of-seats-input').val();
-            var z = $('#scheduleID').text();
-            $('#scheduleID2').val(z);
-
-
-            $('#passengerDetailsContainer').empty();
-
-
-            for (var i = 1; i <= numSeats; i++) {
-                var passengerRow = `
-              <div>Passenger `+i+` </div>
-                <div class="row row2">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="name`+i+` " class="d-flex mt-3">Name</label>
-                            <input type="text" class="form-control-line name" id="name`+i+` " name="passenger`+i+` _name">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="age`+i+` " class="d-flex mt-3">Age</label>
-                            <input type="number" class="form-control-line age" id="age`+i+` " name="passenger`+i+` _age">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="d-flex mt-3 mb-3">Gender</label>
-                            <input class="form-check-input" type="radio" name="gender`+i+`"
-                                   id="male`+i+` " value="Male" checked >
-                            <label class="form-check-label" for="male`+i+` ">
-                                Male
-                            </label>
-                            <input class="form-check-input" type="radio" name="gender`+i+`"
-                                   id="female`+i+` " value="Female">
-                            <label class="form-check-label" for="female`+i+` ">
-                                Female
-                            </label>
-                        </div>
-                    </div>
-                </div>`;
-
-
-                $('#passengerDetailsContainer').append(passengerRow);
-            }
-
+        if (selectedSeats === 'None' || selectedSeats === '') {
+            console.log('Disabling button for scheduleId:', scheduleId);
+            continueButton.prop('disabled', true);
         } else {
-            window.location.href = '${pageContext.request.contextPath}/login';
+            console.log('Enabling button for scheduleId:', scheduleId);
+            continueButton.prop('disabled', false);
         }
+    }
+    toggleContinueButton();
+    $('.seat input[type="checkbox"]').on('change', function() {
+        // updateSelectedSeats(scheduleIdValue);
+        // $('.class-seat-update').click()
 
 
 
     });
 
 
-    function updateForm() {
-        // Additional form validation can be added here if necessary
-        return true;
-    }
+    scheduleId1 = $("#scheduleID").text();
+
+    var fareId = "fare-" + scheduleId1;
+    var seatFare = $('#' + fareId).text();
+
+
+
+
+
+
+    var selectedSeats = [];
+    $(".class-seat-update").click(function(){
+        debugger
+
+        var idString = $(this).attr("id");
+        var splitArray = idString.split("-");
+        var scheduleIdValue =parseInt(splitArray[splitArray.length-1]);
+
+
+        if($(this).is(':checked')){
+            var currentCount=$("#current-count").text();
+            if(currentCount==""){
+                $("#current-count").text(scheduleIdValue);
+            }
+
+            currentCount = $("#current-count").text();
+
+            var value = $(this).attr("value");
+            if(parseInt(currentCount)==scheduleIdValue) {
+                selectedSeats.push(value);
+                const totalFare = selectedSeats.length * seatFare;
+                document.getElementById('selected-seats-display-' + scheduleIdValue).textContent = selectedSeats.join(', ') || 'None';
+                document.getElementById('total-fare-display-' + scheduleIdValue).textContent = totalFare;
+                document.getElementById('selected-seats-input-'+scheduleIdValue).value = selectedSeats.join(', ');
+                document.getElementById('total-fare-input-'+scheduleIdValue).value = totalFare;
+                var numberOfSeats = selectedSeats.length;
+                document.getElementById('number-of-seats-input-'+scheduleIdValue).value = numberOfSeats.toString();
+
+            }
+            else{
+                selectedSeats=[];
+                selectedSeats.push(value);
+                $("#current-count").text(scheduleIdValue);
+                const totalFare = selectedSeats.length * seatFare;
+                document.getElementById('selected-seats-display-' + scheduleIdValue).textContent = selectedSeats.join(', ') || 'None';
+                document.getElementById('selected-seats-input-'+scheduleIdValue).value = selectedSeats.join(', ');
+                document.getElementById('total-fare-display-' + scheduleIdValue).textContent = totalFare;
+                document.getElementById('total-fare-input-'+scheduleIdValue).value = totalFare;
+                var numberOfSeats = selectedSeats.length;
+                document.getElementById('number-of-seats-input-'+scheduleIdValue).value = numberOfSeats.toString();
+            }
+
+
+        }
+
+        else{
+            debugger
+            var value = $(this).attr("value");
+            selectedSeats = selectedSeats.filter(item => item !== value);
+            const totalFare = selectedSeats.length * seatFare;
+            document.getElementById('selected-seats-display-' + scheduleIdValue).textContent = selectedSeats.join(', ') || 'None';
+            document.getElementById('selected-seats-input-'+scheduleIdValue).value = selectedSeats.join(', ');
+            document.getElementById('total-fare-display-' + scheduleIdValue).textContent = totalFare;
+            document.getElementById('total-fare-input-'+scheduleIdValue).value = totalFare;
+            var numberOfSeats = selectedSeats.length;
+            document.getElementById('number-of-seats-input-'+scheduleIdValue).value = numberOfSeats.toString();
+        }
+
+
+
+        toggleContinueButton(scheduleIdValue);
+
+
+    });
+
+
+
+    $(document).ready(function() {
+        // Initial call to set the button state
+        $('[id^=selected-seats-display-]').each(function () {
+            var scheduleId = $(this).attr('id').split('-')[3];
+            toggleContinueButton(scheduleId);
+        });
+    });
+
+    $(document).ready(function () {
+        // Hide the modal on page load
+        $('#yourModalId').hide(); // Replace with your modal's ID
+
+        // Check if redirection happened
+        if (sessionStorage.getItem('redirectedFromModal') === 'true') {
+            $('#yourModalId').hide(); // Hide the modal if it was open before redirection
+            sessionStorage.removeItem('redirectedFromModal'); // Clear the flag
+        }
+    });
+
+    $(document).on('click', '[id^=modalClick-]', function (event) {
+        debugger
+
+        console.log("bhavyaaaaa")
+        event.preventDefault(); // Prevent the default action of the click
+
+        var isLoggedIn = '${not empty sessionScope.email}'; // Ensure this is correctly rendered as a string
+
+        // Convert isLoggedIn to a boolean if needed
+        isLoggedIn = (isLoggedIn === 'true'); // Adjust based on how the server renders this value
+
+        if (isLoggedIn) {
+            var scheduleId = $(this).attr('id').split('-')[1];
+            console.log("Button clicked for schedule ID:", scheduleId);
+            var arrivalTimeId = "times-" + scheduleId;
+            var arrivalTimeText = $("#" + arrivalTimeId).text().trim();
+            $("#depatureTime").text(arrivalTimeText);
+
+            var x = $('#total-fare-input-' + scheduleId).val();
+            $('#totalAmount').text(x);
+
+            var w = $('#selected-seats-input-' + scheduleId).val();
+            var selecte_seats = w.split(",");
+            console.log(selecte_seats);
+            $('#seatNumber').text(selecte_seats);
+
+            var numSeats = $('#number-of-seats-input-' + scheduleId).val();
+            var z = $('#scheduleID').text();
+            $('#scheduleID2').val(z);
+
+            $('#passengerDetailsContainer').empty();
+
+            for (var i = 1; i <= numSeats; i++) {
+                var passengerRow = `
+                <div>Passenger ` + i + ` </div>
+                <div class="row row2">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="name` + i + `" class="d-flex mt-3">Name</label>
+                            <input type="text" class="form-control-line name" id="name` + i + `" name="passenger` + i + `_name">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="age` + i + `" class="d-flex mt-3">Age</label>
+                            <input type="number" class="form-control-line age" id="age` + i + `" name="passenger` + i + `_age">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="d-flex mt-3 mb-3">Gender</label>
+                            <input class="form-check-input" type="radio" name="gender` + i + `" id="male` + i + `" value="Male" checked>
+                            <label class="form-check-label" for="male` + i + `">Male</label>
+                            <input class="form-check-input" type="radio" name="gender` + i + `" id="female` + i + `" value="Female">
+                            <label class="form-check-label" for="female` + i + `">Female</label>
+                        </div>
+                    </div>
+                </div>`;
+
+                $('#passengerDetailsContainer').append(passengerRow);
+            }
+        } else {
+            sessionStorage.setItem('redirectedFromModal', 'true'); // Set flag for redirection
+            setTimeout(function() {
+                window.location.href = '${pageContext.request.contextPath}/login'; // Redirect after a delay
+            }, 0);
+
+            return false; // Ensure no further actions are executed
+            $('modal-main').hide();
+        }
+
+
+    });
+
+    $(document).ready(function () {
+        debugger
+        if (sessionStorage.getItem('redirectedFromModal') === 'true') {
+            $('#modal-main').hide();
+            sessionStorage.removeItem('redirectedFromModal');
+        }
+    });
+
 
 
 </script>
@@ -892,6 +977,11 @@ console.log("jigjr")
 
 
     $(document).ready(function () {
+        console.log("doc ready")
+        debugger
+        var isLoggedIn = <c:out value="${not empty sessionScope.email}"/>;
+        if (isLoggedIn)
+        {
         var bookingId; // Variable to store the booking ID
         var reservationTimer; // Variable to store the reservation timer
         const RESERVATION_TIMEOUT = 0.5 * 60 * 1000; // 10 minutes in milliseconds
@@ -899,11 +989,11 @@ console.log("jigjr")
         $("#bookingDetails").submit(function (event) {
 
             if ($("#bookingDetails").valid()) {
-                console.log("vhgerdrugvffiegveiguf")
 
+                $('#fbtn').prop("disabled", true);
                 event.preventDefault();
-                debugger
-                // Prevent default form submission
+
+
 
                 $('#exampleModal').modal('show');
 
@@ -1038,6 +1128,7 @@ console.log("jigjr")
                 });
             }
         });
+        }
     });
 
 

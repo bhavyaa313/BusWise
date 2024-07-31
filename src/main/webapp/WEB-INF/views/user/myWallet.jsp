@@ -15,6 +15,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Wallet</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -138,7 +139,7 @@
                     <div id="balance-container">
 
 
-                    <p class="wallet-balance">Balance: $<span id="wallet-balance"></span></p>
+                        <p class="wallet-balance">Balance: $<span id="wallet-balance"></span></p>
                     </div>
                     <button class="btn btn-outline-success btn-lg " data-bs-toggle="modal" data-bs-target="#addFundsModal">Add
                         Funds</button>
@@ -165,7 +166,7 @@
                             <th>Amount</th>
                             <th>Type</th>
 
-<%--                            <th>Balance After</th>--%>
+                            <%--                            <th>Balance After</th>--%>
                         </tr>
                         </thead>
                         <tbody id="transaction-history" class="h7">
@@ -245,39 +246,91 @@
 <%--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>--%>
 <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script> -->
- <script>
+<script>
 
-     $(document).ready(function (){
-         $('.loader-overlay').hide();
-         console.log("hide")
-         getbalance()
-         getTransactions()
+    $(document).ready(function (){
+        $('.loader-overlay').hide();
+        console.log("hide")
+        getbalance()
+        getTransactions()
 
-     })
+    })
 
-     function getbalance(){
-         $.ajax({
-             url:"${pageContext.request.contextPath}/getBalance/${userId}",
-             type: "POST",
-             success:function (data){
-                 $('#balance-container').empty()
+    function getbalance(){
+        $.ajax({
+            url:"${pageContext.request.contextPath}/getBalance/${userId}",
+            type: "POST",
+            success:function (data){
+                $('#balance-container').empty()
 
-                 var x = `   <p class="wallet-balance">Balance: $ <span id="wallet-balance">`+data+`</span></p>`
-                 $('#balance-container').append(x);
-             }
+                var x = `   <p class="wallet-balance">Balance: $ <span id="wallet-balance">`+data+`</span></p>`
+                $('#balance-container').append(x);
+            }
 
-         })
-     }
+        })
+    }
 
-     $('#addFundsForm').on('submit', function(event) {
-                event.preventDefault();
-         if ($("#addFundsForm").valid()) {
-                var amount = ($('#amount').val());
+    $('#addFundsForm').on('submit', function(event) {
+        event.preventDefault();
+        if ($("#addFundsForm").valid()) {
+            var amount = ($('#amount').val());
+            $.ajax({
+                url: "${pageContext.request.contextPath}/addAmount/${userId}",
+                type: "POST",
+                data:{
+                    amount:amount
+                },
+                success:function () {
+                    $('.btn-close').click()
+                    $('.loader-overlay').show();
+                    setTimeout(function() {
+                        $('.loader-overlay').hide();
+                    }, 2000);
+                    getbalance()
+                    getTransactions()
+                    $(".btn-close").click();
+
+
+
+
+
+                },
+                error:function (){
+                    alert("errror")
+                }
+
+
+            })
+        }
+
+    });
+
+
+    $('#withdrawFundsForm').on('submit', function(event) {
+
+        debugger
+        //add validtion it should not be less than balance
+        event.preventDefault();
+        if ($("#withdrawFundsForm").valid()) {
+            var amount1 =   $('#amount2').val();
+            var balance = $('#wallet-balance').text();
+            console.log(balance)
+            if(amount1>balance){
+                $('#alertContainer').empty();
+                var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`
+                alert += `<strong>oops! </strong>`;
+                alert+=`Amount is more than your balance.`;
+                alert+=`<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                alert+=`</div>`;
+                console.log(alert)
+                $('#alertContainer').append(alert);
+            }
+            else {
                 $.ajax({
-                    url: "${pageContext.request.contextPath}/addAmount/${userId}",
+                    url: "${pageContext.request.contextPath}/withdrawAmount/${userId}",
                     type: "POST",
                     data:{
-                        amount:amount
+                        amount:amount1
                     },
                     success:function () {
                         $('.btn-close').click()
@@ -293,6 +346,7 @@
 
 
 
+
                     },
                     error:function (){
                         alert("errror")
@@ -300,278 +354,225 @@
 
 
                 })
-         }
+            }
+        }
 
-            });
-
-
-     $('#withdrawFundsForm').on('submit', function(event) {
-
-debugger
-         //add validtion it should not be less than balance
-         event.preventDefault();
-         if ($("#withdrawFundsForm").valid()) {
-         var amount1 =   $('#amount2').val();
-         var balance = $('#wallet-balance').text();
-         console.log(balance)
-         if(amount1>balance){
-             $('#alertContainer').empty();
-             var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`
-             alert += `<strong>oops! </strong>`;
-             alert+=`Amount is more than your balance.`;
-             alert+=`<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-             alert+=`</div>`;
-             console.log(alert)
-             $('#alertContainer').append(alert);
-         }
-         else {
-         $.ajax({
-             url: "${pageContext.request.contextPath}/withdrawAmount/${userId}",
-             type: "POST",
-             data:{
-                 amount:amount1
-             },
-             success:function () {
-                 $('.btn-close').click()
-                 $('.loader-overlay').show();
-                 setTimeout(function() {
-                     $('.loader-overlay').hide();
-                 }, 2000);
-                 getbalance()
-                 getTransactions()
-                 $(".btn-close").click();
+    });
 
 
 
+    console.log("page")
+    function init(totalFinal, curPage) {
 
-
-
-             },
-             error:function (){
-                 alert("errror")
-             }
-
-
-         })
-         }
-         }
-
-     });
-
-
-
-console.log("page")
-function init(totalFinal, curPage) {
-
-Pagination.Init(document.getElementById('pagination'), {
-size: parseInt(totalFinal, 10), // pages size
-page: parseInt(curPage, 10), // selected page
-step: 1
+        Pagination.Init(document.getElementById('pagination'), {
+            size: parseInt(totalFinal, 10), // pages size
+            page: parseInt(curPage, 10), // selected page
+            step: 1
 // pages before and after current
-});
-};
+        });
+    };
 
-var Pagination = {
+    var Pagination = {
 
-code: '',
+        code: '',
 
 // --------------------
 // Utility
 // --------------------
 
 // converting initialize data
-Extend: function(data) {
-data = data || {};
-Pagination.size = data.size || 0;
-Pagination.page = data.page || 1;
-Pagination.step = data.step || 3;
-},
+        Extend: function(data) {
+            data = data || {};
+            Pagination.size = data.size || 0;
+            Pagination.page = data.page || 1;
+            Pagination.step = data.step || 3;
+        },
 
 // add pages by number (from [s] to [f])
-Add: function(s, f) {
-for (var i = s; i < f; i++) {
-Pagination.code += '<a>' + i + '</a>';
-}
-},
+        Add: function(s, f) {
+            for (var i = s; i < f; i++) {
+                Pagination.code += '<a>' + i + '</a>';
+            }
+        },
 
 // add last page with separator
-Last: function() {
-Pagination.code += '<i>...</i><a>' + Pagination.size + '</a>';
-},
+        Last: function() {
+            Pagination.code += '<i>...</i><a>' + Pagination.size + '</a>';
+        },
 
 // add first page with separator
-First: function() {
-Pagination.code += '<a>1</a><i>...</i>';
-},
+        First: function() {
+            Pagination.code += '<a>1</a><i>...</i>';
+        },
 
 // --------------------
 // Handlers
 // --------------------
 
 // change page
-Click: function() {
-Pagination.page = +this.innerHTML;
-Pagination.Start();
-},
+        Click: function() {
+            Pagination.page = +this.innerHTML;
+            Pagination.Start();
+        },
 
 // previous page
-Prev: function() {
-Pagination.page--;
-if (Pagination.page < 1) {
-Pagination.page = 1;
-}
-Pagination.Start();
-},
+        Prev: function() {
+            Pagination.page--;
+            if (Pagination.page < 1) {
+                Pagination.page = 1;
+            }
+            Pagination.Start();
+        },
 
 // next page
-Next: function() {
-Pagination.page++;
-if (Pagination.page > Pagination.size) {
-Pagination.page = Pagination.size;
-}
-Pagination.Start();
-},
+        Next: function() {
+            Pagination.page++;
+            if (Pagination.page > Pagination.size) {
+                Pagination.page = Pagination.size;
+            }
+            Pagination.Start();
+        },
 
 // --------------------
 // Script
 // --------------------
 
 // binding pages
-Bind: function() {
-var a = Pagination.e.getElementsByTagName('a');
-for (var i = 0; i < a.length; i++) {
-if (+a[i].innerHTML === Pagination.page)
-a[i].className = 'current';
-a[i].addEventListener('click', Pagination.Click, false);
-}
-},
+        Bind: function() {
+            var a = Pagination.e.getElementsByTagName('a');
+            for (var i = 0; i < a.length; i++) {
+                if (+a[i].innerHTML === Pagination.page)
+                    a[i].className = 'current';
+                a[i].addEventListener('click', Pagination.Click, false);
+            }
+        },
 
 // write pagination
-Finish: function() {
-Pagination.e.innerHTML = Pagination.code;
-Pagination.code = '';
-Pagination.Bind();
-},
+        Finish: function() {
+            Pagination.e.innerHTML = Pagination.code;
+            Pagination.code = '';
+            Pagination.Bind();
+        },
 
 // find pagination type
-Start: function() {
-if (Pagination.size < Pagination.step * 2 + 6) {
-Pagination.Add(1, Pagination.size + 1);
-} else if (Pagination.page < Pagination.step * 2 + 1) {
-Pagination.Add(1, Pagination.step * 2 + 4);
-Pagination.Last();
-} else if (Pagination.page > Pagination.size - Pagination.step
-* 2) {
-Pagination.First();
-Pagination.Add(Pagination.size - Pagination.step * 2 - 2,
-Pagination.size + 1);
-} else {
-Pagination.First();
-Pagination.Add(Pagination.page - Pagination.step,
-Pagination.page + Pagination.step + 1);
-Pagination.Last();
-}
-Pagination.Finish();
-},
+        Start: function() {
+            if (Pagination.size < Pagination.step * 2 + 6) {
+                Pagination.Add(1, Pagination.size + 1);
+            } else if (Pagination.page < Pagination.step * 2 + 1) {
+                Pagination.Add(1, Pagination.step * 2 + 4);
+                Pagination.Last();
+            } else if (Pagination.page > Pagination.size - Pagination.step
+                * 2) {
+                Pagination.First();
+                Pagination.Add(Pagination.size - Pagination.step * 2 - 2,
+                    Pagination.size + 1);
+            } else {
+                Pagination.First();
+                Pagination.Add(Pagination.page - Pagination.step,
+                    Pagination.page + Pagination.step + 1);
+                Pagination.Last();
+            }
+            Pagination.Finish();
+        },
 
 // --------------------
 // Initialization
 // --------------------
 
 // binding buttons
-Buttons: function(e) {
-var nav = e.getElementsByTagName('a');
-nav[0].addEventListener('click', Pagination.Prev, false);
-nav[1].addEventListener('click', Pagination.Next, false);
-},
+        Buttons: function(e) {
+            var nav = e.getElementsByTagName('a');
+            nav[0].addEventListener('click', Pagination.Prev, false);
+            nav[1].addEventListener('click', Pagination.Next, false);
+        },
 
 // create skeleton
-Create: function(e) {
+        Create: function(e) {
 
-var html = ['<a>&#9668;</a>', // previous button
-'<span></span>', // pagination container
-'<a>&#9658;</a>' // next button
-];
+            var html = ['<a>&#9668;</a>', // previous button
+                '<span></span>', // pagination container
+                '<a>&#9658;</a>' // next button
+            ];
 
-e.innerHTML = html.join('');
-Pagination.e = e.getElementsByTagName('span')[0];
-Pagination.Buttons(e);
-},
+            e.innerHTML = html.join('');
+            Pagination.e = e.getElementsByTagName('span')[0];
+            Pagination.Buttons(e);
+        },
 
 // init
-Init: function(e, data) {
-Pagination.Extend(data);
-Pagination.Create(e);
-Pagination.Start();
-}
-};
+        Init: function(e, data) {
+            Pagination.Extend(data);
+            Pagination.Create(e);
+            Pagination.Start();
+        }
+    };
 
 
 
-$("#pagination").on("click", function() {
-    console.log("page clicked")
-    var current = $(".current").text();
-    $("#currentPage").attr("value" , current);
-    console.log(current)
-    getTransactions()
+    $("#pagination").on("click", function() {
+        console.log("page clicked")
+        var current = $(".current").text();
+        $("#currentPage").attr("value" , current);
+        console.log(current)
+        getTransactions()
 
 
-})
+    })
 
-function getTransactions(){
-    var curPage = $("#currentPage").attr("value");
-    $.ajax({
-        url:'${pageContext.request.contextPath}/getTransactions/${userId}',
-        type:'POST',
-        data:{
-            curPage: curPage
-        },
-        success:function (data){
-            $("#transaction-history").empty();
-            if (data.length === 0) {
-                $("#pagination").hide();
-                $("#myTable").hide();
-                $('#container-data-0').empty();
-                var nodata = `<div class="container nodataC mt-5">
+    function getTransactions(){
+        var curPage = $("#currentPage").attr("value");
+        $.ajax({
+            url:'${pageContext.request.contextPath}/getTransactions/${userId}',
+            type:'POST',
+            data:{
+                curPage: curPage
+            },
+            success:function (data){
+                $("#transaction-history").empty();
+                if (data.length === 0) {
+                    $("#pagination").hide();
+                    $("#myTable").hide();
+                    $('#container-data-0').empty();
+                    var nodata = `<div class="container nodataC mt-5">
     <div id="nodata" class=" d-flex align-items-center justify-content-center flex-column">
         <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
 
         <div> <h3 class="text-dark">No Transactions available!</h3></div>
     </div>
 </div>`
-                $('#container-data-0').append(nodata);
-            }
-            else {
-                $("#pagination").show();
-                $("#myTable").show();// Show pagination if data exists
-                $('#container-data-0').empty();
+                    $('#container-data-0').append(nodata);
+                }
+                else {
+                    $("#pagination").show();
+                    $("#myTable").show();// Show pagination if data exists
+                    $('#container-data-0').empty();
 
 
-            }
+                }
 
-            for (let i = 0; i < data.length; i++) {
-                var trasaction = data[i];
-                var amountClass = trasaction.debit === "debit" ? "text-danger" : "text-success";
-                var amountSign = trasaction.debit === "debit" ? "-" : "+";
+                for (let i = 0; i < data.length; i++) {
+                    var trasaction = data[i];
+                    var amountClass = trasaction.debit === "debit" ? "text-danger" : "text-success";
+                    var amountSign = trasaction.debit === "debit" ? "-" : "+";
 
-                var row =`<tr class="w-100">
+                    var row =`<tr class="w-100">
                              <td>`+trasaction.date+`</td>
                             <td>`+trasaction.description+`</td>
                             <td class="text-success `+amountClass+`  "> `+amountSign+`  `+trasaction.amount+`</td>
                             <td>`+trasaction.debit+`</td>
 
                           <tr>`
-                //dataaa
+                    //dataaa
 
 
-                $("#transaction-history").append(row);
-                var temp =trasaction.count;
-                var totalFinal = Math.ceil(temp / 6);
-                init(totalFinal, curPage);
+                    $("#transaction-history").append(row);
+                    var temp =trasaction.count;
+                    var totalFinal = Math.ceil(temp / 6);
+                    init(totalFinal, curPage);
+                }
             }
-        }
-    })
-}
+        })
+    }
 
     $('#addFundsModal').on('hidden.bs.modal', function() {
         $('#addFundsForm')[0].reset();
@@ -580,18 +581,12 @@ function getTransactions(){
         $('#withdrawFundsForm')[0].reset();
     });
 
+</script>
 
-
-<script src = "https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs"
-type = "module" ></script>
+<script src = "https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type = "module" ></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="<c:url value="/resources/js/wallet.js" />"></script>
 
-<%--<script--%>
-<%--        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>--%>
-<%--<script src="https://code.jquery.com/jquery-3.7.1.min.js"--%>
-<%--        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="--%>
-<%--        crossorigin="anonymous"></script>--%>
 
 </body>
 

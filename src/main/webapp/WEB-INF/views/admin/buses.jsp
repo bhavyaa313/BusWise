@@ -15,6 +15,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Buses</title>
 
 
@@ -110,7 +111,7 @@
         <thead>
         <tr>
 
-            <th scope="col" class="col-md-1">Bus Id</th>
+<%--            <th scope="col" class="col-md-1">Bus Id</th>--%>
             <th scope="col" class="col-md-2">Bus Number</th>
             <th scope="col" class="col-md-2">Bus Type</th>
             <th scope="col" class="col-md-2">Seating Capacity</th>
@@ -152,7 +153,8 @@
                         <div class="col-md">
                             <div class="form mb-3">
                                 <label
-                                        >Bus Number   </label>
+                                        >Bus Number <span
+                                        class="text-danger">*</span>   </label>
                                 <input type="text" class="form-control " placeholder=" Bus Number" id="busNumber"
                                        name="busNumber"/>
 
@@ -164,7 +166,8 @@
 
                         <div class="col-md">
                             <div class="form mb-3">
-                                <label >Select Bus Type </label>
+                                <label >Select Bus Type <span
+                                        class="text-danger">*</span> </label>
                                 <select class="form-select"
                                         aria-label="Floating label select example" name="busType" id="busType">
 
@@ -182,7 +185,8 @@
                         <div class="col-md-6">
                             <div class=" form mb-3">
                                 <label
-                                         class="dm ">Seating Capacity </label>
+                                         class="dm ">Seating Capacity <span
+                                        class="text-danger">*</span></label>
                                 <input type="number" class="form-control error" id="seatingCapacity"
                                        placeholder="Seating Capacity" name="seatingCapacity"/>
 
@@ -235,7 +239,8 @@
                         <input type="text" value="" id="bid" name="id" hidden>
                         <div class="col-md">
                             <div class="form mb-3">
-                                <label for="">Bus Number</label>
+                                <label for="">Bus Number <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="bn"
                                        placeholder="bus number" name="busNumber" value="" disabled>
 
@@ -245,7 +250,8 @@
 
                         <div class="col-md">
                             <div class="form mb-3">
-                                <label for="bt" class="">Select Bus Type</label>
+                                <label for="bt" class="">Select Bus Type <span
+                                        class="text-danger">*</span></label>
                                 <select class="form-select" id="bt"
                                         aria-label="Floating label select example" name="busType">
 
@@ -262,7 +268,8 @@
                         <div class="col-md-6">
                             <div class="form mb-3">
                                 <label
-                                        for="" class="dm">Seating Capacity</label>
+                                        for="" class="dm">Seating Capacity <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="bc"
                                        placeholder="seating capacity" name="seatingCapacity"
                                        value="">

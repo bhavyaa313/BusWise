@@ -14,6 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>My Bookings</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -102,14 +103,14 @@
             backdrop-filter: blur(5px); /* Blur the background */
         }
 
-        .loader {
-            border: 16px solid #f3f3f3; /* Light grey */
-            border-top: 16px solid #3498db; /* Blue */
-            border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            animation: spin 2s linear infinite;
-        }
+        /*.loader {*/
+        /*    border: 16px solid #f3f3f3; !* Light grey *!*/
+        /*    border-top: 16px solid #3498db; !* Blue *!*/
+        /*    border-radius: 50%;*/
+        /*    width: 120px;*/
+        /*    height: 120px;*/
+        /*    animation: spin 2s linear infinite;*/
+        /*}*/
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -123,7 +124,13 @@
 
 
 <div id="loader-overlay" class="loader-overlay">
-    <div class="loader"></div>
+
+    <div id="loader" class="text-center mt-3" >
+        <div class="spinner-border text-white " role="status">
+
+            <dotlottie-player src="https://lottie.host/99a98a1a-9a81-4e0b-a41f-e5180c93b2cb/Bkho40RfEt.json" background="transparent" speed="1" style="width: 50px; height: 50px;" loop autoplay></dotlottie-player>
+        </div>
+    </div>
 </div>
 
 <div class="container mt-5 lato-regular">
@@ -415,6 +422,18 @@
                     console.log("Booking Date:", bookingDate);
                     console.log("Today's Date:", today);
 
+                    var arrivalTimeString = booking.arrival;
+
+
+                    var arrivalTimeParts = arrivalTimeString.split(':');
+                    var arrivalHours = parseInt(arrivalTimeParts[0], 10);
+                    var arrivalMinutes = parseInt(arrivalTimeParts[1], 10);
+
+
+                    var today = new Date();
+                    var arrivalTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), arrivalHours, arrivalMinutes);
+                    var currentTime = new Date();
+
                     bookingHtml += `
     <div class="card-text mb-3">
         <strong>Name:</strong> `+passenger.name+` <br>
@@ -424,11 +443,22 @@
         <div class="mt-2">`;
 
                     // Only show the Cancel Seat button if the booking date is greater than or equal to today's date
-                    if (bookingDate >= today) {
+                    if (bookingDate > today) {
                         console.log("Showing Cancel Seat button for:", passenger.name);
                         bookingHtml += `
             <button class="btn btn-outline-danger btn-sm" onclick="cancelSeat('`+passenger.bookingDetailId+`', '`+passenger.bookingId+`')">Cancel Seat</button>
                     <div id="alertContainerCanelSeat" ></div>`;
+                    }   if (bookingDate = today && arrivalTime> currentTime) {
+                        console.log("Showing Cancel Seat button for:", passenger.name);
+                        bookingHtml += `
+            <button class="btn btn-outline-danger btn-sm" onclick="cancelSeat('`+passenger.bookingDetailId+`', '`+passenger.bookingId+`')">Cancel Seat</button>
+                    <div id="alertContainerCanelSeat" ></div>`;
+                    }
+
+                    if (bookingDate = today && arrivalTime< currentTime) {
+
+                        bookingHtml += `<div class="card-footer text-center bg-white"> This Trip is Completed!
+    </div>`;
                     }
 
 
@@ -454,11 +484,22 @@
 
      <div id="alertContainerDownload" ></div>
         </div>`;
-                } else if (bookingDate < today) {
+
+                }
+
+                else if (bookingDate < today ) {
                     console.log("Marking trip as completed for booking ID:", booking.bookingId);
                     bookingHtml += `
     <div class="card-footer text-center bg-white"> This Trip is Completed!
     </div>`;
+                }
+                else {
+
+                        console.log("Marking trip as completed for booking ID:", booking.bookingId);
+                        bookingHtml += `
+    <div class="card-footer text-center bg-white"> This Trip is Completed!
+    </div>`;
+
                 }
 
                 bookingsContainer.append(bookingHtml);
@@ -487,11 +528,13 @@
             $('#loader-overlay').hide();
         }
         else {
+            $('#alertContainerCancelSeat').empty();
 
             $.ajax({
                 url:  "${pageContext.request.contextPath}/admin/cancelSeat/" + bookingDetailId +"/" + bookingId +"/"+  ${userId},
                 type: "POST", //
                 success: function (response) {
+                    var message = response.message;
                     $('#message').text(response.message);
                     var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                     alert += `<strong>Success! </strong>`;
@@ -529,11 +572,14 @@
     }
 
     function deleteBooking(bookingId) {
+
+        $('#alertContainerCancelBooking').empty();
         $('#loader-overlay').show();
         $.ajax({
             url: "${pageContext.request.contextPath}/admin/cancelBooking/" + bookingId +"/" +${userId},
             type: "POST",
             success: function(response) {
+                var message = response.message;
                 $('#message').text(response.message);
 
                 renderData()
@@ -573,12 +619,15 @@
 
 
     function downloadTicket(bookingId) {
-
+        $('#alertContainerDownload').empty();
         $.ajax({
             url: '${pageContext.request.contextPath}/ticketDownlaod/'+bookingId ,
             type: 'GET',
 
             success: function(response) {
+
+                var fileUrl = response;
+                window.location.href= fileUrl;
                 console.log("succes")
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
@@ -602,6 +651,7 @@
     }
 
 </script>
+
 <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBogGz4MhA0DTVU7jLrP3vv4MOO5Q4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-HoA7Kt98Md5qCZmb3l4b4U0fQW0nPEd6sMBoX5YlTAnCl5xzQ3G01TIHuHtPpTHc" crossorigin="anonymous"></script>

@@ -17,7 +17,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Register</title>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -226,12 +226,21 @@
 </script>
 <script>
     $(document).ready(function() {
+        console.log("hiiiii")
         $('#loader').hide();
+
+    })
+
+
+
         $('#registerForm').submit(function(event) {
+
+            if ($('#registerForm').valid()){
+            $('#saveButton').prop("disabled", true);
             debugger
             event.preventDefault();
             $('#alertContainer').empty()
-
+            debugger
             var email = $("#email").val();
             $.ajax({
                 url:'${pageContext.request.contextPath}/checkEMail',
@@ -256,6 +265,8 @@
                         // Show the loader
                         $('#loader').show();
 
+
+
                         // Set a timeout to hide the loader after 3 seconds (3000 milliseconds)
                         setTimeout(function() {
                             $('#loader').hide();
@@ -266,10 +277,11 @@
             })
 
 
-
+            }
 
         });
-    });
+
+
 
 </script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"

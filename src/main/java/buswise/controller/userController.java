@@ -288,7 +288,7 @@ public class userController {
                 response.put("message", "Booking cancelled, but the email could not be sent.");
             }
             finally {
-                projectService.cancelSeat(bookingId, userId, email);
+                projectService.cancelSeat(bookingDetailId, userId, email);
             }
         }
 
@@ -396,7 +396,7 @@ public class userController {
     public ResponseEntity<Void> confirmBooking(@PathVariable int bookingId, @PathVariable int userId, Model model) {
         try {
             model.addAttribute("userId", userId);
-            projectService.confirmBooking(bookingId);
+            projectService.confirmBooking(bookingId, userId);
 
             return ResponseEntity.ok().build();
         } catch (ResourceNotFoundException e) {

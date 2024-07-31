@@ -19,10 +19,11 @@ public class UserProfileDto {
     @Pattern(regexp = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$", message = "Please enter a valid email address")
     private String email;
     private Integer age;
-    @Pattern(regexp = "^[A-Za-z]+$")
-    private String city;
-    @Pattern(regexp = "^[A-Za-z]+$")
-    private String state;
+    @Pattern(regexp = "^[A-Za-z]*$", message = "City must contain only alphabetic characters")
+    private String city="";
+
+    @Pattern(regexp = "^[A-Za-z]*$", message = "State must contain only alphabetic characters")
+    private String state="";
     private int userId;
 
 

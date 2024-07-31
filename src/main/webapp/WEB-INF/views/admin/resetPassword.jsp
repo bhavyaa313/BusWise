@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Reset Password</title>
     <link rel="stylesheet" href="<c:url value="/resources/css/reset-forgot.css" />">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -88,7 +88,69 @@
 
 
 </div>
+<script>
 
+    $(document).ready(function() {
+    $('#confirmPasswordError').hide();
+    $('#loader').hide();
+    $('#resetForm').submit(function(event) {
+        if ($('#resetForm').valid())
+        {
+            event.preventDefault();
+            debugger
+            $('#loader').show();
+
+
+            // setTimeout(function() {
+            //     $('#loader').hide();
+            // }, 4000);
+            var password = $('#password').val();
+            var confirmPassword = $('#confirmPassword').val();
+            var token = "${token}";
+
+            if (password !== confirmPassword) {
+                // $(this).addClass("is-invalid");
+                console.log("passwords do not match")
+                $("#confirmPasswordError").show();
+                $('#confirmPassword').addClass("is-invalid");
+            } else {
+                // $(this).removeClass("is-invalid");
+                $("#confirmPasswordError").hide()
+
+                $.ajax({
+                    url: "${pageContext.request.contextPath}/resetForm",
+                    type: "POST",
+                    data: {
+                        password:password,
+                        token: token,
+
+                    },
+                    success: function(data) {
+                        console.log(data);
+
+                        console.log("Password changed!");
+                        var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
+                        alert += `<strong>Success! </strong>`;
+                        alert+=`Your Password has been changed successfully.`;
+                        alert+=`<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                        alert+=`</div>`;
+                        console.log(alert)
+                        $('#alertContainer').append(alert);
+                        $('#loader').hide();
+
+                    },
+                    error: function() {
+                        console.log("Error submitting form.");
+                        $('#loader').hide();
+                    }
+                });
+            }
+
+        }
+    });
+    });
+
+</script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>

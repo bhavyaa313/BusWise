@@ -74,7 +74,7 @@ public class BookingDao {
 
     public List<Bookings> getBookingById(int bookingId) {
         Session session = sessionFactory.openSession();
-        String hqlString = "from buswise.model.Bookings where bookingId=:bookingId and isCancelled=false  ";
+        String hqlString = "from buswise.model.Bookings where bookingId=:bookingId and isCancelled=false and isBooked = true  ";
         Query query = session.createQuery(hqlString);
         query.setParameter("bookingId", bookingId);
         List<Bookings> list = query.list();
@@ -88,7 +88,7 @@ public class BookingDao {
         CriteriaQuery<Bookings> cr = cb.createQuery(Bookings.class);
         Root<Bookings> root = cr.from(Bookings.class);
         LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.now().withSecond(0).withNano(0); // Get current time with hours and minutes only
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(root.get("userId"), userId));
         if (valueOfSelectedFilter == 2) {
@@ -103,23 +103,29 @@ public class BookingDao {
                     )
             );
             predicates.add(futureBookingPredicate);
+            cr.orderBy(cb.desc(root.get("scheduleId").get("tripDate")));
             predicates.add(cb.equal(root.get("isCancelled"), false));
+            predicates.add(cb.equal(root.get("isBooked"), true));
 
         } else if (valueOfSelectedFilter == 3) {
             Predicate pastDatePredicate = cb.lessThan(root.get("scheduleId").get("tripDate"), today);
             Predicate pastTimePredicate = cb.lessThan(root.get("scheduleId").get("arrivalTime"), now);
 
             Predicate pastBookingPredicate = cb.or(
-                    cb.lessThan(root.get("scheduleId").get("tripDate"), today),
+                    pastDatePredicate,
                     cb.and(
                             cb.equal(root.get("scheduleId").get("tripDate"), today),
                             pastTimePredicate
                     )
             );
+
             predicates.add(pastBookingPredicate);
+            cr.orderBy(cb.desc(root.get("scheduleId").get("tripDate")));
             predicates.add(cb.equal(root.get("isCancelled"), false));
+            predicates.add(cb.equal(root.get("isBooked"), true));
         } else {
             predicates.add(cb.equal(root.get("isCancelled"), false));
+            predicates.add(cb.equal(root.get("isBooked"), true));
             cr.orderBy(cb.desc(root.get("scheduleId").get("tripDate")));
         }
         cr.select(root).where(predicates.toArray(new Predicate[0]));
@@ -127,6 +133,7 @@ public class BookingDao {
         query.setFirstResult(startIndex);
         query.setMaxResults(endIndex);
         List<Bookings> list = query.getResultList();
+
         session.close();
         return list;
     }
@@ -145,12 +152,16 @@ public class BookingDao {
             predicates.add(cb.greaterThanOrEqualTo(root.get("scheduleId").get("tripDate"), today));
             predicates.add(cb.greaterThanOrEqualTo(root.get("scheduleId").get("arrivalTime"), time));
             predicates.add(cb.equal(root.get("isCancelled"), false));
+            predicates.add(cb.equal(root.get("isBooked"), true));
         } else if (valueOfSelectedFilter == 3) {
             predicates.add(cb.lessThan(root.get("scheduleId").get("tripDate"), today));  //orequalto
             predicates.add(cb.equal(root.get("isCancelled"), false));
+            predicates.add(cb.equal(root.get("isBooked"), true));
 //            predicates.add(cb.lessThan(root.get("scheduleId").get("arrivalTime"), time));
         } else {
             predicates.add(cb.equal(root.get("isCancelled"), false));
+            predicates.add(cb.equal(root.get("isBooked"), true));
+
         }
         cr.select(cb.count(root)).where(predicates.toArray(new Predicate[0]));
         Query<Long> query = session.createQuery(cr);
@@ -164,7 +175,7 @@ public class BookingDao {
 
     public List<String> getNamesByBookingId(int bookingId) {
         Session session = sessionFactory.openSession();
-        String hqlString = "SELECT bd.name FROM BookingDetails bd WHERE bd.booking_id.bookingId = :bookingId and isCancelled=false";
+        String hqlString = "SELECT bd.name FROM BookingDetails bd WHERE bd.booking_id.bookingId = :bookingId and isCancelled=false and bd.booking_id.isBooked = true";
         Query<String> query = session.createQuery(hqlString, String.class);
         query.setParameter("bookingId", bookingId);
         List<String> names = query.list();
@@ -174,7 +185,7 @@ public class BookingDao {
 
     public List<String> getGenderByBookingId(int bookingId) {
         Session session = sessionFactory.openSession();
-        String hqlString = "SELECT bd.gender FROM BookingDetails bd WHERE bd.booking_id.bookingId = :bookingId and isCancelled=false";
+        String hqlString = "SELECT bd.gender FROM BookingDetails bd WHERE bd.booking_id.bookingId = :bookingId and isCancelled=false and bd.booking_id.isBooked = true";
         Query<String> query = session.createQuery(hqlString, String.class);
         query.setParameter("bookingId", bookingId);
         List<String> gender = query.list();
@@ -185,7 +196,7 @@ public class BookingDao {
 
     public List<String> getSeatsByBookingId(int bookingId) {
         Session session = sessionFactory.openSession();
-        String hqlString = "SELECT bd.seatNumber FROM BookingDetails bd WHERE bd.booking_id.bookingId = :bookingId and isCancelled=false";
+        String hqlString = "SELECT bd.seatNumber FROM BookingDetails bd WHERE bd.booking_id.bookingId = :bookingId and isCancelled=false and bd.booking_id.isBooked = true";
         Query<String> query = session.createQuery(hqlString, String.class);
         query.setParameter("bookingId", bookingId);
         List<String> seats = query.list();
@@ -195,7 +206,7 @@ public class BookingDao {
 
     public List<String> getAgeByBookingId(int bookingId) {
         Session session = sessionFactory.openSession();
-        String hqlString = "SELECT bd.age FROM BookingDetails bd WHERE bd.booking_id.bookingId = :bookingId and isCancelled=false";
+        String hqlString = "SELECT bd.age FROM BookingDetails bd WHERE bd.booking_id.bookingId = :bookingId and isCancelled=false and bd.booking_id.isBooked = true";
         Query<String> query = session.createQuery(hqlString, String.class);
         query.setParameter("bookingId", bookingId);
         List<String> age = query.list();
@@ -216,7 +227,7 @@ public class BookingDao {
 
     public List<BookingDetails> getBookingDetailsByBookingDetailId(int bookingDetailId) {
         Session session = sessionFactory.openSession();
-        String hqlString = "from buswise.model.BookingDetails where id=:bookingDetailId and isCancelled=false";
+        String hqlString = "from buswise.model.BookingDetails where id=:bookingDetailId and isCancelled=false ";
         Query query = session.createQuery(hqlString);
         query.setParameter("bookingDetailId", bookingDetailId);
         List<BookingDetails> list = query.list();
@@ -232,7 +243,8 @@ public class BookingDao {
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
         Predicate datePredicate = cb.between(root.get("bookingDate"), startOfDay, endOfDay);
         Predicate isCancelledPredicate = cb.equal(root.get("isCancelled"), false);
-        cq.where(cb.and(datePredicate, isCancelledPredicate));
+        Predicate isBookedPredicate = cb.equal(root.get("isBooked"), true);
+        cq.where(cb.and(datePredicate, isCancelledPredicate, isBookedPredicate));
         List<Bookings> bookings = entityManager.createQuery(cq).getResultList();
         SalesData salesData = processSalesData(bookings);
         return salesData;
@@ -246,7 +258,8 @@ public class BookingDao {
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
         Predicate datePredicate = cb.between(root.get("bookingDate"), startOfDay, endOfDay);
         Predicate isCancelledPredicate = cb.equal(root.get("isCancelled"), false);
-        cq.where(cb.and(datePredicate, isCancelledPredicate));
+        Predicate isBookedPredicate = cb.equal(root.get("isBooked"), true);
+        cq.where(cb.and(datePredicate, isCancelledPredicate, isBookedPredicate));
         List<Bookings> bookings = entityManager.createQuery(cq).getResultList();
         return bookings;
     }
@@ -272,7 +285,8 @@ public class BookingDao {
         LocalDateTime endOfMonth = date.withDayOfMonth(date.lengthOfMonth()).atTime(23, 59, 59);
         Predicate datePredicate = cb.between(root.get("bookingDate"), startOfMonth, endOfMonth);
         Predicate isCancelledPredicate = cb.equal(root.get("isCancelled"), false);
-        cq.where(cb.and(datePredicate, isCancelledPredicate));
+        Predicate isBookedPredicate = cb.equal(root.get("isBooked"), true);
+        cq.where(cb.and(datePredicate, isCancelledPredicate, isBookedPredicate));
         List<Bookings> bookings = entityManager.createQuery(cq).getResultList();
         return bookings;
     }
@@ -285,7 +299,8 @@ public class BookingDao {
         LocalDateTime endOfYear = LocalDate.of(year, 12, 31).atTime(23, 59, 59);
         Predicate datePredicate = cb.between(root.get("bookingDate"), startOfYear, endOfYear);
         Predicate isCancelledPredicate = cb.equal(root.get("isCancelled"), false);
-        cq.where(cb.and(datePredicate, isCancelledPredicate));
+        Predicate isBookedPredicate = cb.equal(root.get("isBooked"), true);
+        cq.where(cb.and(datePredicate, isCancelledPredicate, isBookedPredicate));
         List<Bookings> bookings = entityManager.createQuery(cq).getResultList();
         return bookings;
     }
@@ -301,7 +316,9 @@ public class BookingDao {
         LocalDate endOfDay = date.atTime(23, 59, 59).toLocalDate();
         Predicate datePredicate = cb.between(bookingRoot.join("scheduleId").get("tripDate"), startOfDay, endOfDay);
         Predicate isCancelledPredicate = cb.equal(bookingRoot.get("isCancelled"), false);
-        cq.where(cb.and(datePredicate, isCancelledPredicate));
+        Predicate isBookedPredicate = cb.equal(bookingRoot.get("isBooked"), true);
+        cq.where(cb.and(datePredicate, isCancelledPredicate, isBookedPredicate));
+
         List<Bookings> bookings = em.createQuery(cq).getResultList();
         Map<Integer, OccupancyReportDto> reportDataMap = new HashMap<>();
         for (Bookings booking : bookings) {
@@ -315,6 +332,7 @@ public class BookingDao {
                 reportData.setSelectedDestination(booking != null ? booking.getSelectedDestination() : null);
                 reportData.setDepartureTime(booking != null ? booking.getDepatureTime() : null);
                 reportData.setTotalSeats(schedule.getBusId().getSeatingCapacity());
+                reportData.setRouteId(schedule.getRouteId().getRouteId());
                 reportData.setRoute(schedule.getRouteId().getSource() + " to " + schedule.getRouteId().getDestination());
                 reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity());
                 List<BookingDetails> bookingDetails = getBookingDetailsById(booking != null ? booking.getBookingId() : null);
@@ -327,7 +345,7 @@ public class BookingDao {
                     reportData.setSeatsCancelled(canceledSeats);
                 }
 
-                reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity()-schedule.getAvailableSeats());
+                reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity()-schedule.getAvailableSeats()+reportData.getSeatsCancelled());
                 reportData.setOccupancyPercentage((double) reportData.getSeatsOccupied() / schedule.getBusId().getSeatingCapacity() * 100);
                 reportDataMap.put(scheduleId, reportData);
             }
@@ -346,7 +364,8 @@ public class BookingDao {
         LocalDate endDate = startDate.plusMonths(1).minusDays(1);
         Predicate datePredicate = cb.between(bookingRoot.join("scheduleId").get("tripDate"), startDate, endDate);
         Predicate isDeletedPredicate = cb.equal(bookingRoot.get("isCancelled"), 0);
-        cq.where(cb.and(datePredicate, isDeletedPredicate));
+        Predicate isBookedPredicate = cb.equal(bookingRoot.get("isBooked"), true);
+        cq.where(cb.and(datePredicate, isDeletedPredicate, isBookedPredicate));
         List<Bookings> bookings = em.createQuery(cq).getResultList();
         Map<Integer, OccupancyReportDto> reportDataMap = new HashMap<>();
         for (Bookings booking : bookings) {
@@ -360,6 +379,7 @@ public class BookingDao {
                 reportData.setDepartureTime(booking != null ? booking.getDepatureTime() : null);
                 reportData.setTotalSeats(schedule.getBusId().getSeatingCapacity());
                 reportData.setRouteId(schedule.getRouteId().getRouteId());
+                reportData.setRouteId(schedule.getRouteId().getRouteId());
                 reportData.setRoute(schedule.getRouteId().getSource() + " to " + schedule.getRouteId().getDestination());
                 reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity());
                 List<BookingDetails> bookingDetails = getBookingDetailsById(booking != null ? booking.getBookingId() : null);
@@ -370,7 +390,7 @@ public class BookingDao {
                     int canceledSeats = canceledBookings.size();
                     reportData.setSeatsCancelled(canceledSeats);
                 }
-                reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity()-schedule.getAvailableSeats());
+                reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity()-schedule.getAvailableSeats() + reportData.getSeatsCancelled());
                 reportData.setOccupancyPercentage((double) reportData.getSeatsOccupied() / schedule.getBusId().getSeatingCapacity() * 100);
                 reportDataMap.put(scheduleId, reportData);
             }
@@ -390,7 +410,8 @@ public class BookingDao {
         LocalDate endDate = startDate.plusYears(1).minusDays(1);
         Predicate datePredicate = cb.between(bookingRoot.join("scheduleId").get("tripDate"), startDate, endDate);
         Predicate isDeletedPredicate = cb.equal(bookingRoot.get("isCancelled"), 0);
-        cq.where(datePredicate, isDeletedPredicate);
+        Predicate isBookedPredicate = cb.equal(bookingRoot.get("isBooked"), true);
+        cq.where(cb.and(datePredicate, isDeletedPredicate, isBookedPredicate));
         List<Bookings> bookings = em.createQuery(cq).getResultList();
         Map<Integer, OccupancyReportDto> reportDataMap = new HashMap<>();
         for (Bookings booking : bookings) {
@@ -414,7 +435,7 @@ public class BookingDao {
                     int canceledSeats = canceledBookings.size();
                     reportData.setSeatsCancelled(canceledSeats);
                 }
-                reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity() - schedule.getAvailableSeats());
+                reportData.setSeatsOccupied(schedule.getBusId().getSeatingCapacity() - schedule.getAvailableSeats() + reportData.getSeatsCancelled());
                 reportData.setOccupancyPercentage((double) reportData.getSeatsOccupied() / schedule.getBusId().getSeatingCapacity() * 100);
                 reportDataMap.put(scheduleId, reportData);
             }
@@ -428,7 +449,7 @@ public class BookingDao {
 
     public List<Bookings> getBookingsVyScheduleId(int id){
         Session session = sessionFactory.openSession();
-        String hql = "from buswise.model.Bookings where scheduleId.scheduleId=:id and isCancelled=false and scheduleId.tripDate>=CURRENT_DATE ";
+        String hql = "from buswise.model.Bookings where scheduleId.scheduleId=:id and isCancelled=false and scheduleId.tripDate>=CURRENT_DATE and isBooked=true ";
         Query query = session.createQuery(hql);
         query.setParameter("id", id);
         List<Bookings> bookings = query.list();

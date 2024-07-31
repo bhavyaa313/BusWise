@@ -21,6 +21,7 @@ public class Schedule1Dto {
     private String yourdestination;
     private int noOfSeatsAvailable;
     private List<String> bookedSeats;
+    private String createdDate;
 
 
     public String getYourSource() {
@@ -168,7 +169,15 @@ public class Schedule1Dto {
         this.bookedSeats = bookedSeats;
     }
 
-    public Schedule1Dto(int scheduleId, String source, String destination, String date, String duration, long fare, String busDetails, String subroutes, String time, long count, int busId, String routeDetails, int routeId, int noOfSeats, String yourSource, String yourdestination, int noOfSeatsAvailable, List<String> bookedSeats) {
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Schedule1Dto(int scheduleId, String source, String destination, String date, String duration, long fare, String busDetails, String subroutes, String time, long count, int busId, String routeDetails, int routeId, int noOfSeats, String yourSource, String yourdestination, int noOfSeatsAvailable, List<String> bookedSeats, String createdDate) {
         this.scheduleId = scheduleId;
         this.source = source;
         this.destination = destination;
@@ -187,6 +196,7 @@ public class Schedule1Dto {
         this.yourdestination = yourdestination;
         this.noOfSeatsAvailable = noOfSeatsAvailable;
         this.bookedSeats = bookedSeats;
+        this.createdDate = createdDate;
     }
 
     public Schedule1Dto() {

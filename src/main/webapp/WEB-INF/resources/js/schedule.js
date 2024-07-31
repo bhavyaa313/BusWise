@@ -11,20 +11,38 @@ $.validator.addMethod("minDate", function(value, element) {
     return inputDate >= today;
 }, "Please enter a date on or after today");
 
+
 $.validator.addMethod("minTime", function(value, element) {
-    var now = new Date();
-    var currentHours = now.getHours();
-    var currentMinutes = now.getMinutes();
+    // Get the date field value
+    var dateFieldName = "date1"; // Replace with your actual date field name
+    var inputDateValue = $(element).closest('form').find(`[name="${dateFieldName}"]`).val();
 
-    // Parse the input time value (assuming format is HH:MM)
-    var timeParts = value.split(':');
-    if (timeParts.length !== 2) return false; // Invalid format
+    if (!inputDateValue) {
+        return true; // If there's no date value, skip time validation
+    }
 
-    var inputHours = parseInt(timeParts[0], 10);
-    var inputMinutes = parseInt(timeParts[1], 10);
+    var inputDate = new Date(inputDateValue);
+    var today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to midnight
+    inputDate.setHours(0, 0, 0, 0); // Reset time to midnight for comparison
 
-    // Check if the input time is greater than or equal to the current time
-    return (inputHours > currentHours) || (inputHours === currentHours && inputMinutes >= currentMinutes);
+    // Only apply time validation if the input date is today
+    if (inputDate.getTime() === today.getTime()) {
+        var now = new Date();
+        var currentHours = now.getHours();
+        var currentMinutes = now.getMinutes();
+
+        // Parse the input time value (assuming format is HH:MM)
+        var timeParts = value.split(':');
+        if (timeParts.length !== 2) return false; // Invalid format
+
+        var inputHours = parseInt(timeParts[0], 10);
+        var inputMinutes = parseInt(timeParts[1], 10);
+
+        // Check if the input time is greater than or equal to the current time
+        return (inputHours > currentHours) || (inputHours === currentHours && inputMinutes >= currentMinutes);
+    }
+    return true; // If the date is not today, skip time validation
 }, "Please enter a time on or after the current time");
 
 $("#myFormAdd").validate({
@@ -155,6 +173,5 @@ function getCurrentTime() {
 }
 
 
-const timeInput = document.getElementById('time');
-timeInput.setAttribute('min', getCurrentTime());
+
 

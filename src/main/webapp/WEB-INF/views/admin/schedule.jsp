@@ -16,6 +16,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="<c:url value="/resources/image/logo.png"/>"/>
     <title>Schedule</title>
 
 
@@ -271,11 +272,13 @@
 
                     <div class="row mb-3">
                         <div class="col">
-                            <label for="" >Date</label>
+                            <label for="" >Date <span
+                                    class="text-danger">*</span></label>
                             <input type="date" class="form-control" placeholder="date" aria-label="datetime" name="date1" id="date">
                         </div>
                         <div class="col">
-                            <label for="" >Time</label>
+                            <label for="" >Time <span
+                                    class="text-danger">*</span></label>
                             <input type="time" class="form-control" placeholder="Time" aria-label="time" name="time1" id="time">
                         </div>
                     </div>
@@ -283,7 +286,8 @@
                     <div class="row mb-3">
                         <input id="routeId" type="text" hidden>
                         <div class="col">
-                            <label for="" >Select Route</label>
+                            <label for="" >Select Route <span
+                                    class="text-danger">*</span></label>
                             <select class="form-select" aria-label="Default select example" id="routeSelect" name="route">
 
                             </select>
@@ -295,7 +299,8 @@
                         <input id="busId" type="text" hidden>
 
                         <div class="col">
-                            <label for="" >Select Bus</label>
+                            <label for="" >Select Bus <span
+                                    class="text-danger">*</span></label>
                             <select class="form-select" aria-label="Default select example" id="busSelect" name="bus">
 
                             </select>
@@ -306,11 +311,13 @@
 
                     <div class="row">
                         <div class="col">
-                            <label for="" >Duration</label>
+                            <label for="" >Duration <span
+                                    class="text-danger">*</span></label>
                             <input type="text" class="form-control" placeholder="Duration" aria-label="Duration" id="duration" name="duration">
                         </div>
                         <div class="col">
-                            <label for="" >Fare</label>
+                            <label for="" >Fare <span
+                                    class="text-danger">*</span></label>
                             <input type="number" class="form-control" placeholder="Fare" aria-label="Fare" id="fare" name="fare">
                         </div>
                     </div>
@@ -359,11 +366,13 @@
                     <div class="row mb-3">
                         <div class="col">
                             <input type="text" id="sid" hidden>
-                            <label for="" >Date</label>
+                            <label for="" >Date <span
+                                    class="text-danger">*</span></label>
                             <input type="date" class="form-control" placeholder="date" aria-label="datetime" name="date1" id="date2" disabled>
                         </div>
                         <div class="col">
-                            <label for="" >Time</label>
+                            <label for="" >Time <span
+                                    class="text-danger">*</span></label>
                             <input type="time" class="form-control" placeholder="Time" aria-label="time" name="time1" id="time2">
                         </div>
                     </div>
@@ -371,7 +380,8 @@
                     <div class="row mb-3">
 
                         <div class="col">
-                            <label for="" >Select Route</label>
+                            <label for="" >Select Route <span
+                                    class="text-danger">*</span></label>
                             <select class="form-select" aria-label="Default select example" id="routeSelect2" name="route" disabled>
 
                             </select>
@@ -383,7 +393,8 @@
 
 
                         <div class="col">
-                            <label for="" >Select Bus</label>
+                            <label for="" >Select Bus <span
+                                    class="text-danger">*</span></label>
                             <select class="form-select" aria-label="Default select example" id="busSelect2" name="bus">
 
                             </select>
@@ -394,11 +405,13 @@
 
                     <div class="row">
                         <div class="col">
-                            <label for="" >Duration</label>
+                            <label for="" >Duration <span
+                                    class="text-danger">*</span></label>
                             <input type="text" class="form-control" placeholder="Duration" aria-label="Duration" id="duration2" name="duration" disabled>
                         </div>
                         <div class="col">
-                            <label for="" >Fare</label>
+                            <label for="" >Fare <span
+                                    class="text-danger">*</span></label>
                             <input type="number" class="form-control" placeholder="Fare" aria-label="Fare" id="fare2" name="fare" disabled>
                         </div>
                     </div>
@@ -802,7 +815,7 @@ debugger
                                console.log("error in bus")
                                 errorSpan.text("Error: Bus is already booked at that date and time.");
                                 hasError = true;
-                                console.log(hasError +"hh==============================")
+                                console.log(hasError)
                             }
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
@@ -811,12 +824,7 @@ debugger
                         }
                     });
 
-                    // if(hasError){
-                    //     console.log("error bus number")
-                    // }
-                    // else {
-                    //
-                    // }
+
 
 
 
@@ -854,7 +862,7 @@ debugger
 
 
 
-            var region = $("#searchSource").val();
+            var region = $("#searchSource").val().trim();
 
 
             console.log(sortDirection + "sort")
@@ -942,6 +950,7 @@ debugger
 							<td>` + trips.busDetails + `</td>
 							<td>` + trips.fare + `</td>
 
+
                            <td class="justify-content-end d-flex">
             <button type="button" class="btn btn-dark" style="width: 5vh"
     onclick="checkAndUpdateSchedule('` + trips.scheduleId + `', '` + trips.date + `', '` + trips.time + `', '` + trips.duration + `', '` + trips.fare + `', '` + trips.busId + `', '` + trips.routeId + `')"
@@ -978,8 +987,9 @@ debugger
 
         }
 
-    console.log("yeahhhhhhkkkk")
+
     function checkAndUpdateSchedule(scheduleId, date, time, duration, fare, bus, route) {
+        $('#alertContainerDelete').empty();
         $.ajax({
             url: "checkScheduleUsage/" + scheduleId + "/" + ${userId},
             type: "GET",
@@ -1030,7 +1040,6 @@ debugger
 
 
     $(document).ready(function() {
-        console.log("fvfgfgtfdgf")
         $("#myFormEdit").submit(function(event) {
             $('#routeSelect2').attr('disabled', false);
             $('#date2').attr('disabled', false);
@@ -1105,7 +1114,7 @@ debugger
                             console.log("error in bus")
                             errorSpan.text("Error: Bus is already booked at that date and time.");
                             hasError = true;
-                            console.log(hasError +"hh==============================")
+                            console.log(hasError)
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -1114,12 +1123,6 @@ debugger
                     }
                 });
 
-                // if(hasError){
-                //     console.log("error bus number")
-                // }
-                // else {
-                //
-                // }
 
 
 
@@ -1131,6 +1134,7 @@ debugger
     });
 
     function deletebutton(scheduleId) {
+        $('#alertContainerDelete').empty();
         $.ajax({
             url: "checkScheduleUsage/" + scheduleId + "/" + ${userId},
             type: "GET",
@@ -1167,7 +1171,7 @@ debugger
                             alert += `</div>`;
                             $('#alertContainerDelete').append(alert);
                         }
-                    });
+                      });
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
