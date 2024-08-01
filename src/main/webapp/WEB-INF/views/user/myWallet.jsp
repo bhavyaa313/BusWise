@@ -139,7 +139,7 @@
                     <div id="balance-container">
 
 
-                        <p class="wallet-balance">Balance: $<span id="wallet-balance"></span></p>
+                        <p class="wallet-balance">Balance: <i class="bi bi-currency-rupee"> </i><span id="wallet-balance"></span></p>
                     </div>
                     <button class="btn btn-outline-success btn-lg " data-bs-toggle="modal" data-bs-target="#addFundsModal">Add
                         Funds</button>
@@ -263,7 +263,7 @@
             success:function (data){
                 $('#balance-container').empty()
 
-                var x = `   <p class="wallet-balance">Balance: $ <span id="wallet-balance">`+data+`</span></p>`
+                var x = `   <p class="wallet-balance">Balance: <i class="bi bi-currency-rupee"></i><span id="wallet-balance">`+data+`</span></p>`
                 $('#balance-container').append(x);
             }
 
@@ -312,10 +312,14 @@
         //add validtion it should not be less than balance
         event.preventDefault();
         if ($("#withdrawFundsForm").valid()) {
+
+            debugger
             var amount1 =   $('#amount2').val();
             var balance = $('#wallet-balance').text();
+            var amount1Int = parseInt(amount1, 10);
+            var balanceInt = parseInt(balance, 10);
             console.log(balance)
-            if(amount1>balance){
+            if(amount1Int>balanceInt){
                 $('#alertContainer').empty();
                 var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`
                 alert += `<strong>oops! </strong>`;

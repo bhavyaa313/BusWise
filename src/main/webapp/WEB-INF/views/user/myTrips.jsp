@@ -422,7 +422,7 @@
 
                     console.log("Booking Date:", bookingDate);
                     console.log("Today's Date:", today);
-                    var arrivalTimeString = booking.arrival;
+                    var arrivalTimeString = booking.time;
 
 
                     var arrivalTimeParts = arrivalTimeString.split(':');
@@ -447,17 +447,11 @@
                         bookingHtml += `
             <button class="btn btn-outline-danger btn-sm" onclick="cancelSeat('`+passenger.bookingDetailId+`', '`+passenger.bookingId+`')">Cancel Seat</button>
                     <div id="alertContainerCanelSeat" ></div>`;
-                    }   if (bookingDate = today && arrivalTime> currentTime) {
-                        console.log("Showing Cancel Seat button for:", passenger.name);
+                    } else  if (bookingDate.toDateString() === today.toDateString() && arrivalTime> currentTime) {
+                        console.log("Showing Cancel Seat buttonsss for:", passenger.name);
                         bookingHtml += `
             <button class="btn btn-outline-danger btn-sm" onclick="cancelSeat('`+passenger.bookingDetailId+`', '`+passenger.bookingId+`')">Cancel Seat</button>
                     <div id="alertContainerCanelSeat" ></div>`;
-                    }
-
-                    if (bookingDate = today && arrivalTime< currentTime) {
-
-                        bookingHtml += `<div class="card-footer text-center bg-white"> This Trip is Completed!
-    </div>`;
                     }
 
                     bookingHtml += `
@@ -470,22 +464,49 @@
     </div>`;
 
 // Only add the footer with buttons if the booking date is greater than or equal to today's date
-                if (bookingDate >= today) {
+
+                var arrivalTimeString = booking.time;
+
+
+                var arrivalTimeParts = arrivalTimeString.split(':');
+                var arrivalHours = parseInt(arrivalTimeParts[0], 10);
+                var arrivalMinutes = parseInt(arrivalTimeParts[1], 10);
+
+
+                var today = new Date();
+                var arrivalTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), arrivalHours, arrivalMinutes);
+                var currentTime = new Date();
+
+
+                if (bookingDate > today ) {
                     console.log("Showing footer buttons for booking ID:", booking.bookingId);
                     bookingHtml += `
-        <div class="card-footer text-center bg-white">
-            <button class="btn btn-outline-primary" onclick="downloadTicket('` + booking.bookingId + `')">Download Ticket</button>
-            <button class="btn btn-outline-danger" onclick="deleteBooking('` + booking.bookingId + `')">Cancel Booking</button>
+    <div class="card-footer text-center bg-white">
+        <button class="btn btn-outline-primary" onclick="downloadTicket('`+booking.bookingId+`')">Download Ticket</button>
+        <button class="btn btn-outline-danger" onclick="deleteBooking('`+booking.bookingId+`')">Cancel Booking</button>
+        <div id="alertContainerDownload"></div>
+    </div>`;
+                }
 
-     <div id="alertContainerDownload" ></div>
-        </div>`;
-                } else if (bookingDate < today) {
+                else if (bookingDate.toDateString() === today.toDateString() && arrivalTime > currentTime) {
+                    console.log("Showing footer buttons for booking ID:", booking.bookingId);
+                    bookingHtml += `
+    <div class="card-footer text-center bg-white">
+        <button class="btn btn-outline-primary" onclick="downloadTicket('`+booking.bookingId+`')">Download Ticket</button>
+        <button class="btn btn-outline-danger" onclick="deleteBooking('`+booking.bookingId+`')">Cancel Booking</button>
+        <div id="alertContainerDownload"></div>
+    </div>`;
+                }
+
+
+
+
+                else if (bookingDate < today ) {
                     console.log("Marking trip as completed for booking ID:", booking.bookingId);
                     bookingHtml += `
     <div class="card-footer text-center bg-white"> This Trip is Completed!
     </div>`;
                 }
-
                 else {
 
                     console.log("Marking trip as completed for booking ID:", booking.bookingId);

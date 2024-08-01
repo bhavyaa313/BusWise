@@ -159,7 +159,7 @@
                     onclick="show6()" hidden>Cancel
             </button>
             <button type="submit"
-                    class="btn btn-success btn-lg mx-2 hide1 see1 come1 mb-2" onclick="show6()"
+                    class="btn btn-success btn-lg mx-2 hide1 see1 come1 mb-2" onclick="show7()"
                     hidden>Save
             </button>
 
@@ -187,6 +187,8 @@
         $('.enable1').removeAttr("disabled");
         $('.come1').removeAttr("hidden");
         $('.xx1').attr("hidden", "hidden");
+        $('#myProfileForm')[0].reset();
+        $('.error-message1').remove();
 
     }
 
@@ -198,6 +200,19 @@
         $('.xx1').removeAttr("hidden");
 
     }
+
+    function show7() {
+
+        if (   $('#myProfileForm').valid()) {
+            $('.hide1').removeClass("hide1");
+            $('.see1').addClass("hide1");
+            $('.enable1').attr("disabled", "disabled");
+            $('.come1').attr("hidden", "hidden");
+            $('.xx1').removeAttr("hidden");
+        }
+    }
+
+
 </script>
 
 <script>

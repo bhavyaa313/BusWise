@@ -486,12 +486,6 @@
                     <form action="" id="bookingDetails">
                         <div>Seat <span id="seatNumber"> </span></div>
 
-
-
-
-
-
-
                         <div id="passengerDetailsContainer">
 
                         </div>
@@ -548,7 +542,7 @@
 
                         <div class="d-flex mt-5">
                             <div class="h5" >Total Amount: INR <span id="totalAmount"></span> </div>
-                            <input id="scheduleID2" type="text" >
+                            <input id="scheduleID2" type="text" HIDDEN="hidden" >
 
 
                             <button class="btn text-white  ms-auto" id="fbtn"

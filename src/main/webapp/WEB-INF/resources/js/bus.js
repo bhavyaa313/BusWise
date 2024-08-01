@@ -501,17 +501,25 @@ debugger
     $("#busNumber").removeClass("is-invalid");
     form.classList.remove("error");
     // Reset the form (clears most elements)
+        $('.error-message1').remove();
+        $('.error').remove();
     form.reset();
+        $('.error-message1').remove();
+        $('#myFormEdit')[0].reset()
 
 
 }
 
 
     $('#add').on('hidden.bs.modal', function() {
-    $('#myFormAdd')[0].reset();
+    $('#myFormAdd')[0].reset()
+        $('.error-message1').remove();
+        $('.error').remove();
 });
     $('#edit').on('hidden.bs.modal', function() {
-    $('#myFormAdd')[0].reset();
+    $('#myFormEdit')[0].reset();
+        $('.error-message1').remove();
+        // $('.error').remove();
 });
 
 
@@ -584,6 +592,7 @@ debugger
 
                     var form = document.getElementById("myFormEdit");
                     form.reset();
+                    document.getElementById('bn').disabled = true;
                     $(".btn-close").click();
                     ajaxCallSearch()
 

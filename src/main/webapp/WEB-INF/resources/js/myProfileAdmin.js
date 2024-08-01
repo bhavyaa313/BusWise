@@ -15,6 +15,19 @@ function show6() {
     $('.enable1').attr("disabled", "disabled");
     $('.come1').attr("hidden", "hidden");
     $('.xx1').removeAttr("hidden");
+    $('.error-message1').remove();
+    $('#myProfileForm')[0].reset();
+}
+
+function show7() {
+
+    if ($('#myProfileForm').valid()) {
+        $('.hide1').removeClass("hide1");
+        $('.see1').addClass("hide1");
+        $('.enable1').attr("disabled", "disabled");
+        $('.come1').attr("hidden", "hidden");
+        $('.xx1').removeAttr("hidden");
+    }
 
 }
 

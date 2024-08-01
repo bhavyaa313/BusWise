@@ -14,8 +14,15 @@ $("#myProfileForm").validate({
     },
 
     rules: {
-        firstName: "required",
-        lastName: "required",
+        firstName:
+            {
+                required:true,
+                regex:/^[A-Za-z]+$/
+            },
+        lastName: {
+            required:true,
+            regex:/^[A-Za-z]+$/
+        },
         email: {
             required: true,
             email: true,
@@ -42,18 +49,20 @@ $("#myProfileForm").validate({
 
     messages: {
         firstName: {
-            required: " Please enter a firstName"
+            required: "Please enter a firstName",
+            regex: "Please enter valid name"
         },
         lastName: {
-            required: " Please enter a lastName"
+            required: "Please enter a lastName",
+            regex: "Please enter valid name"
         },
         email: {
-            required: " Please enter an email address",
+            required: "Please enter an email address",
             email: "Please enter a valid email address.",
             regex: "Please enter a valid email address."
         },
         phone: {
-            required: " Please enter a phone number",
+            required: "Please enter a phone number",
             regex: "Please enter a valid phone number",
             minlength:
                 " Your phone number must be consist of 10 numbers",

@@ -1053,6 +1053,7 @@ public class ProjectService {
                 myBookingsDto.setPhone(booking.getPhone());
                 myBookingsDto.setCount(count);
                 myBookingsDto.setDate(booking.getScheduleId().getTripDate().toString());
+                myBookingsDto.setTime(booking.getDepatureTime());
 
                 List<BookingDetails> bookingDetailsList = bookingDao.getBookingDetailsById(booking.getBookingId());
                 if (bookingDetailsList.isEmpty()) {

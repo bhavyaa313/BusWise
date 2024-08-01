@@ -620,9 +620,11 @@
 
         $('#add').on('hidden.bs.modal', function() {
         $('#myFormAdd')[0].reset();
+            $('.error-message1').remove();
     });
         $('#edit').on('hidden.bs.modal', function() {
         $('#myFormAdd')[0].reset();
+            $('.error-message1').remove();
     });
 
 $(document).ready(function() {
@@ -1094,7 +1096,10 @@ debugger
                                 success: function(response) {
                                     $('#loader').show()
                                     console.log("Form submitted successfully:", response);
-
+                                    $('#routeSelect2').attr('disabled', true);
+                                    $('#date2').attr('disabled', true);
+                                    $('#fare2').attr('disabled', true);
+                                    $('#duration2').attr('disabled', true);
 
                                     $(".btn-close").click();
                                     ajaxCallSearch("desc")

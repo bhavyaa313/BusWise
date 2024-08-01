@@ -15,6 +15,7 @@ public class MyBookingsDto {
     private String phone;
     private String seats;
     private long count;
+    private String time;
     private String date;
 
 
@@ -114,7 +115,16 @@ public class MyBookingsDto {
         this.date = date;
     }
 
-    public MyBookingsDto(int noOfBookings, String route, String depature, String arrival, String busNumber, int bookingId, List<PassengerDto> passengers, String email, String phone, String seats, long count, String date) {
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public MyBookingsDto(int noOfBookings, String route, String depature, String arrival, String busNumber, int bookingId, List<PassengerDto> passengers, String email, String phone, String seats, long count, String time, String date) {
         this.noOfBookings = noOfBookings;
         this.route = route;
         this.depature = depature;
@@ -126,6 +136,7 @@ public class MyBookingsDto {
         this.phone = phone;
         this.seats = seats;
         this.count = count;
+        this.time = time;
         this.date = date;
     }
 

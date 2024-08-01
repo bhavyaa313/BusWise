@@ -7,6 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@page isELIgnored="false"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,8 +38,7 @@
 
 <div  id="container-nodata">
 
-<script>
-
+    <script>
     let map;
     let directionsService;
     let directionsRenderers = [];
@@ -48,6 +48,7 @@
     const speed = 50 * 1000 / 3600;
 
     function fetchBusLocations() {
+
 
         console.log("Fetching bus locations...");
         fetch('${pageContext.request.contextPath}/locations/${userId}')

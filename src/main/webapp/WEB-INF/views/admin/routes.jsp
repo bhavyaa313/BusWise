@@ -914,6 +914,9 @@
 
         // Reset the form (clears most elements)
         form.reset();
+        $('.error-message1').remove();
+        $('.error-message').remove();
+
 
 
     }
@@ -998,6 +1001,9 @@
 <script>
     $('#add').on('hidden.bs.modal', function () {
         $('#myForm')[0].reset();
+        $('.error-message1').remove();
+        $('.error-message').remove();
+        // $('.is-invalid1').remove();
     });
     // $('#edit').on('hidden.bs.modal', function() {
     //     $('#myFormAdd')[0].reset();
@@ -1247,7 +1253,9 @@
 
 
                         console.log("Form submitted successfully:", data);
-
+                        $('#source1').attr('disabled', true);
+                        $('#destination1').attr('disabled', true);
+                        $('#distance1').attr('disabled', true);
                         $(".btn-close").click();
                         ajaxCallSearch()
                     },
