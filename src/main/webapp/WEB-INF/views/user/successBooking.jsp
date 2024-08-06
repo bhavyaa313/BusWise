@@ -98,7 +98,7 @@
     </div>
 
     <div class="text-center mt-4">
-        <p class="d-flex"><span class="ms-auto  "><button class="btn btn-danger btn-lg" id="ticket">Download</button></span></p>
+        <p class="d-flex"><span class="ms-auto  "><button class="btn btn-danger btn-lg" id="ticket">Download</button>   <a href="" download="" id="downloadTicket"></a></span></p>
         <div id="alertContainer" class="d-flex ms-auto align-items-end justify-content-end"></div>
         <p><small>Terms and Conditions apply. Please carry a valid ID proof during the journey.</small></p>
         <p><small>Your Ticket have been sent to your email!</small></p>
@@ -124,7 +124,11 @@
                 success: function(response) {
                     // The response is expected to be a URL
                     var fileUrl = response;
-                    window.location.href= fileUrl;
+                    var downloadLink = document.getElementById('downloadTicket');
+                    downloadLink.href = fileUrl;
+                    downloadLink.download = 'ticket.pdf';
+                    downloadLink.click();
+
 
                     var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`;
                     alert += `<strong>Success! </strong>`;

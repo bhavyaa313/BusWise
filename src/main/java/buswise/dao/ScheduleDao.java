@@ -57,47 +57,58 @@ public class ScheduleDao {
         template.update(schedules);
     }
 
-//    public boolean checkBus(int busId, LocalDate date, LocalTime time)
-//    {
-//        Session session = sessionFactory.openSession();
-//        String hqlString = " select b.scheduleId from buswise.model.Schedules b where b.busId.busId=:busId and isDeleted=false and b.tripDate=:date and b.arrivalTime=:time";
-//        Query query = session.createQuery(hqlString);
-//        query.setParameter("busId", busId);
-//        query.setParameter("date", date);
-//        query.setParameter("time", time);
-//        List<Integer> list = query.list();
-//        if(list.size()>0){
-//            boolean check = false;
-//            return check;
-//        }
-//        else {
-//            boolean check = true;
-//            return check;
-//        }
-//
-//    }
+
+
 
     public boolean checkBus(int busId, LocalDate date, LocalTime time) {
         try (Session session = sessionFactory.openSession()) {
             // Define the time window for 6 hours before and after the given time
-            LocalTime sixHoursBefore = time.minus(6, ChronoUnit.HOURS);
-            LocalTime sixHoursAfter = time.plus(6, ChronoUnit.HOURS);
+            LocalTime sixHoursBefore = time.minusHours(6);
+            LocalTime sixHoursAfter = time.plusHours(6);
 
-            String hqlString = "SELECT b.scheduleId FROM buswise.model.Schedules b " +
-                    "WHERE b.busId.busId = :busId AND b.isDeleted = false AND b.tripDate = :date " +
-                    "AND (b.arrivalTime BETWEEN :sixHoursBefore AND :sixHoursAfter)";
+            // Logging the parameters
+            System.out.println("busId: " + busId);
+            System.out.println("date: " + date);
+            System.out.println("time: " + time);
+            System.out.println("sixHoursBefore: " + sixHoursBefore);
+            System.out.println("sixHoursAfter: " + sixHoursAfter);
 
-            Query<Integer> query = session.createQuery(hqlString, Integer.class);
-            query.setParameter("busId", busId);
-            query.setParameter("date", date);
-            query.setParameter("sixHoursBefore", sixHoursBefore);
-            query.setParameter("sixHoursAfter", sixHoursAfter);
+            List<Integer> list = new ArrayList<>();
 
-            List<Integer> list = query.list();
-            return list.isEmpty(); // return true if no conflicting schedules are found
+            if (sixHoursBefore.isAfter(sixHoursAfter)) {
+                // Query for times before midnight
+                String hqlString1 = "SELECT b.scheduleId FROM buswise.model.Schedules b " +
+                        "WHERE b.busId.busId = :busId AND b.isDeleted = false AND b.tripDate = :date " +
+                        "AND (substring(b.arrivalTime, 1, 5) >= :sixHoursBefore1 OR substring(b.arrivalTime, 1, 5) <= :sixHoursAfter1)";
+
+                Query<Integer> query1 = session.createQuery(hqlString1, Integer.class);
+                query1.setParameter("busId", busId);
+                query1.setParameter("date", date);
+                query1.setParameter("sixHoursBefore1", sixHoursBefore.toString());
+                query1.setParameter("sixHoursAfter1", sixHoursAfter.toString());
+
+                list.addAll(query1.list());
+            } else {
+                // Query for times within the same day
+                String hqlString2 = "SELECT b.scheduleId FROM buswise.model.Schedules b " +
+                        "WHERE b.busId.busId = :busId AND b.isDeleted = false AND b.tripDate = :date " +
+                        "AND (substring(b.arrivalTime, 1, 5) BETWEEN :sixHoursBefore2 AND :sixHoursAfter2)";
+
+                Query<Integer> query2 = session.createQuery(hqlString2, Integer.class);
+                query2.setParameter("busId", busId);
+                query2.setParameter("date", date);
+                query2.setParameter("sixHoursBefore2", sixHoursBefore.toString());
+                query2.setParameter("sixHoursAfter2", sixHoursAfter.toString());
+
+                list.addAll(query2.list());
+            }
+
+
+            System.out.println("Query Results: " + list);
+
+            return list.isEmpty();
         }
     }
-
 
 
 

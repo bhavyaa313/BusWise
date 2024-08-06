@@ -1,7 +1,6 @@
 package buswise.dao;
 
 
-import buswise.model.Buses;
 import buswise.model.Routes;
 import buswise.model.SubRoute;
 import org.hibernate.Query;
@@ -56,19 +55,21 @@ public class RoutesDao {
         CriteriaQuery<Routes> cr = cb.createQuery(Routes.class);
         Root<Routes> root = cr.from(Routes.class);
 
+
+
         if (region.equals("empty")) {
             Predicate[] predicates = new Predicate[1];
             predicates[0] = cb.equal(root.get("isDeleted"), 0);
             cr.select(root).where(predicates);
-        } else {
-            System.out.println("elseee");
-            System.out.println(region);
-            Predicate isDeleted  = cb.like(root.get("source"), "%" + region + "%");
-            Predicate source = cb.equal(root.get("isDeleted"), 0);
-            Predicate destination  = cb.like(root.get("destination"), "%" + region + "%");
-
-            cr.select(root).where(cb.and(source, cb.or(isDeleted, destination)));
         }
+
+
+             else {
+                Predicate isDeleted = cb.like(root.get("source"), "%" + region + "%");
+                Predicate source = cb.equal(root.get("isDeleted"), 0);
+                Predicate destination = cb.like(root.get("destination"), "%" + region + "%");
+                cr.select(root).where(cb.and(source, cb.or(isDeleted, destination)));
+            }
 
         Query<Routes> query = session.createQuery(cr);
         query.setFirstResult(startIndex);
@@ -144,6 +145,8 @@ public class RoutesDao {
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Long> cr = cb.createQuery(Long.class);
         Root<Routes> root = cr.from(Routes.class);
+
+
 
         if (region.equals("empty")) {
             Predicate[] predicates = new Predicate[1];

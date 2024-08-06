@@ -485,6 +485,7 @@
         <button class="btn btn-outline-primary" onclick="downloadTicket('`+booking.bookingId+`')">Download Ticket</button>
         <button class="btn btn-outline-danger" onclick="deleteBooking('`+booking.bookingId+`')">Cancel Booking</button>
         <div id="alertContainerDownload"></div>
+<a href="" download="" id="ticket-`+booking.bookingId+`" hidden="hidden" >
     </div>`;
                 }
 
@@ -495,6 +496,7 @@
         <button class="btn btn-outline-primary" onclick="downloadTicket('`+booking.bookingId+`')">Download Ticket</button>
         <button class="btn btn-outline-danger" onclick="deleteBooking('`+booking.bookingId+`')">Cancel Booking</button>
         <div id="alertContainerDownload"></div>
+<a href="" download="" id="ticket-`+booking.bookingId+`" hidden="hidden" >
     </div>`;
                 }
 
@@ -646,8 +648,11 @@
 
             success: function(response) {
                 var fileUrl = response;
-                window.location.href= fileUrl;
-                console.log("succes")
+                var ticketId = "ticket-"+bookingId;
+                var downloadLink = document.getElementById(ticketId);
+                downloadLink.href = fileUrl;
+                downloadLink.download = "Ticket-" + bookingId + ".pdf";
+                downloadLink.click();
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Your ticket has been downloaded successfully.`;

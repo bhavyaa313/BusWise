@@ -17,7 +17,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class userController {
+public class UserController {
 
     @Autowired
     private ProjectService projectService;
@@ -209,7 +208,7 @@ public class userController {
         String activeString = "active  text-dark";
         model.addAttribute("userId", userId);
         model.addAttribute("active2", activeString);
-        List<UserProfile> userProfiles = userDao.userProfiles(userId);
+        List<UserProfile> userProfiles = projectService.userProfileList(userId);
         model.addAttribute("userProfiles", userProfiles);
         return "/user/myProfile";
     }
@@ -249,8 +248,8 @@ public class userController {
             @PathVariable("bookingId") int bookingId) {
 
         Map<String, String> response = new HashMap<>();
-        List<Bookings> bookings = bookingDao.getBookingById(bookingId);
-        List<BookingDetails> bookingDetails = bookingDao.getBookingDetailsByBookingDetailId(bookingDetailId);
+        List<Bookings> bookings = projectService.bookingsList(bookingId);
+        List<BookingDetails> bookingDetails =projectService.bookingDetails(bookingDetailId);
 
         if (bookings.isEmpty()) {
             response.put("message", "Booking not found.");
@@ -280,6 +279,8 @@ public class userController {
                     "BusWise\n" +
                     "Customer Support Team";
 
+            projectService.cancelSeat(bookingDetailId, userId, email);
+
             try {
                 emailService.send(email, subject, message);
 
@@ -287,9 +288,7 @@ public class userController {
             } catch (Exception e) {
                 response.put("message", "Booking cancelled, but the email could not be sent.");
             }
-            finally {
-                projectService.cancelSeat(bookingDetailId, userId, email);
-            }
+
         }
 
         return ResponseEntity.ok(response);
@@ -303,7 +302,8 @@ public class userController {
             @PathVariable("userId") int userId) {
 
         Map<String, String> response = new HashMap<>();
-        List<Bookings> bookings = bookingDao.getBookingById(bookingId);
+        List<Bookings> bookings = projectService.bookingsList(bookingId);
+
 
         if (bookings != null && !bookings.isEmpty()) {
             Bookings booking = bookings.get(0);
@@ -325,6 +325,8 @@ public class userController {
                     "BusWise\n" +
                     "Customer Support Team";
 
+            projectService.cancelBooking(bookingId, userId, email);
+
             try {
                 emailService.send(email, subject, message);
 
@@ -332,9 +334,7 @@ public class userController {
             } catch (Exception e) {
                 response.put("message", "Booking cancelled, but the email could not be sent.");
             }
-            finally {
-                projectService.cancelBooking(bookingId, userId, email);
-            }
+
         } else {
             response.put("message", "Booking not found.");
         }

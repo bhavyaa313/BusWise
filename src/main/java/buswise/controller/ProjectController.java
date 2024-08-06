@@ -113,7 +113,7 @@ public class ProjectController {
 
     @GetMapping("/buses/checkBusNumber/{userId}")
     public ResponseEntity<Map<String, Boolean>> checkBusNumber(@RequestParam String busNumber) {
-        List<String> busNumbers = busesDao.getBusNumber();
+        List<String> busNumbers = projectService.getBusNumbers();
         boolean exists = busNumbers.contains(busNumber);
 
         Map<String, Boolean> response = new HashMap<>();
@@ -279,7 +279,7 @@ public class ProjectController {
         String activeString = "active  text-dark";
         model.addAttribute("userId", userId);
         model.addAttribute("active2", activeString);
-        List<UserProfile> userProfiles = userDao.userProfiles(userId);
+        List<UserProfile> userProfiles = projectService.userProfileList(userId);
         model.addAttribute("userProfiles", userProfiles);
         return "/admin/myProfile";
     }
@@ -379,8 +379,8 @@ public class ProjectController {
             @PathVariable("bookingId") int bookingId) {
 
         Map<String, String> response = new HashMap<>();
-        List<Bookings> bookings = bookingDao.getBookingById(bookingId);
-        List<BookingDetails> bookingDetails = bookingDao.getBookingDetailsByBookingDetailId(bookingDetailId);
+        List<Bookings> bookings = projectService.bookingsList(bookingId);
+        List<BookingDetails> bookingDetails =projectService.bookingDetails(bookingDetailId);
 
         if (bookings.isEmpty()) {
             response.put("message", "Booking not found.");
@@ -397,18 +397,24 @@ public class ProjectController {
             String seatNumber = bookingDetail.getSeatNumber();
 
             String subject = "Cancellation of Ticket";
-            String message = "Dear Customer,\n\n" +
-                    "We regret to inform you that your ticket for the following route has been cancelled:\n\n" +
-                    "Route: " + route + "\n" +
-                    "Date of Journey: " + date + "\n" +
-                    "Departure Time: " + departureTime + "\n\n" +
-                    "Seat Number: " + seatNumber + "\n\n" +
-                    "This cancellation was processed on: " + cancellationDateTime + "\n\n" +
-                    "If you have any questions or need further assistance, please do not hesitate to contact our support team.\n\n" +
-                    "We apologize for any inconvenience this may cause.\n\n" +
-                    "Best regards,\n" +
-                    "BusWise\n" +
-                    "Customer Support Team";
+            StringBuilder messageBuilder = new StringBuilder();
+            messageBuilder.append("Dear Customer,\n\n")
+                    .append("We regret to inform you that your ticket for the following route has been cancelled:\n\n")
+                    .append("Route: ").append(route).append("\n")
+                    .append("Date of Journey: ").append(date).append("\n")
+                    .append("Departure Time: ").append(departureTime).append("\n\n")
+                    .append("Seat Number: ").append(seatNumber).append("\n\n")
+                    .append("This cancellation was processed on: ").append(cancellationDateTime).append("\n\n")
+                    .append("If you have any questions or need further assistance, please do not hesitate to contact our support team.\n\n")
+                    .append("We apologize for any inconvenience this may cause.\n\n")
+                    .append("Best regards,\n")
+                    .append("BusWise\n")
+                    .append("Customer Support Team");
+
+            String message = messageBuilder.toString();
+
+
+            projectService.cancelSeat(bookingDetailId, userId, email);
 
             try {
                 emailService.send(email, subject, message);
@@ -417,9 +423,7 @@ public class ProjectController {
             } catch (Exception e) {
                 response.put("message", "Booking cancelled, but the email could not be sent.");
             }
-            finally {
-                projectService.cancelSeat(bookingDetailId, userId, email);
-            }
+
         }
 
         return ResponseEntity.ok(response);
@@ -433,7 +437,8 @@ public class ProjectController {
             @PathVariable("userId") int userId) {
 
         Map<String, String> response = new HashMap<>();
-        List<Bookings> bookings = bookingDao.getBookingById(bookingId);
+        List<Bookings> bookings = projectService.bookingsList(bookingId);
+
 
         if (bookings != null && !bookings.isEmpty()) {
             Bookings booking = bookings.get(0);
@@ -443,17 +448,21 @@ public class ProjectController {
             String departureTime = booking.getDepatureTime();
             String cancellationDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
             String subject = "Cancellation of Ticket";
-            String message = "Dear Customer,\n\n" +
-                    "We regret to inform you that your ticket for the following route has been cancelled:\n\n" +
-                    "Route: " + route + "\n" +
-                    "Date of Journey: " + date + "\n" +
-                    "Departure Time: " + departureTime + "\n\n" +
-                    "This cancellation was processed on: " + cancellationDateTime + "\n\n" +
-                    "If you have any questions or need further assistance, please do not hesitate to contact our support team.\n\n" +
-                    "We apologize for any inconvenience this may cause.\n\n" +
-                    "Best regards,\n" +
-                    "BusWise\n" +
-                    "Customer Support Team";
+            StringBuilder messageBuilder = new StringBuilder();
+            messageBuilder.append("Dear Customer,\n\n")
+                    .append("We regret to inform you that your ticket for the following route has been cancelled:\n\n")
+                    .append("Route: ").append(route).append("\n")
+                    .append("Date of Journey: ").append(date).append("\n")
+                    .append("Departure Time: ").append(departureTime).append("\n\n")
+                    .append("This cancellation was processed on: ").append(cancellationDateTime).append("\n\n")
+                    .append("If you have any questions or need further assistance, please do not hesitate to contact our support team.\n\n")
+                    .append("We apologize for any inconvenience this may cause.\n\n")
+                    .append("Best regards,\n")
+                    .append("BusWise\n")
+                    .append("Customer Support Team");
+
+            String message = messageBuilder.toString();
+            projectService.cancelBooking(bookingId, userId, email);
 
             try {
                 emailService.send(email, subject, message);
@@ -462,9 +471,7 @@ public class ProjectController {
             } catch (Exception e) {
                 response.put("message", "Booking cancelled, but the email could not be sent.");
             }
-            finally {
-                projectService.cancelBooking(bookingId, userId, email);
-            }
+
         } else {
             response.put("message", "Booking not found.");
         }

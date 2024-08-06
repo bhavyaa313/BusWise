@@ -31,12 +31,18 @@ public class RegisterDto {
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()\\-_=+{};:,<.>]).{4,}$", message = "Please enter password with one uppercase and one number")
     private String confirmPassword;
     private String role;
+    @Pattern(regexp = "^[A-Za-z]*$", message = "City must contain only alphabetic characters")
+    private String city="";
 
-    @Pattern(regexp = "^[A-Za-z]+$")
-    private String city;
+    @Pattern(regexp = "^[A-Za-z]*$", message = "State must contain only alphabetic characters")
+    private String state="";
+
+
     private Integer age;
-    @Pattern(regexp = "^[A-Za-z]+$")
-    private String state;
+
+
+
+
 
 
     public int getUserId() {
@@ -83,11 +89,11 @@ public class RegisterDto {
         return password;
     }
 
-    public @Pattern(regexp = "^[A-Za-z]+$") String getCity() {
+    public  String getCity() {
         return city;
     }
 
-    public void setCity(@Pattern(regexp = "^[A-Za-z]+$") String city) {
+    public void setCity( String city) {
         this.city = city;
     }
 
@@ -99,11 +105,11 @@ public class RegisterDto {
         this.age = age;
     }
 
-    public @Pattern(regexp = "^[A-Za-z]+$") String getState() {
+    public  String getState() {
         return state;
     }
 
-    public void setState(@Pattern(regexp = "^[A-Za-z]+$") String state) {
+    public void setState( String state) {
         this.state = state;
     }
 

@@ -374,21 +374,24 @@
             subrouteContainer1.innerHTML += `
             <div class="row g-2 row1" id="subroute-row-`+i+`">
                 <div class="col-md-2">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control subroute" id="subroute-sequence1-`+i+`" placeholder="Sequence" value="`+subrouteSequenceList[i-1]+`" readonly>
+                    <div class=" mb-3">
                         <label for="subroute-sequence1-`+i+`" ></label>
+                        <input type="text" class="form-control subroute" id="subroute-sequence1-`+i+`" placeholder="Sequence" value="`+subrouteSequenceList[i-1]+`" readonly>
+
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="form-floating mb-3">
+                    <div class=" mb-3">
+                           <label for="subroute-name1-`+i+`">Subroute</label>
                         <input type="text" class="form-control subroute subrouteName" id="subroute-name1-`+i+`" value="`+subrouteList[i-1]+`" placeholder="Subroute Name" required>
-                        <label for="subroute-name1-`+i+`">Subroute</label>
+
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control subroute subrouteDistance" id="subroute-distance1-`+i+`" value="`+subroutedistList[i-1]+`" placeholder="Distance" required>
+                    <div class=" mb-3">
                         <label for="subroute-distance1-`+i+`" >Distance (km)</label>
+                        <input type="text" class="form-control subroute subrouteDistance" id="subroute-distance1-`+i+`" value="`+subroutedistList[i-1]+`" placeholder="Distance" required>
+
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -443,21 +446,24 @@
         const newSubroute = `
         <div class="row g-2 row1" id="subroute-row-`+currentCount+`">
             <div class="col-md-2">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control subroute" id="subroute-sequence1-`+currentCount+`" placeholder="Sequence" value="`+currentCount+`" readonly>
+                <div class=" mb-3">
+
                     <label for="subroute-sequence1-`+currentCount+`" ></label>
+                    <input type="text" class="form-control subroute" id="subroute-sequence1-`+currentCount+`" placeholder="Sequence" value="`+currentCount+`" readonly>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="form-floating mb-3">
+                <div class=" mb-3">
+                     <label for="subroute-name1-`+currentCount+`" >Subroute</label>
                     <input type="text" class="form-control subroute subrouteName" id="subroute-name1-`+currentCount+`" placeholder="Subroute Name" required>
-                    <label for="subroute-name1-`+currentCount+`" >Subroute</label>
+
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control subroute subrouteDistance" id="subroute-distance1-`+currentCount+`" placeholder="Distance" required>
+                <div class=" mb-3">
                     <label for="subroute-distance1-`+currentCount+`" >Distance (km)</label>
+                    <input type="text" class="form-control subroute subrouteDistance" id="subroute-distance1-`+currentCount+`" placeholder="Distance" required>
+
                 </div>
             </div>
             <div class="col-md-2">
@@ -642,6 +648,7 @@
                     Pagination.page + Pagination.step + 1);
                 Pagination.Last();
             }
+
             Pagination.Finish();
         },
 
@@ -685,7 +692,7 @@
         console.log("page clicked")
         var current = $(".current").text();
         $("#currentPage").attr("value", current);
-        ajaxCallSearch()
+         ajaxCallSearch()
 
 
     })
@@ -771,13 +778,14 @@
                         url: "deleteRoute/" + routeId +"/" + ${userId},
                         type: "POST",
                         success: function (response) {
-                            ajaxCallSearch();
+
                             var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`;
                             alert += `<strong>Success! </strong>`;
                             alert += `Route has been deleted successfully.`;
                             alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                             alert += `</div>`;
                             $('#alertContainerDelete').append(alert);
+                             ajaxCallSearch();
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`;
@@ -814,7 +822,7 @@
 
     function ajaxCallSearch(event) {
 
-        console.log("mee")
+
 
 
         var region = $("#searchRegion").val().trim();
@@ -837,31 +845,42 @@
             },
             success: function (data) {
 
-                console.log("success")
+                console.log("success"+data)
 
-                $("#tableData").empty();
+                var curPage = $('#currentPage').attr("value");
+
+                console.log("mee")
+
                 if (data.length === 0) {
-                    $("#pagination").hide();
-                    $("#myTable").hide();
+                    if (curPage > 1) {
+                        $("#currentPage").attr("value", 1);
+                        ajaxCallSearch();
+                        return; // Ensure the function exits here
+                    } else {
+                        $("#tableData").empty();
+                        $("#pagination").hide();
+                        $("#myTable").hide();
+                        $('#container-data-0').empty();
 
-
-                    $('#container-data-0').empty();
-                    var nodata =`<div class="container nodataC mt-5">
-    <div id="nodata" class=" d-flex align-items-center justify-content-center flex-column">
-        <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
-
-        <div> <h3 class="text-dark">No routes available!</h3></div>
-    </div>
-</div>`
-                    $('#container-data-0').append(nodata);
-                }
-
-
-                else {
+                        var nodata = `
+        <div class="container nodataC mt-5">
+            <div id="nodata" class="d-flex align-items-center justify-content-center flex-column">
+                <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
+                <div><h3 class="text-dark">No routes available!</h3></div>
+            </div>
+        </div>`;
+                        $('#container-data-0').append(nodata);
+                        return; // Ensure the function exits here
+                    }
+                } else {
+                    $("#tableData").empty();
                     $("#pagination").show();
-                    $("#myTable").show();// Show pagination if data exists
+                    $("#myTable").show();
                     $('#container-data-0').empty();
                 }
+
+
+
                 for (let i = 0; i < data.length; i++) {
 
                     var routes = data[i];
@@ -895,6 +914,7 @@
 
                     $("#tableData").append(row);
                     var temp = routes.count;
+                    console.log(temp)
                     var totalFinal = Math.ceil(temp / 6);
                     init(totalFinal, curPage);
 
@@ -942,21 +962,25 @@
             row.classList.add('row', 'g-2');
             row.innerHTML = `
             <div class="col-md-2">
-                <div class="form-floating mb-3">
+                <div class=" mb-3">
+
+                     <label for="subroute-sequence-`+i+`"></label>
                     <input type="text" class="form-control subroute" id="subroute-sequence-`+i+`" placeholder="Sequence" value="`+i+`" readonly>
-                    <label for="subroute-sequence-`+i+`"></label>
+
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="form-floating mb-3">
+                <div class=" mb-3">
+                     <label for="subroute-name-`+i+`">Subroute</label>
                     <input type="text" class="form-control subroute subrouteName" id="subroute-name-`+i+`" placeholder="Subroute Name" required>
-                    <label for="subroute-name-`+i+`">Subroute</label>
+
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control subroute subrouteDistance" id="subroute-distance-`+i+`" placeholder="Distance" required>
-                    <label for="subroute-distance-`+i+`">Distance (km)</label>
+                <div class=" mb-3">
+                      <label for="subroute-distance-`+i+`">Distance (km)</label>
+                    <input type="number" class="form-control subroute subrouteDistance" id="subroute-distance-`+i+`" placeholder="Distance" required>
+
                 </div>
             </div>
             <div class="col-md-2 d-flex align-items-center">
@@ -1257,7 +1281,7 @@
                         $('#destination1').attr('disabled', true);
                         $('#distance1').attr('disabled', true);
                         $(".btn-close").click();
-                        ajaxCallSearch()
+                         ajaxCallSearch()
                     },
                     error: function (error) {
                         console.error("Error submitting form:", error);

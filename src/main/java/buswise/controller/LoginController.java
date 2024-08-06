@@ -63,12 +63,9 @@ public class LoginController {
             boolean status = projectService.login(loginDto);
             if (status) {
 
-                int userId = userDao.getUserId(loginDto.getEmail());
-                List<User> userList = userDao.getUserbyUserId(userId);
-                User user = userList.get(0);
-                int roleId = user.getRoleId().getRoleId();
-                String name = userDao.getUsernameByuserId(userId);
-                System.out.println(name +"nameeeee");
+                int userId = projectService.getUserId(loginDto.getEmail());
+                int roleId = projectService.roleId(userId);
+                String name = projectService.getName(userId);
                 String emailIdString = loginDto.getEmail().replace("@", "a");
                 HttpSession session = request.getSession();
                 if (roleId==1)
@@ -144,12 +141,23 @@ public class LoginController {
         return "/admin/error";
     }
 
+//    @GetMapping("logout")
+//    public String logout(HttpServletRequest request) {
+//        request.getSession(false).invalidate();
+//        return "/admin/login";
+//
+//    }
+
+
     @GetMapping("logout")
     public String logout(HttpServletRequest request) {
-        request.getSession(false).invalidate();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
         return "/admin/login";
-
     }
+
 
     @RequestMapping("/checkEMail")
     @ResponseBody

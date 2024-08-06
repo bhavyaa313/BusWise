@@ -30,11 +30,31 @@
             background-color: #f1f1f1;
         }
 
-        .error-message
-        {
-            color: red;
+
+        .container-fluidx {
+           /* Set a fixed height */
+            height: 600px;
+            overflow-y: auto; /* Vertical scrollbar if content exceeds height */
+            display: flex;
+            flex-direction: column;
         }
 
+        .p-5 {
+            overflow-y: auto; /* Ensure internal content scrolls if needed */
+            flex-grow: 0.8; /* Allow this element to grow and fill available space */
+        }
+
+        .error-message {
+            color: red;
+            max-width: 400px; /* Limit width to avoid expanding the container */
+            max-height: 60px; /* Set a maximum height for the error message */
+            overflow-y: auto; /* Add scrollbar if content exceeds max-height */
+            word-wrap: break-word; /* Allow long words to break and wrap */
+            white-space: normal; /* Allow text to wrap */
+            padding: 5px; /* Add padding for better readability */
+            font-size: 12px; /* Adjust font size if needed */
+            box-sizing: border-box; /* Include padding and border in height calculation */
+        }
 
 
 
@@ -79,13 +99,33 @@
             /* Match the color of the welcome text */
             font-weight: bold;
         }
+
+
+        .container-fluidx {
+            padding: 50px;
+            height: 500px; /* Set a fixed height for the container */
+            overflow-y: auto; /* Add vertical scrollbar if content exceeds the height */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
     </style>
 </head>
 
 <body>
 
 
-<div class="container-fluid d-flex align-items-center justify-content-center h-100">
+<div class="container-fluid container-fluidx d-flex align-items-center justify-content-center h-100">
 
     <div class=" p-5 bg-white">
         <h2 class="mb-5">Welcome ! Register Here...</h2>
@@ -234,11 +274,12 @@
 
 
         $('#registerForm').submit(function(event) {
-
-            if ($('#registerForm').valid()){
-            $('#saveButton').prop("disabled", true);
-            debugger
             event.preventDefault();
+            if ($('#registerForm').valid()){
+
+
+
+            $('#saveButton').prop("disabled", true);
             $('#alertContainer').empty()
             debugger
             var email = $("#email").val();
@@ -258,9 +299,11 @@
                         alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                         alert += `</div>`;
                         $('#alertContainer').append(alert);
+                        $('#saveButton').prop("disabled", false);
                     }
 
                     else {
+                        $('#saveButton').prop("disabled", true);
 
                         // Show the loader
                         $('#loader').show();

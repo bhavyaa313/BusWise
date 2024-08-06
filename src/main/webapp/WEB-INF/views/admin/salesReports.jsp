@@ -201,6 +201,7 @@
         <div class="h4 mb-3 mb-md-0 ms-auto">
             <span class="mr-3 mr-md-5">Detailed Daily Report</span>
             <button class="btn-lg btn btn-danger mx-5" id="downloadDailySales">Download Data</button>
+            <a href="" download="" id="dailySalesPdf"></a>
         </div>
         <div id="alertContainerDaily" class="mt-3 mt-md-0"></div>
     </div>
@@ -242,6 +243,7 @@
         <div class="h4 mb-3 mb-md-0 ms-auto">
             <span class="mr-3 mr-md-5">Detailed Monthly Report</span>
         <button class="btn-lg btn btn-danger mx-5" id="downloadMonthlySales">Download Data</button>
+            <a href="" download="" id="monthlySalesPdf"></a>
         </div>
         <div id="alertContainerMonthly" class="mt-3 mt-md-0" ></div>
     </div>
@@ -294,6 +296,7 @@
         </div>
         <div class="ml-md-auto mx-5 ">
             <button class="btn-lg btn btn-danger" id="downloadYearlySales">Download Data</button>
+            <a href="" download="" id="yearlySalesPdf"></a>
         </div>
         <div id="alertContainer" class="mt-3 mt-md-0"></div>
     </div>
@@ -435,7 +438,10 @@
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    padding: 30 // Adjust the padding between y-axis labels and axis
+                                    padding: 30, // Adjust the padding between y-axis labels and axis
+                                    callback: function (value) {
+                                        return Number.isInteger(value) ? value : '';
+                                    }
                                 }
                             }
                         }
@@ -460,7 +466,10 @@
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    padding: 30 // Adjust the padding between y-axis labels and axis
+                                    padding: 30,
+                                    callback: function (value) {
+                                        return Number.isInteger(value) ? value : '';
+                                    },
                                 }
                             }
                         }
@@ -515,7 +524,10 @@
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    padding: 30
+                                    padding: 30, // Adjust the padding between y-axis labels and axis
+                                    callback: function (value) {
+                                        return Number.isInteger(value) ? value : ''; // Display only integer values
+                                    },
                                 }
                             }
                         }
@@ -581,8 +593,12 @@
 
             success: function (response) {
                 console.log("success");
+
                 var fileUrl = response;
-                window.location.href= fileUrl;
+                var downloadLink = document.getElementById("dailySalesPdf");
+                downloadLink.href = fileUrl;
+                downloadLink.download = "Daily-Sales-Report-" + date + ".pdf";
+                downloadLink.click();
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -606,16 +622,18 @@
 
 
     $('#downloadMonthlySales').click(function () {
-        var date = $('#reportDate').val()
+        var date = $('#reportMonth').val()
 
         $.ajax({
             url: '${pageContext.request.contextPath}/monthly-sales-download/' + date,
             type: 'GET',
 
             success: function (response) {
-                console.log("success");
                 var fileUrl = response;
-                window.location.href= fileUrl;
+                var downloadLink = document.getElementById("monthlySalesPdf");
+                downloadLink.href = fileUrl;
+                downloadLink.download = "Monthly-Sales-Report-" + date + ".pdf";
+                downloadLink.click();
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -647,7 +665,10 @@
             success: function (response) {
                 console.log("success");
                 var fileUrl = response;
-                window.location.href= fileUrl;
+                var downloadLink = document.getElementById("yearlySalesPdf");
+                downloadLink.href = fileUrl;
+                downloadLink.download = "Yearly-Sales-Report-" + year + ".pdf";
+                downloadLink.click();
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;

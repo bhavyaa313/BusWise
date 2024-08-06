@@ -60,8 +60,16 @@ public class UserDao {
         String hqlString = "SELECT U.userId from buswise.model.User U where U.email=:mail";
         Query query = session.createQuery(hqlString);
         query.setParameter("mail", mail);
-        int userId = (int) query.uniqueResult();
-        return userId;
+        return (int) query.uniqueResult();
+
+    }
+
+    public int getRoleId(int userId) {
+        Session session = sessionFactory.openSession();
+        String hqlString = "SELECT U.roleId.roleId from buswise.model.User U where U.userId = :userId";
+        Query query = session.createQuery(hqlString);
+        query.setParameter("userId", userId);
+        return (int) query.uniqueResult();
 
     }
 

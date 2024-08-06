@@ -9,6 +9,10 @@ console.log("yeesss routess")
 //     return null; // No error
 // }
 
+$.validator.addMethod("alphabetOnly", function(value, element) {
+    return this.optional(element) || /^[a-zA-Z]+$/.test(value);
+}, "Please enter only alphabets");
+
 $("#myForm").validate({
 
     errorClass: "error",  // Customize error class for styling
@@ -71,7 +75,8 @@ $("#myForm").validate({
 
 
 $.validator.addClassRules("subrouteName", {
-    required: true
+    required: true,
+    alphabetOnly: true
 });
 $.validator.addClassRules("subrouteDistance", {
     required: true,

@@ -67,9 +67,10 @@ public class TicketPDFService {
             addTableData(passengerTable, "Email:", bookings1.getEmail());
 
             Table journeyTable = createTableWithHeader("Journey Details");
+            addTableData(journeyTable, "Bus Number:", bookings1.getScheduleId().getBusId().getBusNumber());
             addTableData(journeyTable, "Departure:", bookings1.getSelectedSource()+","+ bookings1.getScheduleId().getTripDate() +" "+ bookings1.getDepatureTime()  );
             addTableData(journeyTable, "Arrival:", bookings1.getSelectedDestination());
-            addTableData(journeyTable, "Bus Number:", bookings1.getScheduleId().getBusId().getBusNumber());
+
             addTableData(journeyTable, "Seat Number(s):", seats.toString().substring(1,  seats.toString().length() - 1), ColorConstants.RED);
             addTableData(journeyTable, "Route:", bookings1.getScheduleId().getRouteId().getSource() +" to " + bookings1.getScheduleId().getRouteId().getDestination());
             addTableData(journeyTable, "Total Fare:", String.valueOf(bookings1.getTotalAmount()));

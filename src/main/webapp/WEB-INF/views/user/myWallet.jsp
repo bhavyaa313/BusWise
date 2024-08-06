@@ -316,10 +316,11 @@
             debugger
             var amount1 =   $('#amount2').val();
             var balance = $('#wallet-balance').text();
-            var amount1Int = parseInt(amount1, 10);
-            var balanceInt = parseInt(balance, 10);
+            var amount1Double = parseFloat(amount1);
+            var balanceDouble = parseFloat(balance);
+
             console.log(balance)
-            if(amount1Int>balanceInt){
+            if(amount1Double>balanceDouble){
                 $('#alertContainer').empty();
                 var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`
                 alert += `<strong>oops! </strong>`;

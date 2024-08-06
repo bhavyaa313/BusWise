@@ -568,7 +568,7 @@
 
                         <div class="d-flex mt-5">
                             <div class="h5" >Total Amount: INR <span id="totalAmount"></span> </div>
-                            <input id="scheduleID2" type="text" hidden>
+                            <input id="scheduleID2" type="text" >
 
 
 <%--                            <button class="btn text-white  ms-auto"--%>
@@ -646,8 +646,8 @@
     const scheduleIdElement = document.getElementById("scheduleID");
     const scheduleIdValue = scheduleIdElement.textContent || scheduleIdElement.innerText;
     function toggleContinueButton(scheduleId) {
-        debugger
-console.log("kuldeeep")
+
+
         var selectedSeats = $('#selected-seats-display-'+scheduleId).text().trim();
         var continueButton = $('#modalClick-' + scheduleId);
         console.log('Continue Button:', continueButton); // Log the continue button element for debugging
@@ -660,7 +660,7 @@ console.log("kuldeeep")
             continueButton.prop('disabled', false);
         }
     }
-    toggleContinueButton();
+    // toggleContinueButton();
     $('.seat input[type="checkbox"]').on('change', function() {
         // updateSelectedSeats(scheduleIdValue);
         // $('.class-seat-update').click()
@@ -674,6 +674,10 @@ console.log("kuldeeep")
 
     var fareId = "fare-" + scheduleId1;
     var seatFare = $('#' + fareId).text();
+    var arrivalTime = "times-"+scheduleId1;
+    var arrivalTimeText = $("#arrivalTime").text();
+    console.log(arrivalTimeText)
+    $("#depatureTime").text(arrivalTimeText);
 
 
 
@@ -769,7 +773,7 @@ console.log("kuldeeep")
     $(document).on('click', '[id^=modalClick-]', function (event) {
         debugger
 
-        console.log("bhavyaaaaa")
+
         event.preventDefault(); // Prevent the default action of the click
 
         var isLoggedIn = '${not empty sessionScope.email}'; // Ensure this is correctly rendered as a string
@@ -794,7 +798,7 @@ console.log("kuldeeep")
 
             var numSeats = $('#number-of-seats-input-' + scheduleId).val();
             var z = $('#scheduleID').text();
-            $('#scheduleID2').val(z);
+            $('#scheduleID2').val(scheduleId);
 
             $('#passengerDetailsContainer').empty();
 

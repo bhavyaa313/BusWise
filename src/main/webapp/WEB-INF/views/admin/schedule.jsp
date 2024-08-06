@@ -898,29 +898,37 @@ debugger
                     console.log(data)
                     console.log("success")
 
-                    $("#tableData").empty();
+
+
                     if (data.length === 0) {
-                        $("#pagination").hide();
-                        $("#myTable").hide();
+                        if (curPage > 1) {
+                            $("#currentPage").attr("value", 1);
+                            ajaxCallSearch();
+                            return; // Ensure the function exits here
+                        } else {
+                            $("#tableData").empty();
+                            $("#pagination").hide();
+                            $("#myTable").hide();
+                            $('#container-data-0').empty();
 
-
-                        $('#container-data-0').empty();
-                        var nodata =`<div class="container nodataC mt-5">
-    <div id="nodata" class=" d-flex align-items-center justify-content-center flex-column">
-        <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
-
-        <div> <h3 class="text-dark">No Schedules available!</h3></div>
-    </div>
-</div>`
-                        $('#container-data-0').append(nodata);
-                    }
-
-
-                    else {
+                            var nodata = `
+        <div class="container nodataC mt-5">
+            <div id="nodata" class="d-flex align-items-center justify-content-center flex-column">
+                <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
+                <div><h3 class="text-dark">No routes available!</h3></div>
+            </div>
+        </div>`;
+                            $('#container-data-0').append(nodata);
+                            return; // Ensure the function exits here
+                        }
+                    } else {
+                        $("#tableData").empty();
                         $("#pagination").show();
-                        $("#myTable").show();// Show pagination if data exists
+                        $("#myTable").show();
                         $('#container-data-0').empty();
                     }
+
+
 
 
                     for (let i = 0; i < data.length; i++) {

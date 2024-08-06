@@ -89,34 +89,6 @@ public class NewController {
         return ticket;
     }
 
-//    @GetMapping("/ticketDownload/{id}")
-//
-//    public ResponseEntity<Resource> downloadTicket(HttpServletRequest request1, @PathVariable("id") int id) {
-//        try {
-//            // Generate the file and get its path
-//            String filePath = ticketPDFService.createPdf(request1, id);
-//            System.out.println(filePath);
-//            System.out.println("-----------------");
-//
-//            // Convert the local file path to a URL that can be used to serve the file
-//            File file = new File(filePath);
-//
-//            // Ensure the file is within the static directory
-//            String fileName = file.getName();
-//            Resource resource = new ClassPathResource("static/tickets/" + fileName);
-//
-//            if (resource.exists() || resource.isReadable()) {
-//                return ResponseEntity.ok()
-//                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-//                        .contentType(MediaType.APPLICATION_PDF)
-//                        .body(resource);
-//            } else {
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//            }
-//        } catch (Exception e ) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
 
     @GetMapping("/sendEmail/{email}/{bookingId}/{userId}")
     public String sendEmailWithAttachment(@PathVariable("email") String toMail, @PathVariable("bookingId") int id, @PathVariable("userId") int userId, HttpServletRequest request) {
@@ -160,7 +132,7 @@ public class NewController {
     @ResponseBody
     public SalesData fetchDailySales(@RequestParam String date) {
         LocalDate parsedDate = LocalDate.parse(date);
-        return bookingDao.getDailySales(parsedDate);
+        return projectService.getDailySales(parsedDate);
     }
 
     @PostMapping("/monthlySales")
@@ -224,7 +196,7 @@ public class NewController {
     public List<OccupancyReportDto> getDailyOccupancy(@RequestParam String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate localDate = LocalDate.parse(date, formatter);
-        return bookingDao.getDailyOccupancyData(localDate);
+        return projectService.getOccupancyDailyData(localDate);
     }
 
 

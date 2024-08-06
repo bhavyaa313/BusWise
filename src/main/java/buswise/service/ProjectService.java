@@ -57,18 +57,14 @@ public class ProjectService {
         String email = loginDto.getEmail();
         String password = loginDto.getPassword1();
         List<User> userList = userDao.checkEmail(email);
-        if (userList.size() == 0) {
+        if (userList.isEmpty()) {
             return false;
         } else {
             User user = userList.get(0);
             String passwordHashed = user.getPassword();
             byte[] salt = user.getSalt();
             String hash = passwordHash.getSecurePassword(password, salt);
-            if (passwordHashed.equals(hash)) {
-                return true;
-            } else {
-                return false;
-            }
+            return passwordHashed.equals(hash);
 
 
         }
@@ -78,7 +74,7 @@ public class ProjectService {
 
     public boolean checkEmail(String email) {
         List<User> userList = userDao.checkEmail(email);
-        if (userList.size() == 0) {
+        if (userList.isEmpty()) {
             return false;
         } else {
             return true;
@@ -115,6 +111,9 @@ public class ProjectService {
     }
 
 
+
+
+
     public List<RoutesDto> viewRoutes(String region, int curPage) {
         List<RoutesDto> routesDtos = new ArrayList<>();
         try {
@@ -123,6 +122,7 @@ public class ProjectService {
 
             List<Routes> routes = routesDao.getRoutesSearch(region, startIndex, endIndex);
             long count = routesDao.getRoutesSearchCount(region);
+            System.out.println(count);
 
 
             for (Routes route : routes) {
@@ -148,7 +148,7 @@ public class ProjectService {
                 String subRoutesString = subroutes.toString();
                 String subRoutesString1 = subRoutesString.substring(1, subRoutesString.length() - 1);
                 routesDto.setSubRoutes(subRoutesString1);
-
+                System.out.println(routesDto);
                 routesDtos.add(routesDto);
             }
         } catch (Exception e) {
@@ -308,34 +308,6 @@ public class ProjectService {
 
     }
 
-
-//    public void saveRoute(RoutesDto routesDto) {
-//        Routes routes = new Routes();
-//        routes.setSource(routesDto.getSource());
-//        routes.setDistance(routesDto.getDistance());
-//        routes.setDestination(routesDto.getDestination());
-//        routes.setNoOfSubroutes(routesDto.getSubroutesCount());
-//        routes.setCreatedDate(LocalDateTime.now());
-//        routesDao.routeSave(routes);
-//        List<String> name = routesDto.getName();
-//        List<Integer> distancesub = routesDto.getDistancesub();
-//        List<Integer> sequence = routesDto.getSequence();
-//
-//
-//        for (int i = 0; i < routesDto.getSubroutesCount(); i++) {
-//
-//            SubRoute subRoute = new SubRoute();
-//            subRoute.setRouteId(routes);
-//            subRoute.setDistance(distancesub.get(i));
-//            subRoute.setStop(name.get(i));
-//            subRoute.setSequence(sequence.get(i));
-//            routesDao.subrouteSave(subRoute);
-//
-//
-//        }
-//
-//
-//    }
 
 
     public void saveRoute(RoutesDto routesDto) {
@@ -931,20 +903,7 @@ public class ProjectService {
             bookingDao.bookingDetailsSave(bookingDetails);
 
         }
-//
-//        if (user.getRoleId().getRoleId()==2) {
-//            Wallet wallets = walletDao.getWalletByUserId(user);
-//            wallets.setBalance(wallets.getBalance() - bookTicketDto.getAmount());
-//
-//            Transaction transaction = new Transaction();
-//            transaction.setDescription("Ticket Booking");
-//            transaction.setDate(LocalDateTime.now());
-//            transaction.setType("debit");
-//            transaction.setAmount(bookTicketDto.getAmount());
-//            transaction.setWallet(wallets);
-//            walletDao.walletUpdate(wallets);
-//            walletDao.transactionSave(transaction);
-//        }
+
 
         return(bookingId);
 
@@ -1191,7 +1150,7 @@ public class ProjectService {
             List<Schedules> schedulesList = scheduleDao.getScheduleByID(bookings1.getScheduleId().getScheduleId());
             if (schedulesList.isEmpty()) {
                 System.out.println("Schedule not found for schedule ID: " + bookings1.getScheduleId().getScheduleId());
-                return; // or throw a custom exception
+                return;
             }
             Schedules schedules1 = schedulesList.get(0);
 
@@ -1660,8 +1619,42 @@ public class ProjectService {
        }
     }
 
+    public List<UserProfile> userProfileList(int userId){
+        return userDao.userProfiles(userId);
+    }
 
+    public List<Bookings> bookingsList(int bookingId){
+        return bookingDao.getBookingById(bookingId);
+    }
 
+    public List<BookingDetails> bookingDetails(int bookingDetailId){
+        return bookingDao.getBookingDetailsByBookingDetailId(bookingDetailId);
+    }
+
+    public List<String> getBusNumbers(){
+        return  busesDao.getBusNumber();
+    }
+
+    public int getUserId(String email){
+        return userDao.getUserId(email);
+    }
+
+    public int roleId(int userId){
+        return userDao.getRoleId(userId);
+    }
+
+    public String getName(int userId){
+        return userDao.getUsernameByuserId(userId);
+    }
+
+    public SalesData getDailySales(LocalDate parsedDate){
+        return bookingDao.getDailySales(parsedDate);
+    }
+
+    public List<OccupancyReportDto> getOccupancyDailyData(LocalDate localDate)
+    {
+        return bookingDao.getDailyOccupancyData(localDate);
+    }
 }
 
 

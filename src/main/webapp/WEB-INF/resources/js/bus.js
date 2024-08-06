@@ -69,6 +69,7 @@ $("#myFormEdit").validate({
         seatingCapacity: {
             required: true,
             min: 20,
+            max:60
         }
 
     },
@@ -433,31 +434,36 @@ debugger
     console.log(data)
 
 
-    $("#tableData").empty();
+        if (data.length === 0) {
+            if (curPage > 1) {
+                $("#currentPage").attr("value", 1);
+                ajaxCallSearch();
+                return; // Ensure the function exits here
+            } else {
+                $("#tableData").empty();
+                $("#pagination").hide();
+                $("#myTable").hide();
+                $('#container-data-0').empty();
 
-    if (data.length === 0) {
-    $("#pagination").hide();
-    $("#myTable").hide();
+                var nodata = `
+        <div class="container nodataC mt-5">
+            <div id="nodata" class="d-flex align-items-center justify-content-center flex-column">
+                <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
+                <div><h3 class="text-dark">No routes available!</h3></div>
+            </div>
+        </div>`;
+                $('#container-data-0').append(nodata);
+                return; // Ensure the function exits here
+            }
+        } else {
+            $("#tableData").empty();
+            $("#pagination").show();
+            $("#myTable").show();
+            $('#container-data-0').empty();
+        }
 
 
-    $('#container-data-0').empty();
-    var nodata =`<div class="container nodataC mt-5">
-    <div id="nodata" class=" d-flex align-items-center justify-content-center flex-column">
-        <dotlottie-player src="https://lottie.host/c5d27b13-2786-4e34-8aca-ddf227ca5161/oNJTuK3K7k.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
-
-        <div> <h3 class="text-dark">No buses available!</h3></div>
-    </div>
-</div>`
-    $('#container-data-0').append(nodata);
-}
-
-
-    else {
-    $("#pagination").show();
-    $("#myTable").show();// Show pagination if data exists
-    $('#container-data-0').empty();
-}
-    for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
 
     var buses = data[i];
     console.log(buses+"-------------------------------------")

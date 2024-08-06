@@ -206,7 +206,8 @@
 
         <div class="h4  ms-auto  mx-5 ">  <span class="mx-5 mt-5"> Detailed Daily Report </span> <span class="ms-auto ">
 
-        <button class="btn-lg btn btn-danger" id="downloadDailyOccupancy">Download Data</button>   </span></div>
+        <button class="btn-lg btn btn-danger" id="downloadDailyOccupancy">Download Data</button>
+         <a href="" download="" id="dailyOccupancyPdf" hidden="hidden"></a></span></div>
         <div id="alertContainerDaily" ></div>
     </div>
 </div>
@@ -243,7 +244,8 @@
 
         <div class="h4  ms-auto  mx-5 ">  <span class="mx-5 mt-5"> Detailed Monthly Report </span> <span class="ms-auto ">
 
-        <button class="btn-lg btn btn-danger" id="downloadMonthlySales">Download Data</button>   </span></div>
+        <button class="btn-lg btn btn-danger" id="downloadMonthlySales">Download Data</button>
+         <a href="" download="" id="monthlyOccupancyPdf" hidden="hidden"></a></span></div>
         <div id="alertContainerMonthly" ></div>
     </div>
 </div>
@@ -283,7 +285,8 @@
 
         <div class="h4  ms-auto  mx-5 ">  <span class="mx-5 mt-5"> Detailed yearly Report </span> <span class="ms-auto ">
 
-        <button class="btn-lg btn btn-danger" id="downloadYearlyOccupancy">Download Data</button>   </span></div>
+        <button class="btn-lg btn btn-danger" id="downloadYearlyOccupancy">Download Data</button>
+         <a href="" download="" id="yearlyOccupancyPdf"></a></span></div>
         <div id="alertContainer" ></div>
     </div>
 </div>
@@ -324,9 +327,12 @@
             type: 'GET',
 
             success: function (response) {
-                console.log("success");
+
                 var fileUrl = response;
-                window.location.href= fileUrl;
+                var downloadLink = document.getElementById("dailyOccupancyPdf");
+                downloadLink.href = fileUrl;
+                downloadLink.download = "Daily-Sales-Report-" + date + ".pdf";
+                downloadLink.click();
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -356,9 +362,12 @@
             type: 'GET',
 
             success: function (response) {
-                console.log("success");
+
                 var fileUrl = response;
-                window.location.href= fileUrl;
+                var downloadLink = document.getElementById("monthlyOccupancyPdf");
+                downloadLink.href = fileUrl;
+                downloadLink.download = "Daily-Sales-Report-" + date + ".pdf";
+                downloadLink.click();
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;
@@ -389,8 +398,12 @@
 
             success: function (response) {
                 console.log("success");
+
                 var fileUrl = response;
-                window.location.href= fileUrl;
+                var downloadLink = document.getElementById("yearlyOccupancyPdf");
+                downloadLink.href = fileUrl;
+                downloadLink.download = "Daily-Sales-Report-" + year + ".pdf";
+                downloadLink.click();
                 var alert = `<div class="alert alert-success alert-dismissible fade show" role="alert">`
                 alert += `<strong>Success! </strong>`;
                 alert+=`Report Downloaded Successfully!`;

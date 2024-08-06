@@ -12,6 +12,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import javax.xml.bind.SchemaOutputResolver;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,6 +40,7 @@ public class BusesDao {
 
         Session session = sessionFactory.openSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
+        System.out.println(busNumber+"gfghgfhgf");
         CriteriaQuery<Buses> cr = cb.createQuery(Buses.class);
         Root<Buses> root = cr.from(Buses.class);
         if (busNumber.equals("empty")) {
@@ -81,6 +84,7 @@ public class BusesDao {
         session.close();
         return count;
     }
+
 
 
     public List<Buses> getBusbyId(int id) {

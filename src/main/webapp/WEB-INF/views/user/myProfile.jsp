@@ -154,7 +154,7 @@
                     class="btn btn-dark text-white btn-lg mx-3 random1 xx1 mb-2  "
                     onclick="show5()">Edit
             </button>
-            <button type="button"
+            <button type="reset"
                     class="btn btn-danger btn-lg mx-2 hide1 see1 come1 mb-2"
                     onclick="show6()" hidden>Cancel
             </button>
@@ -187,7 +187,7 @@
         $('.enable1').removeAttr("disabled");
         $('.come1').removeAttr("hidden");
         $('.xx1').attr("hidden", "hidden");
-        $('#myProfileForm')[0].reset();
+        $('#myProfileForm').reset();
         $('.error-message1').remove();
 
     }
@@ -198,6 +198,8 @@
         $('.enable1').attr("disabled", "disabled");
         $('.come1').attr("hidden", "hidden");
         $('.xx1').removeAttr("hidden");
+        $('#myProfileForm').reset();
+        $('.error-message1').remove();
 
     }
 
