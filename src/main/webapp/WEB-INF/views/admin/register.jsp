@@ -276,10 +276,7 @@
         $('#registerForm').submit(function(event) {
             event.preventDefault();
             if ($('#registerForm').valid()){
-
-
-
-            $('#saveButton').prop("disabled", true);
+                document.getElementById('saveButton').disabled = true;
             $('#alertContainer').empty()
             debugger
             var email = $("#email").val();
@@ -299,11 +296,11 @@
                         alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                         alert += `</div>`;
                         $('#alertContainer').append(alert);
-                        $('#saveButton').prop("disabled", false);
+                        document.getElementById('saveButton').disabled = false;
                     }
 
                     else {
-                        $('#saveButton').prop("disabled", true);
+                        document.getElementById('saveButton').disabled = true;
 
                         // Show the loader
                         $('#loader').show();

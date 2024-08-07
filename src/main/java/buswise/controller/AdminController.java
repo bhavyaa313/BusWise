@@ -1,9 +1,5 @@
 package buswise.controller;
 
-import buswise.dao.BookingDao;
-import buswise.dao.BusesDao;
-import buswise.dao.UserDao;
-import buswise.dao.VerificationDao;
 import buswise.dto.*;
 import buswise.model.*;
 import buswise.service.*;
@@ -13,10 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -26,22 +22,31 @@ import java.util.Map;
 @Controller
 @RequestMapping("/admin")
 
-public class ProjectController {
+public class AdminController {
 
     @Autowired
     private ProjectService projectService;
 
     @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private BusesDao busesDao;
-
-    @Autowired
-    private BookingDao bookingDao;
-
-    @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private DailySalesPdfService dailySalesPdfService;
+
+    @Autowired
+    private MonthlySalesPdfService monthlySalesPdfService;
+
+    @Autowired
+    private YearlySalesPdfService yearlySalesPdfService;
+
+    @Autowired
+    private DailyOccupancyReportPdf dailyOccupancyReportPdf;
+
+    @Autowired
+    private MonthlyOccupancyReportPdf monthlyOccupancyReportPdf;
+
+    @Autowired
+    private YearlyOccupancyReportPdf yearlyOccupancyReportPdf;
 
 
 
@@ -507,6 +512,110 @@ public class ProjectController {
         String activeString = "active  text-dark";
         model.addAttribute("active10", activeString);
         return "/admin/busLocation";
+    }
+
+    @PostMapping("/dailySales/{userId}")
+    @ResponseBody
+    public SalesData fetchDailySales(@RequestParam String date, @PathVariable("userId") int userId) {
+        LocalDate parsedDate = LocalDate.parse(date);
+        return projectService.getDailySales(parsedDate);
+    }
+
+    @PostMapping("/monthlySales/{userId}")
+    @ResponseBody
+    public SalesData fetchMonthlySales(@RequestParam String date) {
+        String[] parts = date.split("-");
+        int year = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        return projectService.getMonthlySalesData(year, month);
+    }
+
+    @PostMapping("/yearly-sales/{userId}")
+    @ResponseBody
+    public SalesData fetchYearlySales(@RequestParam int year) {
+
+        return projectService.getYearlySalesData(year);
+    }
+
+    @RequestMapping("/dailySalesDownlaod/{date}/{userId}")
+    @ResponseBody
+    public String dailySalesDownlod(HttpServletRequest request, @PathVariable("date") String date) {
+        return dailySalesPdfService.createDailySalesPdf(request, date);
+
+    }
+
+    @RequestMapping("/monthly-sales-download/{date}/{userId}")
+    @ResponseBody
+    public String MonthlySalesDownload(HttpServletRequest request, @PathVariable("date") String date) {
+        String[] parts = date.split("-");
+        int year = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        LocalDate date1 = LocalDate.of(year, month, 1);
+        return monthlySalesPdfService.createMonthlySalesPdf(request, date1);
+
+    }
+
+    @PostMapping("/year-monthly-sales/{userId}")
+    @ResponseBody
+    public List<MonthlySalesData> getMonthlySales(@RequestParam("year") int year) {
+        return projectService.getMonthlySalesData(year);
+    }
+
+
+    @RequestMapping("/yearly-sales-download/{year}/{userId}")
+    @ResponseBody
+    public String yearlySalesDownload(HttpServletRequest request, @PathVariable("year") int year) {
+        return yearlySalesPdfService.createYearlySalesPdf(request, year);
+
+    }
+
+    @RequestMapping("/daily-occupancy-download/{date}/{userId}")
+    @ResponseBody
+    public String dailyOccupancyDownload(HttpServletRequest request, @PathVariable("date") String date) {
+        return dailyOccupancyReportPdf.createDailyOccupancyPdf(request, date);
+
+    }
+
+
+    @PostMapping("/daily-occupancy/{userId}")
+    @ResponseBody
+    public List<OccupancyReportDto> getDailyOccupancy(@RequestParam String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(date, formatter);
+        return projectService.getOccupancyDailyData(localDate);
+    }
+
+
+    @RequestMapping("/monthly-occupancy-download/{date}/{userId}")
+    @ResponseBody
+    public String monthlyOccupancyDownload(HttpServletRequest request, @PathVariable("date") String date) {
+
+        String[] parts = date.split("-");
+        int year = Integer.parseInt(parts[0]);
+        int month = Integer.parseInt(parts[1]);
+        return monthlyOccupancyReportPdf.createMonthlyOccupancyPdf(request, year, month);
+
+    }
+
+    @RequestMapping("/yearly-occupancy-download/{year}/{userId}")
+    @ResponseBody
+    public String yearlyOccupancyDownload(HttpServletRequest request, @PathVariable("year") int year) {
+
+        return yearlyOccupancyReportPdf.createYearlyOccupancyPdf(request, year);
+
+    }
+
+
+    @PostMapping("/monthly-occupancy/{userId}")
+    @ResponseBody
+    public List<OccupancyReportDto> fetchMonthlyOccupancy(@RequestParam String date) {
+        return projectService.getRoutesWiseMonthlyOccupancy(date);
+    }
+
+    @PostMapping("/yearly-occupancy/{userId}")
+    @ResponseBody
+    public List<OccupancyReportDto> fetchMonthlyOccupancy(@RequestParam int year) {
+        return projectService.getRoutesWiseYearlyOccupancy(year);
     }
 
 }

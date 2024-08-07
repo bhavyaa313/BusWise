@@ -968,11 +968,30 @@ debugger
     <i class="bi bi-pen-fill text-white"></i>
 </button>
 
-                <button type="button" class="btn btn-secondary mx-3" style="width: 5vh"
-                        onclick="deletebutton('` + trips.scheduleId + `')"
+                <button type="button" class="btn btn-secondary mx-3" data-bs-toggle="modal" data-bs-target="#delete-modal" style="width: 5vh"
+
                         ` + (disableButtons ? 'disabled' : '') + `>
                     <i class="bi bi-archive-fill text-white"></i>
                 </button>
+
+                   <div class="modal fade" id="delete-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm Delete</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <i class="bi bi-exclamation-circle h1 text-danger mx-2 mt-2" ></i>
+            <span class="h5 mx-4 mb-3">Are you sure you want to delete?</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger"   onclick="deletebutton('` + trips.scheduleId + `')">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
             </td>
 
 
@@ -1158,6 +1177,7 @@ debugger
                     alert += `Schedule is used in current bookings and cannot be deleted.`;
                     alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                     alert += `</div>`;
+                    $('.btn-close').click();
                     $('#alertContainerDelete').append(alert);
                 } else {
                     $.ajax({
@@ -1173,6 +1193,7 @@ debugger
                             alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                             alert += `</div>`;
                             console.log(alert)
+                            $('.btn-close').click();
                             $('#alertContainerDelete').append(alert);
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
@@ -1182,6 +1203,7 @@ debugger
                             alert += `An error occurred while deleting schedule.`;
                             alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                             alert += `</div>`;
+                            $('.btn-close').click();
                             $('#alertContainerDelete').append(alert);
                         }
                       });
@@ -1194,6 +1216,7 @@ debugger
                 alert += `An error occurred while checking schedule usage.`;
                 alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                 alert += `</div>`;
+                $('.btn-close').click();
                 $('#alertContainerDelete').append(alert);
             }
         });

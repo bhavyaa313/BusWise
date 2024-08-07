@@ -319,7 +319,7 @@
         debugger
         var selectedDate = document.getElementById("reportDate").value;
         $.ajax({
-            url: "${pageContext.request.contextPath}/dailySales",
+            url: "${pageContext.request.contextPath}/admin/dailySales/${userId}",
             type: "POST",
             data: {
                 date: selectedDate
@@ -405,7 +405,7 @@
         var selectedDate = document.getElementById("reportMonth").value;
         console.log(selectedDate)
         $.ajax({
-            url: "${pageContext.request.contextPath}/monthlySales",
+            url: "${pageContext.request.contextPath}/admin/monthlySales/${userId}",
             type: "POST",
             data: {
                 date: selectedDate
@@ -491,7 +491,7 @@
         var year = document.getElementById("reportYear").value;
 
         $.ajax({
-            url: "${pageContext.request.contextPath}/yearly-sales",
+            url: "${pageContext.request.contextPath}/admin/yearly-sales/${userId}",
             type: "POST",
             data: {
                 year: year
@@ -588,7 +588,7 @@
         var date = $('#reportDate').val()
 
         $.ajax({
-            url: '${pageContext.request.contextPath}/dailySalesDownlaod/' + date,
+            url: '${pageContext.request.contextPath}/admin/dailySalesDownlaod/' + date +"/${userId}",
             type: 'GET',
 
             success: function (response) {
@@ -625,7 +625,7 @@
         var date = $('#reportMonth').val()
 
         $.ajax({
-            url: '${pageContext.request.contextPath}/monthly-sales-download/' + date,
+            url: '${pageContext.request.contextPath}/admin/monthly-sales-download/' + date +"/${userId}",
             type: 'GET',
 
             success: function (response) {
@@ -659,7 +659,7 @@
         var year = $('#reportYear').val();
 
         $.ajax({
-            url: '${pageContext.request.contextPath}/yearly-sales-download/' + year,
+            url: '${pageContext.request.contextPath}/admin/yearly-sales-download/' + year + "/${userId}",
             type: 'GET',
 
             success: function (response) {
@@ -754,7 +754,7 @@
             debugger
             var year = document.getElementById("reportYear").value;
         $.ajax({
-        url: '${pageContext.request.contextPath}/year-monthly-sales',
+        url: '${pageContext.request.contextPath}/admin/year-monthly-sales/${userId}',
         type: 'POST',
         data: {
             year: year

@@ -360,7 +360,9 @@ function init(totalFinal, curPage) {
                 alert += `Bus is used in schedules and cannot be deleted.`;
                 alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                 alert += `</div>`;
+                $('.btn-close').click();
                 $('#alertContainerDelete').append(alert);
+
             } else {
                 $.ajax({
                     url: 'deleteBus/' + busId + "/" + userId,
@@ -372,7 +374,10 @@ function init(totalFinal, curPage) {
                         alert += `Bus has been deleted successfully.`;
                         alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                         alert += `</div>`;
+                        $('.btn-close').click();
                         $('#alertContainerDelete').append(alert);
+
+
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         var alert = `<div class="alert alert-danger alert-dismissible fade show" role="alert">`;
@@ -380,7 +385,9 @@ function init(totalFinal, curPage) {
                         alert += `An error occurred while deleting the bus.`;
                         alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
                         alert += `</div>`;
+                        $('.btn-close').click();
                         $('#alertContainerDelete').append(alert);
+
                     }
                 });
             }
@@ -391,6 +398,7 @@ function init(totalFinal, curPage) {
             alert += `An error occurred while checking bus usage.`;
             alert += `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
             alert += `</div>`;
+            $('.btn-close').click();
             $('#alertContainerDelete').append(alert);
         }
     });
@@ -482,8 +490,27 @@ debugger
     Edit
 </button>
 
-                                <button type="button" onclick="deletebutton(`+buses.busId+`)" class="btn btn-secondary mx-3 " style="width: 18vh">
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#delete-modal" class="btn btn-secondary mx-3 " style="width: 18vh">
                                   Delete</button>
+                                  
+                                 <div class="modal fade" id="delete-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm Delete</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <i class="bi bi-exclamation-circle h1 text-danger mx-2 mt-2" ></i>
+            <span class="h5 mx-4 mb-3">Are you sure you want to delete?</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-danger" onclick="deletebutton(`+buses.busId+`)">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
                             </td>
 
 						</tr>`

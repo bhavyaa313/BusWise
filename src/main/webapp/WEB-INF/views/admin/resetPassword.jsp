@@ -73,6 +73,7 @@
 
         </form>
 
+        <p class="mt-4"> <a href="${pageContext.request.contextPath}/login">Login Here</a></p>
 
 
         <div id="alertContainer"></div>

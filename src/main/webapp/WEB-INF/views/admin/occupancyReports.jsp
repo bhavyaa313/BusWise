@@ -323,7 +323,7 @@
         var date = $('#reportDate').val()
 
         $.ajax({
-            url: '${pageContext.request.contextPath}/daily-occupancy-download/' + date,
+            url: '${pageContext.request.contextPath}/admin/daily-occupancy-download/' + date + "/${userId}",
             type: 'GET',
 
             success: function (response) {
@@ -358,7 +358,7 @@
         var date = $('#reportMonth').val()
 
         $.ajax({
-            url: '${pageContext.request.contextPath}/monthly-occupancy-download/' + date,
+            url: '${pageContext.request.contextPath}/admin/monthly-occupancy-download/' + date + "/${userId}",
             type: 'GET',
 
             success: function (response) {
@@ -393,7 +393,7 @@
         var year = $('#reportYear').val()
 
         $.ajax({
-            url: '${pageContext.request.contextPath}/yearly-occupancy-download/' + year,
+            url: '${pageContext.request.contextPath}/admin/yearly-occupancy-download/' + year + "/${userId}",
             type: 'GET',
 
             success: function (response) {
@@ -492,7 +492,7 @@
     function fetchDailyOccupancy() {
         var date = $('#reportDate').val();
         $.ajax({
-            url: '${pageContext.request.contextPath}/daily-occupancy',
+            url: '${pageContext.request.contextPath}/admin/daily-occupancy/${userId}',
             type: 'POST',
             data: { date: date },
             success: function(data) {
@@ -572,7 +572,7 @@
         }
 
         $.ajax({
-            url: '${pageContext.request.contextPath}/monthly-occupancy',
+            url: '${pageContext.request.contextPath}/admin/monthly-occupancy/${userId}',
             type: 'POST',
             data: { date: date },
             success: function(data) {
@@ -653,7 +653,7 @@
         }
 
         $.ajax({
-            url: '${pageContext.request.contextPath}/yearly-occupancy',
+            url: '${pageContext.request.contextPath}/admin/yearly-occupancy/${userId}',
             type: 'POST',
             data: { year: year },
             success: function(data) {
